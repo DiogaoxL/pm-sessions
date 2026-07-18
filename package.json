@@ -7,7 +7,8 @@
     "build": "pnpm --filter web build",
     "start": "pnpm --filter web start",
     "lint": "pnpm --filter web lint",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "pnpm --filter web typecheck",
+    "format": "pnpm exec prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "prepare": "husky"
   },
   "devDependencies": {

@@ -35,13 +35,13 @@ Preparar toda a infraestrutura necessária para o desenvolvimento.
 
 ### Deve estar pronto
 
-- [ ] Projeto Next.js criado
-- [ ] App Router configurado
-- [ ] TypeScript configurado
-- [ ] ESLint configurado
-- [ ] Prettier configurado
-- [ ] Estrutura de pastas conforme architecture.md
-- [ ] Projeto executando localmente
+- [x] Projeto Next.js criado
+- [x] App Router configurado
+- [x] TypeScript configurado
+- [x] ESLint configurado
+- [x] Prettier configurado
+- [x] Estrutura de pastas conforme architecture.md
+- [x] Projeto executando localmente
 
 ### Critério de Aceite
 
@@ -53,12 +53,12 @@ A aplicação inicia corretamente utilizando `npm run dev`.
 
 ### Deve estar pronto
 
-- [ ] Tailwind CSS configurado
-- [ ] Shadcn UI instalado
-- [ ] Tema inicial criado
-- [ ] Fonte configurada
-- [ ] Layout base criado
-- [ ] Componentes Button e Input funcionando
+- [x] Tailwind CSS configurado
+- [x] Shadcn UI instalado
+- [x] Tema inicial criado
+- [x] Fonte configurada
+- [x] Layout base criado
+- [x] Componentes Button e Input funcionando
 
 ### Critério de Aceite
 
@@ -70,12 +70,12 @@ A aplicação inicia corretamente utilizando `npm run dev`.
 
 ### Deve estar pronto
 
-- [ ] Projeto Supabase criado
-- [ ] Banco PostgreSQL disponível
-- [ ] Variáveis de ambiente configuradas
-- [ ] Conexão validada
-- [ ] Estrutura inicial criada
-- [ ] Tabelas principais criadas
+- [x] Projeto Supabase criado
+- [x] Banco PostgreSQL disponível
+- [x] Variáveis de ambiente configuradas
+- [x] Conexão validada
+- [x] Estrutura inicial criada
+- [x] Tabelas principais criadas
 
 ### Critério de Aceite
 
@@ -87,12 +87,12 @@ A aplicação consegue gravar e consultar dados.
 
 ### Deve estar pronto
 
-- [ ] Auth.js instalado
-- [ ] Login Google funcionando
-- [ ] Logout funcionando
-- [ ] Sessão persistida
-- [ ] Middleware protegendo rotas
-- [ ] Apenas administradores autorizados conseguem acessar o painel
+- [x] Auth.js instalado
+- [x] Login Google funcionando
+- [x] Logout funcionando
+- [x] Sessão persistida
+- [x] Middleware protegendo rotas
+- [x] Apenas administradores autorizados conseguem acessar o painel
 
 ### Critério de Aceite
 
