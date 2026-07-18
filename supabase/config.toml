@@ -1,0 +1,15 @@
+# Supabase CLI configuration
+project_id = "yjyckvesjmqlvxrszown"
+
+[api]
+port = 54321
+schemas = ["public"]
+
+[db]
+port = 54322
+
+[studio]
+port = 54323
+
+[inbucket]
+port = 54324

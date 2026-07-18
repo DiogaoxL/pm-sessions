@@ -1,0 +1,3 @@
+-- PM Sessions - Database Seed
+-- Use this file to populate the database with development data.
+-- E.g., INSERT INTO public.admins (name, email, role) VALUES ('Admin Dev', 'admin@example.com', 'super_admin');
