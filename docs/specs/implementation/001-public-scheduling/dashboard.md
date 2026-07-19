@@ -16,18 +16,18 @@
 - **RC-1 (Dados)**: ██████████████ 100% (7/7 tasks concluídas)
 - **RC-2 (Serviços)**: ██████████████ 100% (6/6 tasks concluídas)
 - **RC-3 (Actions)**: ██████████████ 100% (6/6 tasks concluídas)
-- **RC-4 (UI)**: ███░░░░░░░░░░░ 43% (3/7 tasks concluídas)
+- **RC-4 (UI)**: ████░░░░░░░░░░ 57% (4/7 tasks concluídas)
 
 ## Release Candidates
 
 - **RC-1**: Camada de Dados e Repositórios (Status: `COMPLETED`, Testes: `PASS`, Lint: `PASS`, Typecheck: `PASS`)
 - **RC-2**: Services e Integração Google (Status: `COMPLETED`, Progresso: `100%`, Tasks: `6/6`, Testes: `PASS`, Lint: `PASS`, Typecheck: `PASS`)
 - **RC-3**: Server Actions e Validações (Status: `✅ Finalizado`, Progresso: `100%`, Tasks: `6/6`, Testes: `PASS`, Lint: `PASS`, Typecheck: `PASS`)
-- **RC-4**: UI e Componentes (Status: `IN_PROGRESS`, Progresso: `43%`, Tasks: `3/7`)
+- **RC-4**: UI e Componentes (Status: `IN_PROGRESS`, Progresso: `57%`, Tasks: `4/7`)
 
 ## Próxima Task
 
-- [RC-4 Task 04: Criar Formulário de Agendamento Público](RC-4/task-04.md)
+- [RC-4 Task 05: Integrar Formulário com scheduleSessionAction](RC-4/task-05.md)
 
 ## Bloqueios
 

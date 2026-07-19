@@ -8,7 +8,7 @@
 **RC-3 Status: COMPLETED (100% concluído) — Conclusão em 2026-07-19**
 
 - _Encerramento técnico do ciclo. Todas as tasks homologadas, auditorias aprovadas, documentação 100% sincronizada e pronto para merge e tag._
-  **RC-4 Status: IN_PROGRESS (43% concluído) — Início em 2026-07-19**
+  **RC-4 Status: IN_PROGRESS (57% concluído) — Início em 2026-07-19**
 
 ---
 
@@ -36,7 +36,7 @@
 | [RC-4 Task 01: Criar Componentes Base de UI e Cards](RC-4/task-01.md)                 | `DONE` | Lead Engineer | RC-3         | 2h         | Baixa        |
 | [RC-4 Task 02: Criar Componente de Listagem de Horários Disponíveis](RC-4/task-02.md) | `DONE` | Lead Engineer | Task 01      | 2h         | Média        |
 | [RC-4 Task 03: Integrar Listagem com getAvailableSlotsAction](RC-4/task-03.md)        | `DONE` | Lead Engineer | Task 02      | 2h         | Baixa        |
-| [RC-4 Task 04: Criar Formulário de Agendamento Público](RC-4/task-04.md)              | `TODO` | Lead Engineer | Task 01      | 2h         | Média        |
+| [RC-4 Task 04: Criar Formulário de Agendamento Público](RC-4/task-04.md)              | `DONE` | Lead Engineer | Task 01      | 2h         | Média        |
 | [RC-4 Task 05: Integrar Formulário com scheduleSessionAction](RC-4/task-05.md)        | `TODO` | Lead Engineer | Task 04      | 3h         | Média        |
 | [RC-4 Task 06: Tratamento de Estados, Loading e Mensagens de Erro](RC-4/task-06.md)   | `TODO` | Lead Engineer | Task 03, 05  | 3h         | Média        |
 | [RC-4 Task 07: Testes Unitários de Componentes de UI](RC-4/task-07.md)                | `TODO` | Lead Engineer | Task 06      | 4h         | Alta         |
@@ -67,3 +67,4 @@
 - **RC-4 Task 01**: Homologada. Testes: PASS (Typecheck / Lint). Situação: Homologada (Criação dos componentes base TimeSlotCard e SchedulingSkeleton com suporte a acessibilidade via teclado, propriedades tipadas e pulse animation).
 - **RC-4 Task 02**: Homologada. Testes: PASS (Typecheck / Lint). Situação: Homologada (Criação do componente TimeSlotList para renderizar a listagem de slots disponíveis agrupados por data e ordenados cronologicamente por dia e horário).
 - **RC-4 Task 03**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 24/24 PASS). Situação: Homologada (Implementação do AvailableSlotsContainer integrando a busca real da Server Action getAvailableSlotsAction com tratamento visual de loadings, skeletons, sucesso e mensagens de erro amigáveis).
+- **RC-4 Task 04**: Homologada. Testes: PASS (Typecheck / Lint). Situação: Homologada (Criação do componente de apresentação SchedulingForm para captura dos dados do candidato, com suporte a acessibilidade e inputs controlados).
