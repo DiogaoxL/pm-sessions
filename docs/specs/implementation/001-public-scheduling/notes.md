@@ -21,3 +21,8 @@
 - Sem pendências em aberto. A Task 06 (Data Layer Integration Tests) está plenamente liberada para desenvolvimento.
 - Auditoria Técnica da Task 05A: Aprovada e homologada tecnicamente. A Task 05A foi criada dinamicamente após a auditoria da Task 06 revelar a ausência de infraestrutura de teste no monorepo.
 - A separação estrita entre preparação de infraestrutura (Task 05A) e escrita de testes de negócio/persistência (Task 06) passa a compor a governança do repositório, garantindo estabilidade nas builds de CI.
+- Auditoria Técnica da Task 06: Aprovada e homologada com sucesso (11/11 testes aprovados).
+- Recomendações de melhorias futuras registradas na auditoria (não bloqueantes para homologação):
+  - Extração do helper `MockQueryBuilder` para um utilitário compartilhado de testes do monorepo;
+  - Ampliação dos cenários negativos dos repositórios simulando falhas nos métodos de `update` e `insert`;
+  - Configuração posterior de relatórios automatizados de cobertura de código usando `vitest --coverage`.

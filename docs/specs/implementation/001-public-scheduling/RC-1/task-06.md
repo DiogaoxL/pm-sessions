@@ -14,7 +14,7 @@ A persistência lida com concorrência e transações. Escrever testes garante q
 
 # Dependências
 
-- [Task 05](task-05.md)
+- [Task 05](task-05A.md)
 
 # Arquivos que serão alterados
 
@@ -47,7 +47,7 @@ Nenhum.
 Executar suíte de testes do projeto:
 
 ```bash
-pnpm test
+pnpm --filter web test
 ```
 
 # Rollback

@@ -16,3 +16,4 @@
 - Execução da **Task 04: Implement SessionRepository** (classe `SessionRepository` desenvolvida em `session.repository.ts` contendo concorrência otimista com verificação e update atômico de participantes, com testes estáticos aprovados).
 - Execução da **Task 05: Implement ParticipantRepository** (classe `ParticipantRepository` desenvolvida em `participant.repository.ts` contendo inserção e validação de duplicados com filtro de junção interna de sessões ativas).
 - Execução da **Task 05A: Setup Testing Infrastructure** (instalação do Vitest no app web, criação dos arquivos `vitest.config.ts` e `setup.ts`, configuração de aliases e script de testes configurado com `--passWithNoTests`).
+- Execução da **Task 06: Data Layer Integration Tests** (criação do arquivo de testes unitários/integração `repositories.test.ts` sob a pasta `__tests__/` cobrindo 11 cenários de teste para `TimeSlotRepository`, `SessionRepository` e `ParticipantRepository`).

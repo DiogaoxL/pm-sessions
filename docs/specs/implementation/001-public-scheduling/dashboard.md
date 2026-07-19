@@ -12,8 +12,8 @@
 
 ## Progresso Geral
 
-- **Feature Total**: 28%
-- **RC-1 (Dados)**: ████████████░░ 85% (6/7 tasks concluídas)
+- **Feature Total**: 35%
+- **RC-1 (Dados)**: ██████████████ 100% (7/7 tasks concluídas)
 
 ## Release Candidates
 
@@ -24,7 +24,7 @@
 
 ## Próxima Task
 
-- [Task 06: Data Layer Integration Tests](RC-1/task-06.md)
+- **RC-2 Services** (Pronto para início)
 
 ## Bloqueios
 
