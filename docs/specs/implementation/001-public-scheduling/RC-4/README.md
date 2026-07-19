@@ -2,7 +2,7 @@
 
 [← Voltar para Feature](../README.md)
 
-**Status: IN_PROGRESS (57% Concluído)**
+**Status: IN_PROGRESS (86% Concluído)**
 
 ---
 
@@ -43,8 +43,8 @@ Este ciclo aborda estritamente a camada de visualização (UI) e a lógica de ap
 | [Task 02](task-02.md) | Criar Componente de Listagem de Horários Disponíveis | `DONE` | Task 01      | 2h         | Média        |
 | [Task 03](task-03.md) | Integrar Listagem com getAvailableSlotsAction        | `DONE` | Task 02      | 2h         | Baixa        |
 | [Task 04](task-04.md) | Criar Formulário de Agendamento Público              | `DONE` | Task 01      | 2h         | Média        |
-| [Task 05](task-05.md) | Integrar Formulário com scheduleSessionAction        | `TODO` | Task 04      | 3h         | Média        |
-| [Task 06](task-06.md) | Tratamento de Estados, Loading e Mensagens de Erro   | `TODO` | Task 03, 05  | 3h         | Média        |
+| [Task 05](task-05.md) | Integrar Formulário com scheduleSessionAction        | `DONE` | Task 04      | 3h         | Média        |
+| [Task 06](task-06.md) | Tratamento de Estados, Loading e Mensagens de Erro   | `DONE` | Task 03, 05  | 3h         | Média        |
 | [Task 07](task-07.md) | Testes Unitários de Componentes de UI                | `TODO` | Task 06      | 4h         | Alta         |
 
 ---

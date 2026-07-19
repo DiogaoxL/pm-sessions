@@ -1,6 +1,7 @@
 import React, { useState, useTransition } from 'react';
 import { Participant } from '../repositories/interfaces';
 import { scheduleSessionAction } from '../actions';
+import { cn } from '@/lib/utils';
 
 interface SchedulingFormProps {
   sessionId: string;
@@ -20,11 +21,17 @@ export function SchedulingForm({
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [globalError, setGlobalError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isPending) return;
+
+    // Reset error states before new submission
+    setFieldErrors({});
+    setGlobalError(null);
 
     startTransition(async () => {
       try {
@@ -41,13 +48,27 @@ export function SchedulingForm({
             onSuccess(result.data);
           }
         } else {
+          // Map validation fieldErrors if present
+          if (result.validationErrors?.fieldErrors) {
+            const mappedErrors: Record<string, string> = {};
+            Object.entries(result.validationErrors.fieldErrors).forEach(([key, val]) => {
+              if (Array.isArray(val) && val.length > 0) {
+                mappedErrors[key] = val[0];
+              }
+            });
+            setFieldErrors(mappedErrors);
+          }
+
+          setGlobalError(result.error);
           if (onError) {
             onError(result.error);
           }
         }
       } catch {
+        const fallbackMsg = 'Ocorreu um erro inesperado ao realizar o agendamento.';
+        setGlobalError(fallbackMsg);
         if (onError) {
-          onError('Ocorreu um erro inesperado ao realizar o agendamento.');
+          onError(fallbackMsg);
         }
       }
     });
@@ -58,6 +79,14 @@ export function SchedulingForm({
       onSubmit={handleSubmit}
       className="w-full space-y-5 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm"
     >
+      {/* Global Business Error Banner */}
+      {globalError && (
+        <div className="p-4 rounded-xl border border-red-200 bg-red-50 text-red-800 text-sm">
+          <p className="font-semibold">Não foi possível completar o agendamento</p>
+          <p className="mt-1 text-red-700">{globalError}</p>
+        </div>
+      )}
+
       <div className="space-y-1">
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
           Nome Completo
@@ -71,8 +100,16 @@ export function SchedulingForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Seu nome"
-          className="w-full px-3.5 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-400"
+          className={cn(
+            'w-full px-3.5 py-2 border rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 disabled:bg-gray-50 disabled:text-gray-400',
+            fieldErrors.name
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+              : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200',
+          )}
         />
+        {fieldErrors.name && (
+          <p className="text-xs text-red-600 mt-1 font-medium">{fieldErrors.name}</p>
+        )}
       </div>
 
       <div className="space-y-1">
@@ -88,8 +125,16 @@ export function SchedulingForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="exemplo@email.com"
-          className="w-full px-3.5 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-400"
+          className={cn(
+            'w-full px-3.5 py-2 border rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 disabled:bg-gray-50 disabled:text-gray-400',
+            fieldErrors.email
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+              : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200',
+          )}
         />
+        {fieldErrors.email && (
+          <p className="text-xs text-red-600 mt-1 font-medium">{fieldErrors.email}</p>
+        )}
       </div>
 
       <div className="space-y-1">
@@ -104,8 +149,16 @@ export function SchedulingForm({
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="(00) 00000-0000"
-          className="w-full px-3.5 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-400"
+          className={cn(
+            'w-full px-3.5 py-2 border rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 disabled:bg-gray-50 disabled:text-gray-400',
+            fieldErrors.phone
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
+              : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200',
+          )}
         />
+        {fieldErrors.phone && (
+          <p className="text-xs text-red-600 mt-1 font-medium">{fieldErrors.phone}</p>
+        )}
       </div>
 
       <div className="flex items-center justify-end gap-3 pt-3">
