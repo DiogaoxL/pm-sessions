@@ -40,6 +40,7 @@
 
 ### Adicionado
 
+- Execução da **RC-4 Task 02: Criar Componente de Listagem de Horários Disponíveis** (implementação de `TimeSlotList` que agrupa e ordena slots por dia e horário cronologicamente, com formatação localizada pt-BR e tratamento de estado vazio).
 - Execução da **RC-4 Task 01: Criar Componentes Base de UI e Cards** (implementação dos componentes base `TimeSlotCard` e `SchedulingSkeleton` com suporte a teclado, acessibilidade ARIA e animações de loading do Tailwind v4).
 - **Planejamento do RC-4 (UI e Componentes)**: Definição do cronograma e especificações técnicas de sete tarefas (Tasks 01 a 07) para a criação dos componentes de formulário, listagem de slots e integrações das Server Actions com testes no cliente.
 - Execução da **RC-3 Task 06: Testes Unitários das Server Actions** (criação da suíte de testes unitários das Server Actions em `get-available-slots.test.ts` e `schedule-session.test.ts` cobrindo validações de schema Zod, fluxos felizes e mapeamento amigável de erros de vagas e concorrência).
