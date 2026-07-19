@@ -17,7 +17,7 @@
 | [RC-2 Task 02: Implementar Listagem de Horários Disponíveis](RC-2/task-02.md)     | `DONE` | Lead Engineer | Task 01      | 3h         | Média        |
 | [RC-2 Task 03: Implementar Fluxo de Reserva de Vagas](RC-2/task-03.md)            | `DONE` | Lead Engineer | Task 02      | 4h         | Alta         |
 | [RC-2 Task 04: Implementar Criação de Participante e Duplicados](RC-2/task-04.md) | `DONE` | Lead Engineer | Task 03      | 3h         | Média        |
-| [RC-2 Task 05: Orquestração do Fluxo de Agendamento Público](RC-2/task-05.md)     | `TODO` | Lead Engineer | Task 04      | 4h         | Alta         |
+| [RC-2 Task 05: Orquestração do Fluxo de Agendamento Público](RC-2/task-05.md)     | `DONE` | Lead Engineer | Task 04      | 4h         | Alta         |
 | [RC-2 Task 06: Testes da Camada de Serviços](RC-2/task-06.md)                     | `TODO` | Lead Engineer | Task 05      | 5h         | Alta         |
 | **RC-3 Server Actions**                                                           | `TODO` | —             | RC-2         | 6h         | Média        |
 | **RC-4 UI/Componentes**                                                           | `TODO` | —             | RC-3         | 10h        | Alta         |
@@ -37,3 +37,4 @@
 - **RC-2 Task 02**: Homologada. Testes: PASS (Typecheck). Situação: Homologada (Método `getAvailableSlots` implementado delegando listagem ordenada e filtrada ao `TimeSlotRepository`).
 - **RC-2 Task 03**: Homologada. Testes: PASS (Typecheck). Situação: Homologada (Método `reserveSeat` implementado orquestrando chamada e delegação de lock atômico direto para o `SessionRepository`).
 - **RC-2 Task 04**: Homologada. Testes: PASS (Typecheck / Test Runner). Situação: Homologada (Método interno `registerParticipant` implementado no `SchedulingService` com checagem de duplicidade por e-mail no slot e captura de Unique Constraints do banco).
+- **RC-2 Task 05**: Homologada. Testes: PASS (Typecheck / Lint). Situação: Homologada (Método público `scheduleSession` implementado no `SchedulingService` unificando reserva de vaga, chamada ao cadastro e rollback em caso de falha).

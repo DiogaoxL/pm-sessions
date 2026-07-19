@@ -12,9 +12,9 @@
 
 ## Progresso Geral
 
-- **Feature Total**: 50%
+- **Feature Total**: 55%
 - **RC-1 (Dados)**: ██████████████ 100% (7/7 tasks concluídas)
-- **RC-2 (Serviços)**: █████████░░░░░ 67% (4/6 tasks concluídas)
+- **RC-2 (Serviços)**: ███████████░░░ 83% (5/6 tasks concluídas)
 
 ## Release Candidates
 
@@ -25,7 +25,7 @@
 
 ## Próxima Task
 
-- [RC-2 Task 05: Orquestração do Fluxo de Agendamento Público](RC-2/task-05.md)
+- [RC-2 Task 06: Testes da Camada de Serviços](RC-2/task-06.md)
 
 ## Bloqueios
 

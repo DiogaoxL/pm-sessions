@@ -57,11 +57,21 @@ export class SchedulingService implements ISchedulingService {
   }
 
   async scheduleSession(
-    _email: string,
-    _name: string,
-    _sessionId: string,
-    _timeSlotId: string,
+    email: string,
+    name: string,
+    sessionId: string,
+    timeSlotId: string,
   ): Promise<Participant> {
-    throw new Error('Method not implemented.');
+    const seatReserved = await this.reserveSeat(sessionId);
+    if (!seatReserved) {
+      throw new Error('No seats available for this session');
+    }
+
+    try {
+      return await this.registerParticipant(email, name, sessionId, timeSlotId);
+    } catch (error) {
+      await this.sessionRepository.decrementParticipants(sessionId);
+      throw error;
+    }
   }
 }
