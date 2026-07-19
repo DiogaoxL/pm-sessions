@@ -11,7 +11,8 @@
 | [RC-1 Task 03: Implement TimeSlotRepository](RC-1/task-03.md)    | `DONE` | Lead Engineer | Task 02      | 3h         | Média        |
 | [RC-1 Task 04: Implement SessionRepository](RC-1/task-04.md)     | `DONE` | Lead Engineer | Task 03      | 4h         | Alta         |
 | [RC-1 Task 05: Implement ParticipantRepository](RC-1/task-05.md) | `DONE` | Lead Engineer | Task 04      | 3h         | Média        |
-| [RC-1 Task 06: Data Layer Integration Tests](RC-1/task-06.md)    | `TODO` | Lead Engineer | Task 05      | 4h         | Alta         |
+| [RC-1 Task 05A: Setup Testing Infrastructure](RC-1/task-05A.md)  | `DONE` | Lead Engineer | Task 05      | 1h         | Baixa        |
+| [RC-1 Task 06: Data Layer Integration Tests](RC-1/task-06.md)    | `TODO` | Lead Engineer | Task 05A     | 4h         | Alta         |
 | **RC-2 Services**                                                | `TODO` | —             | RC-1         | 8h         | Alta         |
 | **RC-3 Server Actions**                                          | `TODO` | —             | RC-2         | 6h         | Média        |
 | **RC-4 UI/Componentes**                                          | `TODO` | —             | RC-3         | 10h        | Alta         |
@@ -25,3 +26,4 @@
 - **Task 03**: Homologada. Testes: PASS (Typecheck / Lint). Situação: Homologada (Classe `TimeSlotRepository` implementada conforme DR-008 com timezone `America/Sao_Paulo`).
 - **Task 04**: Homologada. Testes: PASS (Typecheck / Lint). Situação: Homologada (Classe `SessionRepository` implementada com trava atômica de concorrência e rollback de capacidade).
 - **Task 05**: Homologada. Testes: PASS (Typecheck / Lint). Situação: Homologada (Classe `ParticipantRepository` implementada com validação interna de e-mail duplicado para o mesmo slot).
+- **Task 05A**: Homologada. Testes: PASS (Test Runner). Situação: Homologada (Infraestrutura do Vitest configurada e aliases integrados).

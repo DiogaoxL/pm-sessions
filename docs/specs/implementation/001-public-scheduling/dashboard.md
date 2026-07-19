@@ -12,8 +12,8 @@
 
 ## Progresso Geral
 
-- **Feature Total**: 25%
-- **RC-1 (Dados)**: ███████████░░░ 83% (5/6 tasks concluídas)
+- **Feature Total**: 28%
+- **RC-1 (Dados)**: ████████████░░ 85% (6/7 tasks concluídas)
 
 ## Release Candidates
 

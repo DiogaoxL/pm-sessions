@@ -19,3 +19,5 @@
 - Sem vazamento de escopo ou adiantamentos da Task 05. O repositório está pronto para servir de base ao `ParticipantRepository` (Task 05).
 - Auditoria Técnica da Task 05: Aprovada e homologada tecnicamente com 100% de sucesso. A validação de duplicidade com inner join no PostgreSQL foi concluída de forma performática.
 - Sem pendências em aberto. A Task 06 (Data Layer Integration Tests) está plenamente liberada para desenvolvimento.
+- Auditoria Técnica da Task 05A: Aprovada e homologada tecnicamente. A Task 05A foi criada dinamicamente após a auditoria da Task 06 revelar a ausência de infraestrutura de teste no monorepo.
+- A separação estrita entre preparação de infraestrutura (Task 05A) e escrita de testes de negócio/persistência (Task 06) passa a compor a governança do repositório, garantindo estabilidade nas builds de CI.

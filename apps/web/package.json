@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
     "supabase:generate-types": "supabase gen types typescript --project-id yjyckvesjmqlvxrszown --schema public > src/shared/types/database.ts"
   },
   "dependencies": {
@@ -32,6 +33,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
