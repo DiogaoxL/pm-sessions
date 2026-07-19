@@ -193,6 +193,12 @@ A Sprint será considerada concluída quando:
 
 ---
 
+## Status
+
+✅ Concluído
+
+---
+
 # Próxima Sprint
 
 Sprint 2 — Core MVP

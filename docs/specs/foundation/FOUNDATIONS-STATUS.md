@@ -6,6 +6,7 @@
 | 002 Supabase       | ✅ Complete | 10    |
 | 003 Google Cloud   | ✅ Complete | 10    |
 | 004 Authentication | ✅ Complete | 10    |
+| 005 Deploy         | ✅ Complete | 10    |
 
 ---
 

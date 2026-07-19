@@ -1,3 +1,3 @@
 // Scheduling Domain Feature
 // Orchester public scheduling of interviews and time slot visualization
-export {};
+export * from './repositories/interfaces';
