@@ -40,6 +40,7 @@
 
 ### Adicionado
 
+- Execução da **RC-4 Task 05: Integrar Formulário com scheduleSessionAction** (integração do formulário com a Server Action `scheduleSessionAction` utilizando `useTransition` para tratar submissões concorrentes e callbacks de sucesso/erro desacoplados).
 - Execução da **RC-4 Task 04: Criar Formulário de Agendamento Público** (criação do componente de apresentação `SchedulingForm` para captura dos dados do candidato, com suporte a acessibilidade e inputs controlados).
 - Execução da **RC-4 Task 03: Integrar Listagem com getAvailableSlotsAction** (criação do container client `AvailableSlotsContainer` integrando a Server Action de busca de slots, cuidando de estados de loading/error e passando callbacks de seleção).
 - Execução da **RC-4 Task 02: Criar Componente de Listagem de Horários Disponíveis** (implementação de `TimeSlotList` que agrupa e ordena slots por dia e horário cronologicamente, com formatação localizada pt-BR e tratamento de estado vazio).
