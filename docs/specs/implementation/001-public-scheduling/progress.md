@@ -5,7 +5,7 @@
 ---
 
 **RC-2 Status: COMPLETED (100% concluído) — Conclusão em 2026-07-19**
-**RC-3 Status: IN_PROGRESS (33% concluído) — Início em 2026-07-19**
+**RC-3 Status: IN_PROGRESS (50% concluído) — Início em 2026-07-19**
 
 ---
 
@@ -26,7 +26,7 @@
 | [RC-2 Task 06: Testes da Camada de Serviços](RC-2/task-06.md)                       | `DONE` | Lead Engineer | Task 05      | 5h         | Alta         |
 | [RC-3 Task 01: Criar DTOs de Validação com Zod](RC-3/task-01.md)                    | `DONE` | Lead Engineer | RC-2         | 2h         | Baixa        |
 | [RC-3 Task 02: Criar Instanciação do Service via Factory](RC-3/task-02.md)          | `DONE` | Lead Engineer | Task 01      | 2h         | Baixa        |
-| [RC-3 Task 03: Implementar Action de Listagem de Slots](RC-3/task-03.md)            | `TODO` | Lead Engineer | Task 02      | 2h         | Baixa        |
+| [RC-3 Task 03: Implementar Action de Listagem de Slots](RC-3/task-03.md)            | `DONE` | Lead Engineer | Task 02      | 2h         | Baixa        |
 | [RC-3 Task 04: Implementar Action de Agendamento com Tratamento](RC-3/task-04.md)   | `TODO` | Lead Engineer | Task 03      | 4h         | Média        |
 | [RC-3 Task 05: Sincronizar e Exportar Actions no Ponto de Entrada](RC-3/task-05.md) | `TODO` | Lead Engineer | Task 04      | 1h         | Baixa        |
 | [RC-3 Task 06: Testes Unitários das Server Actions](RC-3/task-06.md)                | `TODO` | Lead Engineer | Task 05      | 4h         | Média        |
@@ -51,3 +51,4 @@
 - **RC-2 Task 06**: Homologada. Testes: PASS (Test Runner - 6/6 casos passando). Situação: Homologada (Suíte de testes unitários do `SchedulingService` desenvolvida em `scheduling.service.test.ts` cobrindo listagem, reservas e orquestração de agendamento com validações e rollback de vaga).
 - **RC-3 Task 01**: Homologada. Testes: PASS (Typecheck / Lint). Situação: Homologada (Criação do schema Zod `scheduleSessionSchema` e do tipo derivado com suporte a validação estrutural de e-mail, nome, sessionId, timeSlotId e telefone opcional/nullable).
 - **RC-3 Task 02**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 17/17 PASS). Situação: Homologada (Implementação da factory assíncrona `getSchedulingService` instanciando repositórios e `SchedulingService` sob demanda a partir do cliente do Supabase do Next.js).
+- **RC-3 Task 03**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 17/17 PASS). Situação: Homologada (Implementação da Server Action `getAvailableSlotsAction` em `get-available-slots.ts` delegando listagem ordenada e filtrada ao `SchedulingService` e tratando exceções com erro padronizado para a UI).

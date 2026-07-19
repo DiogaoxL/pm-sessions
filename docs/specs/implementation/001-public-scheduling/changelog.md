@@ -35,6 +35,7 @@
 
 ### Adicionado
 
+- Execução da **RC-3 Task 03: Implementar Action de Listagem de Slots** (implementação da Server Action `getAvailableSlotsAction` em `get-available-slots.ts` delegando a busca ao `SchedulingService` e tratando exceções com payload unificado).
 - Execução da **RC-3 Task 02: Criar Instanciação do Service via Factory** (criação da factory dinâmica `getSchedulingService` em `factory.ts` para carregar repositórios e instanciar `SchedulingService` utilizando o cliente do Supabase do Next.js).
 - Execução da **RC-3 Task 01: Criar DTOs de Validação com Zod** (implementação do `scheduleSessionSchema` com Zod para validar name, email, sessionId, timeSlotId, e suporte ao campo opcional/nullable `phone`).
 - **Planejamento do RC-3 (Server Actions e Validações)**: Definição do cronograma e especificações técnicas de seis tarefas (Tasks 01 a 06) cobrindo Zod DTOs, factories, Server Actions e testes locais para o ciclo de apresentação.
