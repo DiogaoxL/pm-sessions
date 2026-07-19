@@ -28,7 +28,10 @@ Nenhum.
 
 1. Criar classe `TimeSlotRepository` implementando `ITimeSlotRepository`.
 2. Chamar o cliente seguro do Supabase.
-3. Filtrar e ordenar os resultados por data e horário de início crescentes.
+3. Filtrar os resultados de forma que apenas slots futuros ou do dia atual (com horário de início posterior ao momento atual) sejam exibidos, respeitando a regra para cumprimento da **DR-008**:
+   - `date > CURRENT_DATE` OU (`date = CURRENT_DATE` AND `start_time > CURRENT_TIME`)
+   - A comparação e cálculo do momento atual devem respeitar o fuso horário oficial do projeto (`America/Sao_Paulo`).
+4. Ordenar os resultados por data e horário de início crescentes.
 
 # Checklist Técnico
 
@@ -38,8 +41,9 @@ Nenhum.
 
 # Critérios de Aceite
 
-- Query estruturada e tipada.
+- Query estruturada, segura e tipada.
 - Retorno compatível com o formato `{ id, date, start_time, end_time }`.
+- Filtro de slots passados respeitando estritamente a regra de data e hora atual sob o fuso horário `America/Sao_Paulo` (DR-008).
 
 # Como Testar
 

@@ -12,3 +12,4 @@
 - Execução da **Task 01: Setup Directory Structure & Types Verification** (criação física do diretório `repositories/` e verificação estática de tipos do compilador Next.js).
 - Execução da **Task 02: Implement Repository Interfaces** (criação das interfaces de contrato de persistência `ITimeSlotRepository`, `ISessionRepository` e `IParticipantRepository` em `interfaces.ts`).
 - Homologação Técnica da **Task 02**: Aprovada sem pendências estruturais. Typecheck, build e lint validados com sucesso absoluto. Ajustes finais de assinatura técnica aplicados de forma consistente.
+- Execução da **Task 03: Implement TimeSlotRepository** (classe `TimeSlotRepository` desenvolvida em `time-slot.repository.ts`, com filtros baseados no fuso horário `America/Sao_Paulo` de acordo com a DR-008).

@@ -12,8 +12,8 @@
 
 ## Progresso Geral
 
-- **Feature Total**: 10%
-- **RC-1 (Dados)**: ████░░░░░░░░░░ 33% (2/6 tasks concluídas)
+- **Feature Total**: 15%
+- **RC-1 (Dados)**: ███████░░░░░░░ 50% (3/6 tasks concluídas)
 
 ## Release Candidates
 
@@ -24,7 +24,7 @@
 
 ## Próxima Task
 
-- [Task 03: Implement TimeSlotRepository](RC-1/task-03.md)
+- [Task 04: Implement SessionRepository](RC-1/task-04.md)
 
 ## Bloqueios
 

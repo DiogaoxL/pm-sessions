@@ -5,10 +5,10 @@
 ---
 
 - **Cobertura de Testes**: 0% (Testes estáticos de compilação 100% OK)
-- **Tasks Concluídas**: 2
-- **Tasks Restantes (RC-1)**: 4
+- **Tasks Concluídas**: 3
+- **Tasks Restantes (RC-1)**: 3
 - **RCs Concluídos**: 0 / 4
-- **Tempo Estimado Gasto**: 3h (Task 01: 1h, Task 02: 2h)
+- **Tempo Estimado Gasto**: 6h (Task 01: 1h, Task 02: 2h, Task 03: 3h)
 - **Bugs Encontrados / Corrigidos**: 0
 - **Cobertura Documental**: 100%
 - **Status Geral da Feature**: `Em andamento`
