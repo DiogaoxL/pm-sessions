@@ -8,31 +8,38 @@
 **RC-3 Status: COMPLETED (100% concluído) — Conclusão em 2026-07-19**
 
 - _Encerramento técnico do ciclo. Todas as tasks homologadas, auditorias aprovadas, documentação 100% sincronizada e pronto para merge e tag._
+  **RC-4 Status: IN_PROGRESS (14% concluído) — Início em 2026-07-19**
 
 ---
 
-| Task                                                                                | Status | Responsável   | Dependências | Estimativa | Complexidade |
-| ----------------------------------------------------------------------------------- | ------ | ------------- | ------------ | ---------- | ------------ |
-| [RC-1 Task 01: Setup Directory Structure](RC-1/task-01.md)                          | `DONE` | Lead Engineer | Nenhuma      | 1h         | Baixa        |
-| [RC-1 Task 02: Implement Repository Interfaces](RC-1/task-02.md)                    | `DONE` | Lead Engineer | Task 01      | 2h         | Baixa        |
-| [RC-1 Task 03: Implement TimeSlotRepository](RC-1/task-03.md)                       | `DONE` | Lead Engineer | Task 02      | 3h         | Média        |
-| [RC-1 Task 04: Implement SessionRepository](RC-1/task-04.md)                        | `DONE` | Lead Engineer | Task 03      | 4h         | Alta         |
-| [RC-1 Task 05: Implement ParticipantRepository](RC-1/task-05.md)                    | `DONE` | Lead Engineer | Task 04      | 3h         | Média        |
-| [RC-1 Task 05A: Setup Testing Infrastructure](RC-1/task-05A.md)                     | `DONE` | Lead Engineer | Task 05      | 1h         | Baixa        |
-| [RC-1 Task 06: Data Layer Integration Tests](RC-1/task-06.md)                       | `DONE` | Lead Engineer | Task 05A     | 4h         | Alta         |
-| [RC-2 Task 01: Criar Classe SchedulingService e Interfaces](RC-2/task-01.md)        | `DONE` | Lead Engineer | RC-1         | 2h         | Baixa        |
-| [RC-2 Task 02: Implementar Listagem de Horários Disponíveis](RC-2/task-02.md)       | `DONE` | Lead Engineer | Task 01      | 3h         | Média        |
-| [RC-2 Task 03: Implementar Fluxo de Reserva de Vagas](RC-2/task-03.md)              | `DONE` | Lead Engineer | Task 02      | 4h         | Alta         |
-| [RC-2 Task 04: Implementar Criação de Participante e Duplicados](RC-2/task-04.md)   | `DONE` | Lead Engineer | Task 03      | 3h         | Média        |
-| [RC-2 Task 05: Orquestração do Fluxo de Agendamento Público](RC-2/task-05.md)       | `DONE` | Lead Engineer | Task 04      | 4h         | Alta         |
-| [RC-2 Task 06: Testes da Camada de Serviços](RC-2/task-06.md)                       | `DONE` | Lead Engineer | Task 05      | 5h         | Alta         |
-| [RC-3 Task 01: Criar DTOs de Validação com Zod](RC-3/task-01.md)                    | `DONE` | Lead Engineer | RC-2         | 2h         | Baixa        |
-| [RC-3 Task 02: Criar Instanciação do Service via Factory](RC-3/task-02.md)          | `DONE` | Lead Engineer | Task 01      | 2h         | Baixa        |
-| [RC-3 Task 03: Implementar Action de Listagem de Slots](RC-3/task-03.md)            | `DONE` | Lead Engineer | Task 02      | 2h         | Baixa        |
-| [RC-3 Task 04: Implementar Action de Agendamento com Tratamento](RC-3/task-04.md)   | `DONE` | Lead Engineer | Task 03      | 4h         | Média        |
-| [RC-3 Task 05: Sincronizar e Exportar Actions no Ponto de Entrada](RC-3/task-05.md) | `DONE` | Lead Engineer | Task 04      | 1h         | Baixa        |
-| [RC-3 Task 06: Testes Unitários das Server Actions](RC-3/task-06.md)                | `DONE` | Lead Engineer | Task 05      | 4h         | Média        |
-| **RC-4 UI/Componentes**                                                             | `TODO` | —             | RC-3         | 10h        | Alta         |
+| Task                                                                                  | Status | Responsável   | Dependências | Estimativa | Complexidade |
+| ------------------------------------------------------------------------------------- | ------ | ------------- | ------------ | ---------- | ------------ |
+| [RC-1 Task 01: Setup Directory Structure](RC-1/task-01.md)                            | `DONE` | Lead Engineer | Nenhuma      | 1h         | Baixa        |
+| [RC-1 Task 02: Implement Repository Interfaces](RC-1/task-02.md)                      | `DONE` | Lead Engineer | Task 01      | 2h         | Baixa        |
+| [RC-1 Task 03: Implement TimeSlotRepository](RC-1/task-03.md)                         | `DONE` | Lead Engineer | Task 02      | 3h         | Média        |
+| [RC-1 Task 04: Implement SessionRepository](RC-1/task-04.md)                          | `DONE` | Lead Engineer | Task 03      | 4h         | Alta         |
+| [RC-1 Task 05: Implement ParticipantRepository](RC-1/task-05.md)                      | `DONE` | Lead Engineer | Task 04      | 3h         | Média        |
+| [RC-1 Task 05A: Setup Testing Infrastructure](RC-1/task-05A.md)                       | `DONE` | Lead Engineer | Task 05      | 1h         | Baixa        |
+| [RC-1 Task 06: Data Layer Integration Tests](RC-1/task-06.md)                         | `DONE` | Lead Engineer | Task 05A     | 4h         | Alta         |
+| [RC-2 Task 01: Criar Classe SchedulingService e Interfaces](RC-2/task-01.md)          | `DONE` | Lead Engineer | RC-1         | 2h         | Baixa        |
+| [RC-2 Task 02: Implementar Listagem de Horários Disponíveis](RC-2/task-02.md)         | `DONE` | Lead Engineer | Task 01      | 3h         | Média        |
+| [RC-2 Task 03: Implementar Fluxo de Reserva de Vagas](RC-2/task-03.md)                | `DONE` | Lead Engineer | Task 02      | 4h         | Alta         |
+| [RC-2 Task 04: Implementar Criação de Participante e Duplicados](RC-2/task-04.md)     | `DONE` | Lead Engineer | Task 03      | 3h         | Média        |
+| [RC-2 Task 05: Orquestração do Fluxo de Agendamento Público](RC-2/task-05.md)         | `DONE` | Lead Engineer | Task 04      | 4h         | Alta         |
+| [RC-2 Task 06: Testes da Camada de Serviços](RC-2/task-06.md)                         | `DONE` | Lead Engineer | Task 05      | 5h         | Alta         |
+| [RC-3 Task 01: Criar DTOs de Validação com Zod](RC-3/task-01.md)                      | `DONE` | Lead Engineer | RC-2         | 2h         | Baixa        |
+| [RC-3 Task 02: Criar Instanciação do Service via Factory](RC-3/task-02.md)            | `DONE` | Lead Engineer | Task 01      | 2h         | Baixa        |
+| [RC-3 Task 03: Implementar Action de Listagem de Slots](RC-3/task-03.md)              | `DONE` | Lead Engineer | Task 02      | 2h         | Baixa        |
+| [RC-3 Task 04: Implementar Action de Agendamento com Tratamento](RC-3/task-04.md)     | `DONE` | Lead Engineer | Task 03      | 4h         | Média        |
+| [RC-3 Task 05: Sincronizar e Exportar Actions no Ponto de Entrada](RC-3/task-05.md)   | `DONE` | Lead Engineer | Task 04      | 1h         | Baixa        |
+| [RC-3 Task 06: Testes Unitários das Server Actions](RC-3/task-06.md)                  | `DONE` | Lead Engineer | Task 05      | 4h         | Média        |
+| [RC-4 Task 01: Criar Componentes Base de UI e Cards](RC-4/task-01.md)                 | `DONE` | Lead Engineer | RC-3         | 2h         | Baixa        |
+| [RC-4 Task 02: Criar Componente de Listagem de Horários Disponíveis](RC-4/task-02.md) | `TODO` | Lead Engineer | Task 01      | 2h         | Média        |
+| [RC-4 Task 03: Integrar Listagem com getAvailableSlotsAction](RC-4/task-03.md)        | `TODO` | Lead Engineer | Task 02      | 2h         | Baixa        |
+| [RC-4 Task 04: Criar Formulário de Agendamento Público](RC-4/task-04.md)              | `TODO` | Lead Engineer | Task 01      | 2h         | Média        |
+| [RC-4 Task 05: Integrar Formulário com scheduleSessionAction](RC-4/task-05.md)        | `TODO` | Lead Engineer | Task 04      | 3h         | Média        |
+| [RC-4 Task 06: Tratamento de Estados, Loading e Mensagens de Erro](RC-4/task-06.md)   | `TODO` | Lead Engineer | Task 03, 05  | 3h         | Média        |
+| [RC-4 Task 07: Testes Unitários de Componentes de UI](RC-4/task-07.md)                | `TODO` | Lead Engineer | Task 06      | 4h         | Alta         |
 
 ---
 
@@ -57,3 +64,4 @@
 - **RC-3 Task 04**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 17/17 PASS). Situação: Homologada (Implementação da Server Action `scheduleSessionAction` em `schedule-session.ts` com validação Zod e mapeamento amigável de erros de negócio e de banco).
 - **RC-3 Task 05**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 17/17 PASS). Situação: Homologada (Sincronização de exports no index das actions e index da feature, expondo a API pública e mantendo a factory privada).
 - **RC-3 Task 06**: Homologada. Testes: PASS (Test Runner - 7/7 casos passando). Situação: Homologada (Suíte de testes unitários das Server Actions implementada com mocks da factory, cobrindo cenários de sucesso, erros Zod, erros semânticos de concorrência/vagas e falhas técnicas genéricas).
+- **RC-4 Task 01**: Homologada. Testes: PASS (Typecheck / Lint). Situação: Homologada (Criação dos componentes base TimeSlotCard e SchedulingSkeleton com suporte a acessibilidade via teclado, propriedades tipadas e pulse animation).

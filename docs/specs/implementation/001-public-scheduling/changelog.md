@@ -40,6 +40,8 @@
 
 ### Adicionado
 
+- Execução da **RC-4 Task 01: Criar Componentes Base de UI e Cards** (implementação dos componentes base `TimeSlotCard` e `SchedulingSkeleton` com suporte a teclado, acessibilidade ARIA e animações de loading do Tailwind v4).
+- **Planejamento do RC-4 (UI e Componentes)**: Definição do cronograma e especificações técnicas de sete tarefas (Tasks 01 a 07) para a criação dos componentes de formulário, listagem de slots e integrações das Server Actions com testes no cliente.
 - Execução da **RC-3 Task 06: Testes Unitários das Server Actions** (criação da suíte de testes unitários das Server Actions em `get-available-slots.test.ts` e `schedule-session.test.ts` cobrindo validações de schema Zod, fluxos felizes e mapeamento amigável de erros de vagas e concorrência).
 - Execução da **RC-3 Task 05: Sincronizar e Exportar Actions no Ponto de Entrada** (criação de `actions/index.ts` e exportação estruturada das Server Actions e schemas no ponto de entrada global da feature, mantendo a factory privada).
 - Execução da **RC-3 Task 04: Implementar Action de Agendamento com Tratamento** (implementação da Server Action `scheduleSessionAction` em `schedule-session.ts` com validação Zod, injeção via factory e mapeamento semântico amigável de erros de negócio de duplicidade e capacidade).
