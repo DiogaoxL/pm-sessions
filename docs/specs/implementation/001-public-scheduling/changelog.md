@@ -35,6 +35,8 @@
 
 ### Adicionado
 
+- Execução da **RC-3 Task 01: Criar DTOs de Validação com Zod** (implementação do `scheduleSessionSchema` com Zod para validar name, email, sessionId, timeSlotId, e suporte ao campo opcional/nullable `phone`).
+- **Planejamento do RC-3 (Server Actions e Validações)**: Definição do cronograma e especificações técnicas de seis tarefas (Tasks 01 a 06) cobrindo Zod DTOs, factories, Server Actions e testes locais para o ciclo de apresentação.
 - Execução da **RC-2 Task 06: Testes da Camada de Serviços** (criação da suíte de testes unitários `scheduling.service.test.ts` cobrindo cenários de sucesso, falta de vagas, duplicidade e falhas de persistência com rollback de vagas no `SchedulingService`).
 - Execução da **RC-2 Task 05: Orquestração do Fluxo de Agendamento Público** (implementação do método público `scheduleSession` no `SchedulingService` orquestrando a reserva atômica de assento, a chamada ao cadastro validado de participante e o tratamento de rollback com liberação de vaga em caso de erros).
 - Execução da **RC-2 Task 04: Implementar Criação de Participante e Duplicados** (implementação do método interno `registerParticipant` no `SchedulingService` para validar duplicidade de e-mail no slot e realizar a inserção, com captura e mapeamento de Unique Constraints de banco de dados para evitar vazamento de erros técnicos).

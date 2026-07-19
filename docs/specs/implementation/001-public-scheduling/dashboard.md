@@ -15,17 +15,18 @@
 - **Feature Total**: 60%
 - **RC-1 (Dados)**: ██████████████ 100% (7/7 tasks concluídas)
 - **RC-2 (Serviços)**: ██████████████ 100% (6/6 tasks concluídas)
+- **RC-3 (Actions)**: █░░░░░░░░░░░░░ 17% (1/6 tasks concluídas)
 
 ## Release Candidates
 
 - **RC-1**: Camada de Dados e Repositórios (Status: `COMPLETED`, Testes: `PASS`, Lint: `PASS`, Typecheck: `PASS`)
 - **RC-2**: Services e Integração Google (Status: `COMPLETED`, Progresso: `100%`, Tasks: `6/6`, Testes: `PASS`, Lint: `PASS`, Typecheck: `PASS`)
-- **RC-3**: Server Actions e Validações (Status: `TODO`)
+- **RC-3**: Server Actions e Validações (Status: `IN_PROGRESS`, Progresso: `17%`, Tasks: `1/6`, Testes: `PASS`, Lint: `PASS`, Typecheck: `PASS`)
 - **RC-4**: UI e Componentes (Status: `TODO`)
 
 ## Próxima Task
 
-- **RC-3 Task 01: Setup do Diretor de Server Actions e Esquemas de Validação** (Início do Ciclo RC-3)
+- [RC-3 Task 02: Criar Instanciação do Service via Factory](RC-3/task-02.md)
 
 ## Bloqueios
 
