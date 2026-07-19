@@ -35,6 +35,7 @@
 
 ### Adicionado
 
+- Execução da **RC-3 Task 05: Sincronizar e Exportar Actions no Ponto de Entrada** (criação de `actions/index.ts` e exportação estruturada das Server Actions e schemas no ponto de entrada global da feature, mantendo a factory privada).
 - Execução da **RC-3 Task 04: Implementar Action de Agendamento com Tratamento** (implementação da Server Action `scheduleSessionAction` em `schedule-session.ts` com validação Zod, injeção via factory e mapeamento semântico amigável de erros de negócio de duplicidade e capacidade).
 - Execução da **RC-3 Task 03: Implementar Action de Listagem de Slots** (implementação da Server Action `getAvailableSlotsAction` em `get-available-slots.ts` delegando a busca ao `SchedulingService` e tratando exceções com payload unificado).
 - Execução da **RC-3 Task 02: Criar Instanciação do Service via Factory** (criação da factory dinâmica `getSchedulingService` em `factory.ts` para carregar repositórios e instanciar `SchedulingService` utilizando o cliente do Supabase do Next.js).

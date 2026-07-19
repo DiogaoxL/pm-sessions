@@ -2,7 +2,7 @@
 
 [← Voltar para Feature](../README.md)
 
-**Status: IN_PROGRESS (67% Concluído)**
+**Status: IN_PROGRESS (83% Concluído)**
 
 ---
 
@@ -18,7 +18,7 @@ Implementar a camada de Server Actions da Feature **001 - Public Scheduling**, a
 | [Task 02](task-02.md) | Criar Instanciação do Service via Factory          | `DONE` | Task 01      | 2h         | Baixa        |
 | [Task 03](task-03.md) | Implementar Action de Listagem de Slots            | `DONE` | Task 02      | 2h         | Baixa        |
 | [Task 04](task-04.md) | Implementar Action de Agendamento com Tratamento   | `DONE` | Task 03      | 4h         | Média        |
-| [Task 05](task-05.md) | Sincronizar e Exportar Actions no Ponto de Entrada | `TODO` | Task 04      | 1h         | Baixa        |
+| [Task 05](task-05.md) | Sincronizar e Exportar Actions no Ponto de Entrada | `DONE` | Task 04      | 1h         | Baixa        |
 | [Task 06](task-06.md) | Testes Unitários das Server Actions                | `TODO` | Task 05      | 4h         | Média        |
 
 ---
