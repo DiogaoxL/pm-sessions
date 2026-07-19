@@ -20,3 +20,4 @@
 - Criação e planejamento completo das especificações das tarefas de **RC-2 — Camada de Serviços (Application Layer)**, cobrindo a classe `SchedulingService`, interfaces e fluxos lógicos de negócio com tratamento de concorrência e rollback.
 - Execução da **RC-2 Task 01: Criar Classe SchedulingService e Interfaces** (criação do contrato de serviço em `interfaces.ts`, do esqueleto da classe em `scheduling.service.ts` com injeção de dependências via construtor, e sincronização de exports).
 - Execução da **RC-2 Task 02: Implementar Listagem de Horários Disponíveis** (implementação do método `getAvailableSlots` no `SchedulingService` direcionando a lógica de listagem ao repositório homologado).
+- Execução da **RC-2 Task 03: Implementar Fluxo de Reserva de Vagas** (implementação do método `reserveSeat` no `SchedulingService` delegando a tentativa de lock atômico concorrente ao `SessionRepository`).

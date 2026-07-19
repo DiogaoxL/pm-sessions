@@ -19,7 +19,7 @@ export class SchedulingService implements ISchedulingService {
   }
 
   async reserveSeat(sessionId: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+    return this.sessionRepository.tryReserveSeat(sessionId);
   }
 
   async registerParticipant(

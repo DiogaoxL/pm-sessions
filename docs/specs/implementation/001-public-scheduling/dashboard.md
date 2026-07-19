@@ -12,9 +12,9 @@
 
 ## Progresso Geral
 
-- **Feature Total**: 42%
+- **Feature Total**: 45%
 - **RC-1 (Dados)**: ██████████████ 100% (7/7 tasks concluídas)
-- **RC-2 (Serviços)**: ██░░░░░░░░░░░░ 33% (2/6 tasks concluídas)
+- **RC-2 (Serviços)**: ████░░░░░░░░░░ 50% (3/6 tasks concluídas)
 
 ## Release Candidates
 
@@ -25,7 +25,7 @@
 
 ## Próxima Task
 
-- [RC-2 Task 03: Implementar Fluxo de Reserva de Vagas](RC-2/task-03.md)
+- [RC-2 Task 04: Implementar Criação de Participante e Duplicados](RC-2/task-04.md)
 
 ## Bloqueios
 

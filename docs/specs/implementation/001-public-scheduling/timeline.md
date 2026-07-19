@@ -21,8 +21,8 @@ RC-1 (Camada de Dados) [Concluído]
 RC-2 (Services & Google Calendar) [Iniciando]
      ├─ Task 01: Criar Classe SchedulingService e Interfaces ➔ Concluído & Homologada
      ├─ Task 02: Implementar Listagem de Horários Disponíveis ➔ Concluído & Homologada
-     ├─ Task 03: Implementar Fluxo de Reserva de Vagas ➔ Liberada para início
-     ├─ Task 04: Implementar Criação de Participante e Duplicados ➔ Planejado
+     ├─ Task 03: Implementar Fluxo de Reserva de Vagas ➔ Concluído & Homologada
+     ├─ Task 04: Implementar Criação de Participante e Duplicados ➔ Liberada para início
      ├─ Task 05: Orquestração do Fluxo de Agendamento Público ➔ Planejado
      └─ Task 06: Testes da Camada de Serviços ➔ Planejado
      │
