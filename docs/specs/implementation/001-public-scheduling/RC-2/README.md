@@ -2,6 +2,8 @@
 
 [← Voltar para Feature](../README.md)
 
+**Status: COMPLETED (100% Concluído)**
+
 ---
 
 ## Objetivo do Ciclo
@@ -12,12 +14,12 @@ Implementar a camada de serviços da Feature **001 - Public Scheduling**, sendo 
 
 | Task                  | Título                                           | Status | Dependências | Estimativa | Complexidade |
 | --------------------- | ------------------------------------------------ | ------ | ------------ | ---------- | ------------ |
-| [Task 01](task-01.md) | Criar Classe SchedulingService e Interfaces      | `TODO` | RC-1         | 2h         | Baixa        |
-| [Task 02](task-02.md) | Implementar Listagem de Horários Disponíveis     | `TODO` | Task 01      | 3h         | Média        |
-| [Task 03](task-03.md) | Implementar Fluxo de Reserva de Vagas            | `TODO` | Task 02      | 4h         | Alta         |
-| [Task 04](task-04.md) | Implementar Criação de Participante e Duplicados | `TODO` | Task 03      | 3h         | Média        |
-| [Task 05](task-05.md) | Orquestração do Fluxo de Agendamento Público     | `TODO` | Task 04      | 4h         | Alta         |
-| [Task 06](task-06.md) | Testes da Camada de Serviços                     | `TODO` | Task 05      | 5h         | Alta         |
+| [Task 01](task-01.md) | Criar Classe SchedulingService e Interfaces      | `DONE` | RC-1         | 2h         | Baixa        |
+| [Task 02](task-02.md) | Implementar Listagem de Horários Disponíveis     | `DONE` | Task 01      | 3h         | Média        |
+| [Task 03](task-03.md) | Implementar Fluxo de Reserva de Vagas            | `DONE` | Task 02      | 4h         | Alta         |
+| [Task 04](task-04.md) | Implementar Criação de Participante e Duplicados | `DONE` | Task 03      | 3h         | Média        |
+| [Task 05](task-05.md) | Orquestração do Fluxo de Agendamento Público     | `DONE` | Task 04      | 4h         | Alta         |
+| [Task 06](task-06.md) | Testes da Camada de Serviços                     | `DONE` | Task 05      | 5h         | Alta         |
 
 ---
 

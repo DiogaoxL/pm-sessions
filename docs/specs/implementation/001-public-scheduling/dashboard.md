@@ -18,10 +18,10 @@
 
 ## Release Candidates
 
-- **RC-1**: Camada de Dados e Repositórios
-- **RC-2**: Services e Integração Google
-- **RC-3**: Server Actions e Validações
-- **RC-4**: UI e Componentes
+- **RC-1**: Camada de Dados e Repositórios (Status: `COMPLETED`, Testes: `PASS`, Lint: `PASS`, Typecheck: `PASS`)
+- **RC-2**: Services e Integração Google (Status: `COMPLETED`, Progresso: `100%`, Tasks: `6/6`, Testes: `PASS`, Lint: `PASS`, Typecheck: `PASS`)
+- **RC-3**: Server Actions e Validações (Status: `TODO`)
+- **RC-4**: UI e Componentes (Status: `TODO`)
 
 ## Próxima Task
 

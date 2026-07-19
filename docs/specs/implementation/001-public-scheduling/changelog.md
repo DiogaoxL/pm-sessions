@@ -24,6 +24,15 @@
 
 ## 2026-07-19
 
+### Concluído
+
+- **Encerramento do RC-2 (Camada de Serviços)**: Conclusão e homologação do ciclo de serviços da Feature **001 - Public Scheduling**, abrangendo:
+  - Implementação da listagem de horários disponíveis (`getAvailableSlots()`);
+  - Reserva atômica de assentos via lock concorrente do banco (`reserveSeat()`);
+  - Inserção e validação interna de duplicações de participantes (`registerParticipant()`);
+  - Orquestração completa do agendamento de sessões com rollback de vagas em cenários de falhas de persistência (`scheduleSession()`);
+  - Suíte completa de testes unitários da camada de serviços (Vitest) alcançando 100% de cobertura lógica e validações de concorrência.
+
 ### Adicionado
 
 - Execução da **RC-2 Task 06: Testes da Camada de Serviços** (criação da suíte de testes unitários `scheduling.service.test.ts` cobrindo cenários de sucesso, falta de vagas, duplicidade e falhas de persistência com rollback de vagas no `SchedulingService`).
