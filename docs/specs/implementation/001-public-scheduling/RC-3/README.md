@@ -2,7 +2,7 @@
 
 [← Voltar para Feature](../README.md)
 
-**Status: IN_PROGRESS (83% Concluído)**
+**Status: COMPLETED (100% Concluído)**
 
 ---
 
@@ -19,7 +19,7 @@ Implementar a camada de Server Actions da Feature **001 - Public Scheduling**, a
 | [Task 03](task-03.md) | Implementar Action de Listagem de Slots            | `DONE` | Task 02      | 2h         | Baixa        |
 | [Task 04](task-04.md) | Implementar Action de Agendamento com Tratamento   | `DONE` | Task 03      | 4h         | Média        |
 | [Task 05](task-05.md) | Sincronizar e Exportar Actions no Ponto de Entrada | `DONE` | Task 04      | 1h         | Baixa        |
-| [Task 06](task-06.md) | Testes Unitários das Server Actions                | `TODO` | Task 05      | 4h         | Média        |
+| [Task 06](task-06.md) | Testes Unitários das Server Actions                | `DONE` | Task 05      | 4h         | Média        |
 
 ---
 
@@ -54,3 +54,24 @@ Implementar a camada de Server Actions da Feature **001 - Public Scheduling**, a
        ▼ (sucesso)
 Retorna { success: true, data: Participant }
 ```
+
+---
+
+## Resumo de Entregáveis do Ciclo
+
+No encerramento técnico deste Release Candidate, registramos os seguintes resultados e especificações entregues:
+
+- **Objetivo do Ciclo**: Estabelecer a camada de Presentation Boundary do servidor seguro utilizando Server Actions do Next.js, encapsulando injeção de dependências e regras de validação estrutural.
+- **Escopo Entregue**:
+  - **DTOs de Validação (Zod)**: Schema `scheduleSessionSchema` validando rigorosamente formato de e-mail, nomes com mais de 2 caracteres, IDs não vazios e suporte ao telefone opcional/nullable.
+  - **Factory de Instanciação**: Função assíncrona `getSchedulingService` resolvendo repositórios Supabase e injetando as dependências do `SchedulingService` por requisição.
+  - **Server Actions**:
+    - `getAvailableSlotsAction`: Listagem pública de horários disponíveis formatados.
+    - `scheduleSessionAction`: Orquestração de agendamento validado com tratamento semântico de concorrência e capacidade de vagas.
+  - **Exports Públicos**: Arquivo `actions/index.ts` e `scheduling/index.ts` expondo apenas as actions, schemas e tipos DTO, blindando repositórios e serviços internos da feature.
+  - **Testes Unitários**: Suite local no Vitest cobrindo 100% das branches lógicas, validações Zod e ramificações de concorrência (7 novos testes unitários adicionados).
+
+- **Resultados Finais das Validações**:
+  - `pnpm typecheck`: **PASS** (Zero erros de compilação estática)
+  - `pnpm lint`: **PASS** (Zero avisos ou erros de estilização/eslint)
+  - `pnpm test`: **PASS** (24 testes unitários e de integração passando com sucesso no projeto)

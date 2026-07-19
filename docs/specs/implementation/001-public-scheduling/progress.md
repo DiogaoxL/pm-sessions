@@ -5,7 +5,9 @@
 ---
 
 **RC-2 Status: COMPLETED (100% concluído) — Conclusão em 2026-07-19**
-**RC-3 Status: IN_PROGRESS (83% concluído) — Início em 2026-07-19**
+**RC-3 Status: COMPLETED (100% concluído) — Conclusão em 2026-07-19**
+
+- _Encerramento técnico do ciclo. Todas as tasks homologadas, auditorias aprovadas, documentação 100% sincronizada e pronto para merge e tag._
 
 ---
 
@@ -29,7 +31,7 @@
 | [RC-3 Task 03: Implementar Action de Listagem de Slots](RC-3/task-03.md)            | `DONE` | Lead Engineer | Task 02      | 2h         | Baixa        |
 | [RC-3 Task 04: Implementar Action de Agendamento com Tratamento](RC-3/task-04.md)   | `DONE` | Lead Engineer | Task 03      | 4h         | Média        |
 | [RC-3 Task 05: Sincronizar e Exportar Actions no Ponto de Entrada](RC-3/task-05.md) | `DONE` | Lead Engineer | Task 04      | 1h         | Baixa        |
-| [RC-3 Task 06: Testes Unitários das Server Actions](RC-3/task-06.md)                | `TODO` | Lead Engineer | Task 05      | 4h         | Média        |
+| [RC-3 Task 06: Testes Unitários das Server Actions](RC-3/task-06.md)                | `DONE` | Lead Engineer | Task 05      | 4h         | Média        |
 | **RC-4 UI/Componentes**                                                             | `TODO` | —             | RC-3         | 10h        | Alta         |
 
 ---
@@ -54,3 +56,4 @@
 - **RC-3 Task 03**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 17/17 PASS). Situação: Homologada (Implementação da Server Action `getAvailableSlotsAction` em `get-available-slots.ts` delegando listagem ordenada e filtrada ao `SchedulingService` e tratando exceções com erro padronizado para a UI).
 - **RC-3 Task 04**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 17/17 PASS). Situação: Homologada (Implementação da Server Action `scheduleSessionAction` em `schedule-session.ts` com validação Zod e mapeamento amigável de erros de negócio e de banco).
 - **RC-3 Task 05**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 17/17 PASS). Situação: Homologada (Sincronização de exports no index das actions e index da feature, expondo a API pública e mantendo a factory privada).
+- **RC-3 Task 06**: Homologada. Testes: PASS (Test Runner - 7/7 casos passando). Situação: Homologada (Suíte de testes unitários das Server Actions implementada com mocks da factory, cobrindo cenários de sucesso, erros Zod, erros semânticos de concorrência/vagas e falhas técnicas genéricas).

@@ -26,6 +26,11 @@
 
 ### Concluído
 
+- **Encerramento do RC-3 (Server Actions e Validações)**: Conclusão e homologação de todas as tarefas de Presentation Boundary da Feature **001 - Public Scheduling**, cobrindo:
+  - Validação rigorosa de dados de formulário via schema do Zod (`scheduleSessionSchema`);
+  - Injeção dinâmica do serviço no servidor sem vazamento de clients do Supabase (`getSchedulingService`);
+  - Implementação das Server Actions públicas e tipadas de listagem e de agendamento de sessões com mapeamento semântico de erros de domínio;
+  - Criação de uma suite isolada de testes locais com Vitest cobrindo 100% dos caminhos das Server Actions e Zod.
 - **Encerramento do RC-2 (Camada de Serviços)**: Conclusão e homologação do ciclo de serviços da Feature **001 - Public Scheduling**, abrangendo:
   - Implementação da listagem de horários disponíveis (`getAvailableSlots()`);
   - Reserva atômica de assentos via lock concorrente do banco (`reserveSeat()`);
@@ -35,6 +40,7 @@
 
 ### Adicionado
 
+- Execução da **RC-3 Task 06: Testes Unitários das Server Actions** (criação da suíte de testes unitários das Server Actions em `get-available-slots.test.ts` e `schedule-session.test.ts` cobrindo validações de schema Zod, fluxos felizes e mapeamento amigável de erros de vagas e concorrência).
 - Execução da **RC-3 Task 05: Sincronizar e Exportar Actions no Ponto de Entrada** (criação de `actions/index.ts` e exportação estruturada das Server Actions e schemas no ponto de entrada global da feature, mantendo a factory privada).
 - Execução da **RC-3 Task 04: Implementar Action de Agendamento com Tratamento** (implementação da Server Action `scheduleSessionAction` em `schedule-session.ts` com validação Zod, injeção via factory e mapeamento semântico amigável de erros de negócio de duplicidade e capacidade).
 - Execução da **RC-3 Task 03: Implementar Action de Listagem de Slots** (implementação da Server Action `getAvailableSlotsAction` em `get-available-slots.ts` delegando a busca ao `SchedulingService` e tratando exceções com payload unificado).
