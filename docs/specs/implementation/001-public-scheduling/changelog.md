@@ -26,6 +26,7 @@
 
 ### Adicionado
 
+- Execução da **RC-2 Task 06: Testes da Camada de Serviços** (criação da suíte de testes unitários `scheduling.service.test.ts` cobrindo cenários de sucesso, falta de vagas, duplicidade e falhas de persistência com rollback de vagas no `SchedulingService`).
 - Execução da **RC-2 Task 05: Orquestração do Fluxo de Agendamento Público** (implementação do método público `scheduleSession` no `SchedulingService` orquestrando a reserva atômica de assento, a chamada ao cadastro validado de participante e o tratamento de rollback com liberação de vaga em caso de erros).
 - Execução da **RC-2 Task 04: Implementar Criação de Participante e Duplicados** (implementação do método interno `registerParticipant` no `SchedulingService` para validar duplicidade de e-mail no slot e realizar a inserção, com captura e mapeamento de Unique Constraints de banco de dados para evitar vazamento de erros técnicos).
 

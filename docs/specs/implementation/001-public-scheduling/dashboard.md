@@ -12,9 +12,9 @@
 
 ## Progresso Geral
 
-- **Feature Total**: 55%
+- **Feature Total**: 60%
 - **RC-1 (Dados)**: ██████████████ 100% (7/7 tasks concluídas)
-- **RC-2 (Serviços)**: ███████████░░░ 83% (5/6 tasks concluídas)
+- **RC-2 (Serviços)**: ██████████████ 100% (6/6 tasks concluídas)
 
 ## Release Candidates
 
@@ -25,7 +25,7 @@
 
 ## Próxima Task
 
-- [RC-2 Task 06: Testes da Camada de Serviços](RC-2/task-06.md)
+- **RC-3 Task 01: Setup do Diretor de Server Actions e Esquemas de Validação** (Início do Ciclo RC-3)
 
 ## Bloqueios
 
