@@ -26,3 +26,4 @@
   - Extração do helper `MockQueryBuilder` para um utilitário compartilhado de testes do monorepo;
   - Ampliação dos cenários negativos dos repositórios simulando falhas nos métodos de `update` e `insert`;
   - Configuração posterior de relatórios automatizados de cobertura de código usando `vitest --coverage`.
+- Auditoria Técnica da RC-2 Task 01: Aprovada e homologada com sucesso. A estrutura base da camada Services foi criada, aplicando injeção de dependências desacoplada de adaptadores concretos. Nenhum comportamento ou regra de negócio foi codificado nesta etapa, mantendo os métodos como skeletons/esqueletos prontos para as próximas tarefas.

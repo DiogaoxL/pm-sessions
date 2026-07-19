@@ -4,3 +4,5 @@ export * from './repositories/interfaces';
 export * from './repositories/time-slot.repository';
 export * from './repositories/session.repository';
 export * from './repositories/participant.repository';
+export * from './services/interfaces';
+export * from './services/scheduling.service';

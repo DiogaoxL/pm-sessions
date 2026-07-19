@@ -18,7 +18,13 @@ RC-1 (Camada de Dados) [Concluído]
      └─ Task 06: Data Layer Integration Tests ➔ Concluído & Homologada
      │
      ▼
-RC-2 (Services & Google Calendar) [Liberado para início]
+RC-2 (Services & Google Calendar) [Iniciando]
+     ├─ Task 01: Criar Classe SchedulingService e Interfaces ➔ Concluído & Homologada
+     ├─ Task 02: Implementar Listagem de Horários Disponíveis ➔ Liberada para início
+     ├─ Task 03: Implementar Fluxo de Reserva de Vagas ➔ Planejado
+     ├─ Task 04: Implementar Criação de Participante e Duplicados ➔ Planejado
+     ├─ Task 05: Orquestração do Fluxo de Agendamento Público ➔ Planejado
+     └─ Task 06: Testes da Camada de Serviços ➔ Planejado
      │
      ▼
 RC-3 (Server Actions & Zod)
