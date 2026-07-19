@@ -27,8 +27,8 @@ Nenhum.
 # Ordem de Implementação
 
 1. Criar classe `SessionRepository`.
-2. Implementar busca de sessões ativas por `time_slot_id`.
-3. Criar método `incrementParticipantsSecure` com a lógica de update condicional.
+2. Implementar busca de sessões ativas por `time_slot_id` usando o método `findOpenSessionsByTimeSlot`.
+3. Criar método `tryReserveSeat` com a lógica de update condicional.
 4. Criar método `decrementParticipants` de rollback.
 
 # Checklist Técnico

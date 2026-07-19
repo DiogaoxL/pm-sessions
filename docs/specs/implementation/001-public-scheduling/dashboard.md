@@ -12,8 +12,8 @@
 
 ## Progresso Geral
 
-- **Feature Total**: 15%
-- **RC-1 (Dados)**: ███████░░░░░░░ 50% (3/6 tasks concluídas)
+- **Feature Total**: 20%
+- **RC-1 (Dados)**: █████████░░░░░ 66% (4/6 tasks concluídas)
 
 ## Release Candidates
 
@@ -24,7 +24,7 @@
 
 ## Próxima Task
 
-- [Task 04: Implement SessionRepository](RC-1/task-04.md)
+- [Task 05: Implement ParticipantRepository](RC-1/task-05.md)
 
 ## Bloqueios
 

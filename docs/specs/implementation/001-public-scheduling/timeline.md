@@ -11,7 +11,9 @@ Planejamento
 RC-1 (Camada de Dados) [Iniciando]
      ├─ Task 01: Setup Directory Structure ➔ Concluído
      ├─ Task 02: Implement Repository Interfaces ➔ Concluído & Homologada
-     └─ Task 03: Implement TimeSlotRepository ➔ Liberada para início
+     ├─ Task 03: Implement TimeSlotRepository ➔ Concluído & Homologada
+     ├─ Task 04: Implement SessionRepository ➔ Concluído & Homologada
+     └─ Task 05: Implement ParticipantRepository ➔ Liberada para início
      │
      ▼
 RC-2 (Services & Google Calendar)
