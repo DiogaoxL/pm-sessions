@@ -6,13 +6,17 @@
 
 # Objetivo
 
-Implementar a validação de duplicidade e a inserção do participante no `SchedulingService`.
+Implementar a validação de duplicidade e a inserção do participante via método interno `registerParticipant()` no `SchedulingService`. Este método é de uso interno e não deve fazer parte da API pública (`ISchedulingService`) consumida por controllers ou actions. Sua responsabilidade é encapsular:
+
+- A validação de duplicidade de e-mail por slot;
+- As chamadas ao `this.participantRepository`;
+- A persistência física do participante.
 
 ---
 
 # Contexto
 
-O service deve unificar a checagem de e-mail duplicado para o mesmo `TimeSlot` e a persistência na tabela `participants`. Se o e-mail já estiver cadastrado de forma ativa no horário, a inscrição deve ser recusada imediatamente.
+O service deve unificar a checagem de e-mail duplicado para o mesmo `TimeSlot` e a persistência na tabela `participants`. Se o e-mail já estiver cadastrado de forma ativa no horário, a inscrição deve ser recusada imediatamente. Este método será reutilizado exclusivamente pela Task 05 durante a orquestração completa do agendamento.
 
 ---
 
@@ -24,32 +28,32 @@ O service deve unificar a checagem de e-mail duplicado para o mesmo `TimeSlot` e
 
 # Arquivos que serão alterados
 
-- **Alterar**: `apps/web/src/features/scheduling/services/interfaces.ts`
 - **Alterar**: `apps/web/src/features/scheduling/services/scheduling.service.ts`
 
 ---
 
 # Arquivos que NÃO podem ser alterados
 
-Nenhum.
+- **Não Alterar**: `apps/web/src/features/scheduling/services/interfaces.ts` (uma vez que `registerParticipant` não deve ser exposto na interface pública)
 
 ---
 
 # Ordem de Implementação
 
-1. Definir o método `registerParticipant(email: string, name: string, sessionId: string, timeSlotId: string): Promise<Participant>` na interface.
-2. No `SchedulingService`, chamar `existsConfirmedParticipant(email, timeSlotId)`.
-3. Se existir participante confirmado para o horário, lançar um erro estruturado de negócio (ex. `Error("Duplicated participant registration for this time slot")`).
-4. Se não existir, invocar `participantRepository.insertParticipant` com status `CONFIRMED`.
+1. Definir o método interno `registerParticipant(email: string, name: string, sessionId: string, timeSlotId: string): Promise<Participant>` no `SchedulingService` (sem expor no contrato `ISchedulingService`).
+2. Consultar `this.participantRepository.existsConfirmedParticipant(email, timeSlotId)`.
+3. Se existir participante confirmado para o horário (impedir duplicidade), lançar um erro estruturado de negócio (ex. `Error("Duplicated participant registration for this time slot")`).
+4. Executar `this.participantRepository.insertParticipant` com status `CONFIRMED`.
+5. Retornar o participante criado.
 
 ---
 
 # Checklist Técnico
 
-- [ ] Adicionar `registerParticipant` ao contrato.
-- [ ] Implementar fluxo de checagem prévia de duplicados.
-- [ ] Chamar inserção física do participante.
-- [ ] Tratar exceção de e-mail duplicado.
+- [ ] Declarar `registerParticipant` como método privado/interno em `SchedulingService`.
+- [ ] Implementar fluxo de checagem prévia chamando `this.participantRepository.existsConfirmedParticipant`.
+- [ ] Executar inserção chamando `this.participantRepository.insertParticipant`.
+- [ ] Tratar exceção de e-mail duplicado de negócio ou do banco de dados.
 
 ---
 
@@ -57,6 +61,8 @@ Nenhum.
 
 - Lança erro se o e-mail possuir cadastro ativo (`CONFIRMED`) no mesmo slot.
 - Retorna o objeto `Participant` inserido se a validação passar.
+- Nenhuma regra de reserva de vagas deve existir neste método.
+- O método será reutilizado exclusivamente pelo fluxo de orquestração da Task 05.
 
 ---
 

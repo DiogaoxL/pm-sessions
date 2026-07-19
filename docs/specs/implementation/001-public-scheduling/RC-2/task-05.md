@@ -38,19 +38,19 @@ Nenhum.
 # Ordem de Implementação
 
 1. Definir o método principal `scheduleSession(email: string, name: string, sessionId: string, timeSlotId: string): Promise<Participant>` no contrato `ISchedulingService`.
-2. No `SchedulingService`, implementar o seguinte fluxo:
-   - Checar se já existe participante confirmado chamando `existsConfirmedParticipant(email, timeSlotId)`. Caso sim, lançar erro de duplicidade.
-   - Chamar `tryReserveSeat(sessionId)`. Se retornar `false`, lançar erro de vaga esgotada/conflito.
-   - Chamar `insertParticipant(...)`.
-   - Se a inserção falhar (lançar erro), interceptar a exceção, executar `sessionRepository.decrementParticipants(sessionId)` (rollback de capacidade) e propagar o erro de inserção.
+2. No `SchedulingService`, implementar o seguinte fluxo de orquestração reutilizando a implementação construída na Task 04:
+   - Chamar `tryReserveSeat(sessionId)` (através do `sessionRepository`). Se retornar `false`, lançar erro de vaga esgotada/conflito.
+   - Chamar o método interno `this.registerParticipant(email, name, sessionId, timeSlotId)`. Toda validação de duplicidade e cadastro do participante já permanece centralizada ali.
+   - Se a execução do `this.registerParticipant(...)` falhar (lançar erro de duplicidade ou de banco), interceptar a exceção, executar `this.sessionRepository.decrementParticipants(sessionId)` (rollback da reserva de assento) e propagar o erro original.
 
 ---
 
 # Checklist Técnico
 
 - [ ] Declarar `scheduleSession` na interface.
-- [ ] Implementar fluxo transacional manual com tratamento de erro e rollback de vagas no `SchedulingService`.
-- [ ] Validar fluxo de rollback sob falha de banco.
+- [ ] Implementar a orquestração chamando `tryReserveSeat` e reutilizando `registerParticipant`.
+- [ ] Garantir que a Task 05 NÃO reimplementa a lógica de duplicidade de e-mail por slot, centralizando-a na Task 04.
+- [ ] Implementar fluxo de rollback de assento (`decrementParticipants`) se `registerParticipant` falhar.
 
 ---
 
@@ -58,7 +58,7 @@ Nenhum.
 
 - Cadastro realizado com sucesso se houver vaga e e-mail limpo.
 - Lança erro se duplicado ou sem vagas.
-- Decrementa participante da sessão de volta caso o participante falhe ao ser criado no banco de dados.
+- Decrementa a quantidade de participantes da sessão de volta (rollback) caso o participante falhe ao ser registrado no banco de dados.
 
 ---
 

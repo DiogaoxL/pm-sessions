@@ -12,9 +12,9 @@
 
 ## Progresso Geral
 
-- **Feature Total**: 45%
+- **Feature Total**: 50%
 - **RC-1 (Dados)**: ██████████████ 100% (7/7 tasks concluídas)
-- **RC-2 (Serviços)**: ████░░░░░░░░░░ 50% (3/6 tasks concluídas)
+- **RC-2 (Serviços)**: █████████░░░░░ 67% (4/6 tasks concluídas)
 
 ## Release Candidates
 
@@ -25,7 +25,7 @@
 
 ## Próxima Task
 
-- [RC-2 Task 04: Implementar Criação de Participante e Duplicados](RC-2/task-04.md)
+- [RC-2 Task 05: Orquestração do Fluxo de Agendamento Público](RC-2/task-05.md)
 
 ## Bloqueios
 
@@ -33,4 +33,4 @@ Nenhum bloqueio registrado.
 
 ## Última Atualização
 
-- 2026-07-18
+- 2026-07-19

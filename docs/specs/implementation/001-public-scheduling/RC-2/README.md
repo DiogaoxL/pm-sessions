@@ -26,3 +26,20 @@ Implementar a camada de serviços da Feature **001 - Public Scheduling**, sendo 
 1. **Dependency Injection**: Todas as dependências (repositórios) devem ser injetadas via construtor do service.
 2. **Repository Pattern**: O `SchedulingService` deve operar exclusivamente por meio de interfaces (`ITimeSlotRepository`, `ISessionRepository`, `IParticipantRepository`).
 3. **Decoplamento do Supabase**: Nenhuma referência proprietária do Supabase SDK (ex. queries ou tipos do PostgREST) deve ser exposta ou processada dentro da camada de serviços de aplicação.
+
+---
+
+## Fluxo Arquitetural da RC-2
+
+O fluxo de cadastro e agendamento da camada de aplicação segue o seguinte fluxo estrutural:
+
+```
+[Task 04]
+   └── registerParticipant() (método interno/privado para validar duplicidade e persistir participante)
+
+[Task 05]
+   └── scheduleSession() (caso de uso público de orquestração que reutiliza registerParticipant())
+```
+
+1. **Task 04** define o método interno `registerParticipant()` responsável por validar a duplicidade via `participantRepository.existsConfirmedParticipant` e realizar a inserção via `participantRepository.insertParticipant`.
+2. **Task 05** define o caso de uso público `scheduleSession()` que orquestra a transação lógica: reserva de assento via `sessionRepository.tryReserveSeat()`, reuso de `registerParticipant()` e rollback de assento via `sessionRepository.decrementParticipants()` em caso de falha.

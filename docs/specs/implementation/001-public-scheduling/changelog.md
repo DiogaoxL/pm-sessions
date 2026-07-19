@@ -21,3 +21,16 @@
 - Execução da **RC-2 Task 01: Criar Classe SchedulingService e Interfaces** (criação do contrato de serviço em `interfaces.ts`, do esqueleto da classe em `scheduling.service.ts` com injeção de dependências via construtor, e sincronização de exports).
 - Execução da **RC-2 Task 02: Implementar Listagem de Horários Disponíveis** (implementação do método `getAvailableSlots` no `SchedulingService` direcionando a lógica de listagem ao repositório homologado).
 - Execução da **RC-2 Task 03: Implementar Fluxo de Reserva de Vagas** (implementação do método `reserveSeat` no `SchedulingService` delegando a tentativa de lock atômico concorrente ao `SessionRepository`).
+
+## 2026-07-19
+
+### Adicionado
+
+- Execução da **RC-2 Task 04: Implementar Criação de Participante e Duplicados** (implementação do método interno `registerParticipant` no `SchedulingService` para validar duplicidade de e-mail no slot e realizar a inserção, com captura e mapeamento de Unique Constraints de banco de dados para evitar vazamento de erros técnicos).
+
+### Refatorado
+
+- Realizado refinamento arquitetural da **RC-2 (Camada de Serviços)** com base na auditoria funcional.
+- Removida a duplicação prevista de lógica de verificação de duplicidade e inserção entre as Tasks 04 e 05.
+- Alterada a visibilidade do método `registerParticipant()` da Task 04 para método interno do `SchedulingService`, removendo-o da interface pública `ISchedulingService` para reforçar o encapsulamento e integridade do domínio.
+- Atualizada a especificação da Task 05 para reutilizar a lógica de `registerParticipant()` definida na Task 04 em vez de reimplementar a validação e inserção de participante.
