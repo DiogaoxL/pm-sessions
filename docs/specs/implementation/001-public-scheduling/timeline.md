@@ -13,7 +13,8 @@ RC-1 (Camada de Dados) [Iniciando]
      ├─ Task 02: Implement Repository Interfaces ➔ Concluído & Homologada
      ├─ Task 03: Implement TimeSlotRepository ➔ Concluído & Homologada
      ├─ Task 04: Implement SessionRepository ➔ Concluído & Homologada
-     └─ Task 05: Implement ParticipantRepository ➔ Liberada para início
+     ├─ Task 05: Implement ParticipantRepository ➔ Concluído & Homologada
+     └─ Task 06: Data Layer Integration Tests ➔ Liberada para início
      │
      ▼
 RC-2 (Services & Google Calendar)

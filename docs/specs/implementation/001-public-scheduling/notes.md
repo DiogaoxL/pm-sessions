@@ -17,3 +17,5 @@
 - O `TimeSlotRepository` está pronto e validado sob typecheck estático do compilador do Next.js, servindo como base estável para a Task 04 (`SessionRepository`).
 - Auditoria Técnica da Task 04: Aprovada e homologada com sucesso. A concorrência otimista (Optimistic Locking) foi implementada no método `tryReserveSeat` comparando a versão dos participantes concorrentes direto na query, protegendo totalmente contra overbookings.
 - Sem vazamento de escopo ou adiantamentos da Task 05. O repositório está pronto para servir de base ao `ParticipantRepository` (Task 05).
+- Auditoria Técnica da Task 05: Aprovada e homologada tecnicamente com 100% de sucesso. A validação de duplicidade com inner join no PostgreSQL foi concluída de forma performática.
+- Sem pendências em aberto. A Task 06 (Data Layer Integration Tests) está plenamente liberada para desenvolvimento.

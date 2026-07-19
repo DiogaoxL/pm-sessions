@@ -27,13 +27,13 @@ Nenhum.
 # Ordem de Implementação
 
 1. Criar classe `ParticipantRepository`.
-2. Criar método `checkDuplicate(email, timeSlotId)` realizando query de junção ou filtro correlacionado.
+2. Criar método `existsConfirmedParticipant(email, timeSlotId)` realizando query de junção ou filtro correlacionado.
 3. Criar método `insertParticipant(participantData)`.
 
 # Checklist Técnico
 
 - [ ] Criar arquivo `participant.repository.ts`.
-- [ ] Implementar método `checkDuplicate`.
+- [ ] Implementar método `existsConfirmedParticipant`.
 - [ ] Implementar método de inserção `insertParticipant`.
 
 # Critérios de Aceite
