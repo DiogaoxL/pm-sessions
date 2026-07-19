@@ -15,7 +15,7 @@ export class SchedulingService implements ISchedulingService {
   ) {}
 
   async getAvailableSlots(): Promise<TimeSlot[]> {
-    throw new Error('Method not implemented.');
+    return this.timeSlotRepository.selectAvailableSlots();
   }
 
   async reserveSeat(sessionId: string): Promise<boolean> {

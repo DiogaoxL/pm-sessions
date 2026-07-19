@@ -14,7 +14,7 @@
 | [RC-1 Task 05A: Setup Testing Infrastructure](RC-1/task-05A.md)                   | `DONE` | Lead Engineer | Task 05      | 1h         | Baixa        |
 | [RC-1 Task 06: Data Layer Integration Tests](RC-1/task-06.md)                     | `DONE` | Lead Engineer | Task 05A     | 4h         | Alta         |
 | [RC-2 Task 01: Criar Classe SchedulingService e Interfaces](RC-2/task-01.md)      | `DONE` | Lead Engineer | RC-1         | 2h         | Baixa        |
-| [RC-2 Task 02: Implementar Listagem de Horários Disponíveis](RC-2/task-02.md)     | `TODO` | Lead Engineer | Task 01      | 3h         | Média        |
+| [RC-2 Task 02: Implementar Listagem de Horários Disponíveis](RC-2/task-02.md)     | `DONE` | Lead Engineer | Task 01      | 3h         | Média        |
 | [RC-2 Task 03: Implementar Fluxo de Reserva de Vagas](RC-2/task-03.md)            | `TODO` | Lead Engineer | Task 02      | 4h         | Alta         |
 | [RC-2 Task 04: Implementar Criação de Participante e Duplicados](RC-2/task-04.md) | `TODO` | Lead Engineer | Task 03      | 3h         | Média        |
 | [RC-2 Task 05: Orquestração do Fluxo de Agendamento Público](RC-2/task-05.md)     | `TODO` | Lead Engineer | Task 04      | 4h         | Alta         |
@@ -34,3 +34,4 @@
 - **Task 05A**: Homologada. Testes: PASS (Test Runner). Situação: Homologada (Infraestrutura do Vitest configurada e aliases integrados).
 - **Task 06**: Homologada. Testes: PASS (Test Runner - 11/11 casos passando). Situação: Homologada (Suíte de testes de integração implementada com mocks precisos do Supabase Client validando fuso horário, optimistic lock e rollback).
 - **RC-2 Task 01**: Homologada. Testes: PASS (Typecheck). Situação: Homologada (Interfaces de serviço e esqueleto da classe `SchedulingService` com injeção de dependências concluídos).
+- **RC-2 Task 02**: Homologada. Testes: PASS (Typecheck). Situação: Homologada (Método `getAvailableSlots` implementado delegando listagem ordenada e filtrada ao `TimeSlotRepository`).

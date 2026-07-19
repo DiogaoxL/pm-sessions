@@ -12,9 +12,9 @@
 
 ## Progresso Geral
 
-- **Feature Total**: 38%
+- **Feature Total**: 42%
 - **RC-1 (Dados)**: ██████████████ 100% (7/7 tasks concluídas)
-- **RC-2 (Serviços)**: █░░░░░░░░░░░░░ 17% (1/6 tasks concluídas)
+- **RC-2 (Serviços)**: ██░░░░░░░░░░░░ 33% (2/6 tasks concluídas)
 
 ## Release Candidates
 
@@ -25,7 +25,7 @@
 
 ## Próxima Task
 
-- [RC-2 Task 02: Implementar Listagem de Horários Disponíveis](RC-2/task-02.md)
+- [RC-2 Task 03: Implementar Fluxo de Reserva de Vagas](RC-2/task-03.md)
 
 ## Bloqueios
 
