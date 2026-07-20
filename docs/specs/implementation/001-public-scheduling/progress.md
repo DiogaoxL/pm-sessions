@@ -73,14 +73,15 @@
 - **RC-4.1 Task 01**: Homologada. Testes: PASS (Vitest / Typecheck / Lint). Situação: Rota `/scheduling` e página criadas no App Router, com orquestração completa e layout responsivo com Bottom Sheet móvel. Mocks de desenvolvimento condicional de erros e sucesso implementados para homologação funcional.
 - **RC-4.1 Task 02**: Homologada. Testes: PASS (Vitest / Typecheck / Lint). Situação: Resolvidos pontos críticos de a11y (aria-invalid, aria-describedby, role="alert", aria-live="assertive", autoComplete) e UX (separação de erros Zod inline vs. erros globais de negócio).
 - **RC-4.1 Task 03**: Homologada. Testes: PASS (Vitest / Typecheck / Lint). Situação: Implementado card de sucesso detalhado no formulário de agendamento (checkmark, título, dados do participante e botão de reset), com testes unitários atualizados.
+- **RC-4.1 Task 04**: Homologada. Testes: PASS (Vitest / Typecheck / Lint). Situação: Smoke test executado manualmente na rota `/scheduling` com 100% de conformidade, e documentação operacional/diagramas do ciclo sincronizados.
 
 ---
 
-**RC-4.1 Status: IN PROGRESS (75% concluído) — Início em 2026-07-20**
+**RC-4.1 Status: COMPLETED (100% concluído) — Conclusão em 2026-07-20**
 
 | Task                                                                                       | Status | Responsável   | Dependências | Estimativa | Complexidade |
 | ------------------------------------------------------------------------------------------ | ------ | ------------- | ------------ | ---------- | ------------ |
 | [RC-4.1 Task 01: Criar Rota e Página de Agendamento Público](RC-4.1/task-01.md)            | `DONE` | Lead Engineer | RC-4         | 4h         | Média        |
 | [RC-4.1 Task 02: Resolver Acessibilidade (a11y) e UX no Form e Banners](RC-4.1/task-02.md) | `DONE` | Lead Engineer | Task 01      | 3h         | Média        |
 | [RC-4.1 Task 03: Implementar Feedback Visual de Sucesso](RC-4.1/task-03.md)                | `DONE` | Lead Engineer | Task 02      | 2h         | Média        |
-| [RC-4.1 Task 04: Smoke Test e Sincronização de Documentação](RC-4.1/task-04.md)            | `TODO` | Lead Engineer | Task 03      | 2h         | Baixa        |
+| [RC-4.1 Task 04: Smoke Test e Sincronização de Documentação](RC-4.1/task-04.md)            | `DONE` | Lead Engineer | Task 03      | 2h         | Baixa        |

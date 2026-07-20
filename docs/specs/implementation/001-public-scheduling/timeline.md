@@ -9,31 +9,32 @@ Planejamento
      │
      ▼
 RC-1 (Camada de Dados) [Concluído]
-     ├─ Task 01: Setup Directory Structure ➔ Concluído
-     ├─ Task 02: Implement Repository Interfaces ➔ Concluído & Homologada
-     ├─ Task 03: Implement TimeSlotRepository ➔ Concluído & Homologada
-     ├─ Task 04: Implement SessionRepository ➔ Concluído & Homologada
-     ├─ Task 05: Implement ParticipantRepository ➔ Concluído & Homologada
-     ├─ Task 05A: Setup Testing Infrastructure ➔ Concluído & Homologada
-     └─ Task 06: Data Layer Integration Tests ➔ Concluído & Homologada
+     ├─ Tasks 01 a 06 ➔ Concluídas & Homologadas
      │
      ▼
-RC-2 (Services & Google Calendar) [Iniciando]
-     ├─ Task 01: Criar Classe SchedulingService e Interfaces ➔ Concluído & Homologada
-     ├─ Task 02: Implementar Listagem de Horários Disponíveis ➔ Concluído & Homologada
-     ├─ Task 03: Implementar Fluxo de Reserva de Vagas ➔ Concluído & Homologada
-     ├─ Task 04: Implementar Criação de Participante e Duplicados ➔ Liberada para início
-     ├─ Task 05: Orquestração do Fluxo de Agendamento Público ➔ Planejado
-     └─ Task 06: Testes da Camada de Serviços ➔ Planejado
+RC-2 (Services & Google Calendar) [Concluído]
+     ├─ Tasks 01 a 06 ➔ Concluídas & Homologadas
      │
      ▼
-RC-3 (Server Actions & Zod)
+RC-3 (Server Actions & Zod) [Concluído]
+     ├─ Tasks 01 a 06 ➔ Concluídas & Homologadas
      │
      ▼
-RC-4 (Telas & Frontend)
+RC-4 (Componentes de UI) [Concluído]
+     ├─ Tasks 01 a 07 ➔ Concluídas & Homologadas
      │
      ▼
-QA (Testes Manuais/E2E)
+RC-4.1 (Integração e Homologação Visual) [Concluído]
+     ├─ Task 01: Criar Rota e Página de Agendamento ➔ Concluído & Homologado
+     ├─ Task 02: Resolver a11y e UX no Formulário ➔ Concluído & Homologado
+     ├─ Task 03: Feedback Visual de Sucesso ➔ Concluído & Homologado
+     ├─ Task 04: Smoke Test e Gate de Integration Review ➔ Concluído & Homologado
+     │
+     ▼
+Gate: Integration Review [Aprovado]
+     │
+     ▼
+QA / Homologação de Produção
      │
      ▼
 Produção

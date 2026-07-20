@@ -43,7 +43,7 @@ Este Release Candidate (RC-4.1) existe exclusivamente para integrar a interface 
 - [x] [Task 01: Criar Rota e Página de Agendamento Público](task-01.md)
 - [x] [Task 02: Resolver Acessibilidade (a11y) e UX no Form e Banners](task-02.md)
 - [x] [Task 03: Implementar Feedback Visual de Sucesso](task-03.md)
-- [ ] [Task 04: Smoke Test e Sincronização de Documentação](task-04.md)
+- [x] [Task 04: Smoke Test e Sincronização de Documentação](task-04.md)
 
 ---
 
@@ -55,8 +55,8 @@ Este Release Candidate (RC-4.1) existe exclusivamente para integrar a interface 
 - [x] Banners de erro dinâmicos possuem `role="alert"`.
 - [x] Erros de validação Zod não exibem o banner global redundante "Dados inválidos".
 - [x] O fluxo de sucesso exibe uma confirmação visual amigável com os detalhes do agendamento.
-- [ ] Smoke Test executado com sucesso e todos os estados validados visualmente.
-- [ ] Toda a documentação atualizada com a conclusão do RC-4.1.
+- [x] Smoke Test executado com sucesso e todos os estados validados visualmente.
+- [x] Toda a documentação atualizada com a conclusão do RC-4.1.
 
 ---
 

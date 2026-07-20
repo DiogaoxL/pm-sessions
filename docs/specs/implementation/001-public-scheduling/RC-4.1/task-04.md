@@ -34,15 +34,15 @@ Como parte da nova regra obrigatória do projeto, todo Release Candidate com int
    - Iniciar o servidor de desenvolvimento: `npm run dev`.
    - Acessar `http://localhost:3000/scheduling` no navegador.
    - Seguir o checklist obrigatório:
-     - [ ] A página carrega sem erros 404 e sem exceptions no console.
-     - [ ] O skeleton de carregamento é exibido durante a busca inicial.
-     - [ ] Os horários disponíveis são renderizados agrupados por dia e ordenados por hora.
-     - [ ] Clicar em um horário disponível destaca o card correspondente e abre o formulário abaixo.
-     - [ ] Clicar em outro horário altera a seleção corretamente.
-     - [ ] Clicar em "Cancelar" limpa a seleção e fecha o formulário.
-     - [ ] Submeter dados inválidos (ex: e-mail incorreto) exibe apenas as validações inline vermelhas nos campos, sem o banner global superior de erro.
-     - [ ] Simular um erro de negócio ou rede e validar que o banner vermelho superior role="alert" é anunciado por leitores de tela.
-     - [ ] Submeter dados válidos exibe a tela de confirmação de sucesso com o checkmark verde e os dados do participante.
+     - [x] A página carrega sem erros 404 e sem exceptions no console.
+     - [x] O skeleton de carregamento é exibido durante a busca inicial.
+     - [x] Os horários disponíveis são renderizados agrupados por dia e ordenados por hora.
+     - [x] Clicar em um horário disponível destaca o card correspondente e abre o formulário abaixo.
+     - [x] Clicar em outro horário altera a seleção corretamente.
+     - [x] Clicar em "Cancelar" limpa a seleção e fecha o formulário.
+     - [x] Submeter dados inválidos (ex: e-mail incorreto) exibe apenas as validações inline vermelhas nos campos, sem o banner global superior de erro.
+     - [x] Simular um erro de negócio ou rede e validar que o banner vermelho superior role="alert" é anunciado por leitores de tela.
+     - [x] Submeter dados válidos exibe a tela de confirmação de sucesso com o checkmark verde e os dados do participante.
 2. **Atualização Documental**:
    - Atualizar `progress.md`: Marcar as tasks do RC-4.1 como concluídas e atualizar o progresso do ciclo.
    - Atualizar `changelog.md`: Registrar a entrega da integração visual, melhorias de a11y e feedback de sucesso do RC-4.1.
@@ -51,15 +51,15 @@ Como parte da nova regra obrigatória do projeto, todo Release Candidate com int
 
 # Checklist Técnico
 
-- [ ] Realizar todo o fluxo do Smoke Test manual anotando eventuais discrepâncias.
-- [ ] Atualizar todos os 5 documentos obrigatórios listados.
-- [ ] Registrar o novo gate de homologação visual na especificação do projeto.
+- [x] Realizar todo o fluxo do Smoke Test manual anotando eventuais discrepâncias.
+- [x] Atualizar todos os 5 documentos obrigatórios listados.
+- [x] Registrar o novo gate de homologação visual na especificação do projeto.
 
 # Critérios de Aceite
 
-- [ ] Todos os passos do Smoke Test passam com 100% de sucesso.
-- [ ] Não existem erros de console no navegador.
-- [ ] Documentação perfeitamente sincronizada e sem links quebrados.
+- [x] Todos os passos do Smoke Test passam com 100% de sucesso.
+- [x] Não existem erros de console no navegador.
+- [x] Documentação perfeitamente sincronizada e sem links quebrados.
 
 # Como Testar
 
@@ -72,5 +72,25 @@ Como parte da nova regra obrigatória do projeto, todo Release Candidate com int
 
 # Definition of Done
 
-- [ ] Documentos de progresso atualizados.
-- [ ] Smoke test executado e validado.
+- [x] Documentos de progresso atualizados.
+- [x] Smoke test executado e validado.
+
+# Resultado de Implementação
+
+Status:
+✅ Sincronizada
+
+Resumo:
+
+- Todos os documentos operacionais da feature (`timeline.md`, `decisions.md`, `progress.md`, `dashboard.md`, `README.md`, `changelog.md`) atualizados para refletir a conclusão total de todas as 4 tasks da release candidate RC-4.1.
+- Registrado o gate de "Integration Review" nas decisões arquiteturais e timeline.
+
+# Resultado da Homologação Visual (Smoke Test)
+
+Status:
+✅ Aprovado (100% PASS)
+
+Valilações realizadas:
+
+- Todo o checklist do Smoke Test manual passou com sucesso absoluto no navegador, com o servidor rodando localmente após exclusão do cache `.next`.
+- Não foram reportados erros no terminal ou no console do navegador.
