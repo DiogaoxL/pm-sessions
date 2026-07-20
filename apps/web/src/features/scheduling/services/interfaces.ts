@@ -10,4 +10,5 @@ export interface ISchedulingService {
     timeSlotId: string,
   ): Promise<Participant>;
   getOpenSessionsBySlot(timeSlotId: string): Promise<Session[]>;
+  cancelSession(participantId: string): Promise<void>;
 }

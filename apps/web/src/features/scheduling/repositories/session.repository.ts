@@ -89,4 +89,36 @@ export class SessionRepository implements ISessionRepository {
       })
       .eq('id', sessionId);
   }
+
+  async updateSessionCalendar(
+    sessionId: string,
+    calendarEventId: string,
+    meetUrl: string | null,
+  ): Promise<void> {
+    const { error } = await this.supabase
+      .from('sessions')
+      .update({
+        calendar_event_id: calendarEventId,
+        meet_url: meetUrl,
+      })
+      .eq('id', sessionId);
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  async findSessionById(id: string): Promise<Session | null> {
+    const { data, error } = await this.supabase
+      .from('sessions')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
 }
