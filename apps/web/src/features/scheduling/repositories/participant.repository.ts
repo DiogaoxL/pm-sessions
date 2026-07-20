@@ -40,4 +40,55 @@ export class ParticipantRepository implements IParticipantRepository {
 
     return data;
   }
+
+  async getParticipantsBySession(sessionId: string): Promise<Participant[]> {
+    const { data, error } = await this.supabase
+      .from('participants')
+      .select('*')
+      .eq('session_id', sessionId)
+      .eq('status', 'CONFIRMED');
+
+    if (error) {
+      throw error;
+    }
+
+    return data || [];
+  }
+
+  async findParticipantById(id: string): Promise<Participant | null> {
+    const { data, error } = await this.supabase
+      .from('participants')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async updateParticipantStatus(id: string, status: Participant['status']): Promise<Participant> {
+    const { data, error } = await this.supabase
+      .from('participants')
+      .update({ status })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
+  async deleteParticipant(id: string): Promise<void> {
+    const { error } = await this.supabase.from('participants').delete().eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+  }
 }

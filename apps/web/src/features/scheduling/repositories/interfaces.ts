@@ -10,6 +10,11 @@ export interface ITimeSlotRepository {
    * Busca slots de data futura com status 'OPEN'.
    */
   selectAvailableSlots(): Promise<TimeSlot[]>;
+
+  /**
+   * Busca um time slot específico por ID.
+   */
+  findTimeSlotById(id: string): Promise<TimeSlot | null>;
 }
 
 export interface ISessionRepository {
@@ -29,6 +34,20 @@ export interface ISessionRepository {
    * Decrementa a quantidade de participantes (usado para rollback).
    */
   decrementParticipants(sessionId: string): Promise<void>;
+
+  /**
+   * Atualiza as colunas de integração de calendário na sessão.
+   */
+  updateSessionCalendar(
+    sessionId: string,
+    calendarEventId: string,
+    meetUrl: string | null,
+  ): Promise<void>;
+
+  /**
+   * Busca uma sessão por ID.
+   */
+  findSessionById(id: string): Promise<Session | null>;
 }
 
 export interface IParticipantRepository {
@@ -41,4 +60,24 @@ export interface IParticipantRepository {
    * Valida se o email fornecido já possui inscrição ativa (CONFIRMED) no mesmo TimeSlot.
    */
   existsConfirmedParticipant(email: string, timeSlotId: string): Promise<boolean>;
+
+  /**
+   * Busca todos os participantes ativos de uma sessão.
+   */
+  getParticipantsBySession(sessionId: string): Promise<Participant[]>;
+
+  /**
+   * Busca um participante por ID.
+   */
+  findParticipantById(id: string): Promise<Participant | null>;
+
+  /**
+   * Atualiza o status do participante.
+   */
+  updateParticipantStatus(id: string, status: Participant['status']): Promise<Participant>;
+
+  /**
+   * Exclui o registro de um participante do banco.
+   */
+  deleteParticipant(id: string): Promise<void>;
 }

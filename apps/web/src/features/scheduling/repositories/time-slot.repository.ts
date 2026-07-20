@@ -47,4 +47,18 @@ export class TimeSlotRepository implements ITimeSlotRepository {
 
     return data || [];
   }
+
+  async findTimeSlotById(id: string): Promise<TimeSlot | null> {
+    const { data, error } = await this.supabase
+      .from('time_slots')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
 }
