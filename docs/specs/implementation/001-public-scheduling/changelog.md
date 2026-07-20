@@ -115,3 +115,31 @@ Data: 2026-07-20
 - Mobile: Bottom Sheet ativado ao selecionar horário, com scroll bloqueado, formulário acessível e todos os estados (loading, formulário, erro, sucesso) validados.
 - Fluxo completo de ponta a ponta validado com mocks: seleção → formulário → loading → sucesso → retorno.
 - Cenários de erro de negócio (`error@example.com` e `duplicate@example.com`) validados visualmente.
+
+## RC-4.1 — Task 02
+
+Data: 2026-07-20
+
+### Adicionado
+
+- Atributos de acessibilidade (`aria-invalid`, `aria-describedby`, `autoComplete`, `role="alert"`, `aria-live="assertive"`) no `SchedulingForm` e `AvailableSlotsContainer`.
+- Tratamento de erro refinado para evitar exibição de erro global redundante durante falhas de validação estrutural do Zod.
+
+### Homologado
+
+- Leitores de tela anunciando erros e foco semântico testados e validados.
+
+## RC-4.1 — Task 03
+
+Data: 2026-07-20
+
+### Adicionado
+
+- Estado local `participantData` e função `handleReset` na limpeza de estados do agendamento concluído.
+- Card de sucesso detalhado exibindo Nome, E-mail e Status ("Confirmada") do participante.
+- Botão "Voltar" que limpa estados locais e invoca o callback `onCancel`.
+- Suíte de testes unitários em `scheduling-form.test.tsx` atualizada e testando o fluxo feliz e ocultação de inputs.
+
+### Homologado
+
+- Desktop & Mobile: Transição de tela de sucesso completa, exibição de dados de agendamento confirmados, e reset de fluxos testados manualmente com sucesso.

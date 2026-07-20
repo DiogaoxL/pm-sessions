@@ -24,6 +24,7 @@ export function SchedulingForm({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [participantData, setParticipantData] = useState<Participant | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -45,6 +46,7 @@ export function SchedulingForm({
         });
 
         if (result.success) {
+          setParticipantData(result.data);
           setIsSuccess(true);
           if (onSuccess) {
             onSuccess(result.data);
@@ -77,12 +79,25 @@ export function SchedulingForm({
     });
   };
 
+  const handleReset = () => {
+    setIsSuccess(false);
+    setParticipantData(null);
+    setName('');
+    setEmail('');
+    setPhone('');
+    setFieldErrors({});
+    setGlobalError(null);
+    if (onCancel) {
+      onCancel();
+    }
+  };
+
   if (isSuccess) {
     return (
-      <div className="w-full bg-white p-6 rounded-2xl border border-green-200 shadow-sm text-center space-y-4">
-        <div className="size-12 bg-green-50 rounded-full flex items-center justify-center mx-auto border border-green-200">
+      <div className="w-full bg-white p-6 rounded-2xl border border-green-200 shadow-sm text-center space-y-5">
+        <div className="size-14 bg-green-50 rounded-full flex items-center justify-center mx-auto border border-green-100">
           <svg
-            className="size-6 text-green-600"
+            className="size-7 text-green-600"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -92,18 +107,39 @@ export function SchedulingForm({
           </svg>
         </div>
         <div className="space-y-1">
-          <h3 className="text-lg font-bold text-gray-900">Agendamento Confirmado!</h3>
-          <p className="text-xs text-gray-500">Seu horário foi reservado com sucesso.</p>
+          <h3 className="text-xl font-bold text-gray-950">Agendamento Confirmado!</h3>
+          <p className="text-sm text-gray-500">Seu horário foi reservado com sucesso.</p>
         </div>
-        {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer"
-          >
-            Voltar
-          </button>
+
+        {participantData && (
+          <div className="bg-gray-50 rounded-xl p-4 text-left border border-gray-100 space-y-2">
+            <div className="text-xs text-gray-500 uppercase font-semibold tracking-wider">
+              Dados da Inscrição
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-900 font-medium">
+                <span className="text-gray-500 font-normal">Nome:</span> {participantData.name}
+              </p>
+              <p className="text-sm text-gray-900 font-medium">
+                <span className="text-gray-500 font-normal">E-mail:</span> {participantData.email}
+              </p>
+              <p className="text-sm text-gray-900 font-medium">
+                <span className="text-gray-500 font-normal">Status:</span>{' '}
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                  Confirmada
+                </span>
+              </p>
+            </div>
+          </div>
         )}
+
+        <button
+          type="button"
+          onClick={handleReset}
+          className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer"
+        >
+          Voltar
+        </button>
       </div>
     );
   }

@@ -69,6 +69,24 @@ describe('SchedulingForm', () => {
         }),
       );
       expect(screen.getByText('Agendamento Confirmado!')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          (_, el) =>
+            el?.tagName.toLowerCase() === 'p' &&
+            el.textContent?.includes('Nome:') === true &&
+            el.textContent?.includes('John Doe') === true,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          (_, el) =>
+            el?.tagName.toLowerCase() === 'p' &&
+            el.textContent?.includes('E-mail:') === true &&
+            el.textContent?.includes('john@example.com') === true,
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Confirmada')).toBeInTheDocument();
+      expect(screen.queryByLabelText(/nome completo/i)).not.toBeInTheDocument();
     });
   });
 

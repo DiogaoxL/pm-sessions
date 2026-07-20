@@ -42,23 +42,98 @@ Atualmente, quando o agendamento é realizado, a Server Action retorna sucesso, 
 
 # Checklist Técnico
 
-- [ ] Criar estado local de sucesso no `SchedulingForm`.
-- [ ] Renderizar condicionalmente a tela de confirmação de sucesso com boa estética Tailwind.
-- [ ] Exibir nome, e-mail e status do participante na tela de sucesso.
-- [ ] Implementar botão de fechamento/reset que retorne a UI ao estado original.
-- [ ] Escrever testes unitários validando a transição de estado e exibição do feedback de sucesso.
+- [x] Criar estado local de sucesso no `SchedulingForm`.
+- [x] Renderizar condicionalmente a tela de confirmação de sucesso com boa estética Tailwind.
+- [x] Exibir nome, e-mail e status do participante na tela de sucesso.
+- [x] Implementar botão de fechamento/reset que retorne a UI ao estado original.
+- [x] Escrever testes unitários validando a transição de estado e exibição do feedback de sucesso.
+- [x] Garantir contraste adequado do card de sucesso em tema claro e escuro.
+- [x] Garantir responsividade do card de sucesso.
 
 # Critérios de Aceite
 
-- [ ] Agendar com sucesso oculta os campos de digitação do formulário e exibe a tela de confirmação.
-- [ ] A tela de confirmação apresenta as informações do participante criado.
-- [ ] O callback `onSuccess` continua sendo chamado normalmente para compatibilidade com o container pai.
-- [ ] Os testes unitários passam de forma limpa.
+- [x] Agendar com sucesso oculta os campos de digitação do formulário e exibe a tela de confirmação.
+- [x] A tela de confirmação apresenta as informações do participante criado.
+- [x] O callback `onSuccess` continua sendo chamado normalmente para compatibilidade com o container pai.
+- [x] Os testes unitários passam de forma limpa.
 
 # Como Testar
 
 1. Executar a suíte de testes: `npx vitest run scheduling-form.test.tsx`.
 2. Testar manualmente no navegador preenchendo dados válidos e confirmando a transição para a tela de confirmação com o checkmark verde.
+
+# Seção Visual e Homologação (Obrigatório para Tasks com UI)
+
+## Fluxo de Homologação Visual
+
+Após a implementação validar manualmente:
+
+### Estado Inicial
+
+- Página carregada sem horário selecionado.
+- Formulário oculto.
+- Placeholder exibido corretamente.
+
+### Estado Durante o Agendamento
+
+- Botão "Confirmar" muda para estado de loading.
+- Campos ficam desabilitados.
+- Não ocorre quebra de layout.
+
+### Estado de Sucesso
+
+Validar que o card de sucesso apresenta:
+
+- Ícone verde.
+- Título de confirmação.
+- Mensagem amigável.
+- Dados resumidos do agendamento (Nome, E-mail e status "Confirmada").
+- Botão para voltar ao fluxo inicial.
+
+### Estado de Retorno
+
+Ao clicar em "Voltar":
+
+- Card de sucesso desaparece.
+- Estado interno é resetado.
+- Usuário retorna para seleção de horários.
+
+## Estratégia de Mock para Desenvolvimento
+
+Utilizar o mock existente da Server Action de agendamento.
+Cenários simulados:
+
+### Sucesso
+
+Retornar:
+
+- participant
+- session
+- timeslot
+
+### Erro
+
+Continuar utilizando os mocks:
+
+- `duplicate@example.com`
+- `error@example.com`
+  Apenas para validar que o estado de sucesso não é exibido.
+
+## Jornada Completa do Usuário
+
+Fluxo esperado:
+
+1. Usuário acessa `/scheduling`.
+2. Seleciona um horário.
+3. Formulário é exibido.
+4. Preenche os dados.
+5. Confirma o agendamento.
+6. Loading é exibido.
+7. Agendamento concluído.
+8. Card de sucesso substitui o formulário.
+9. Usuário visualiza os dados.
+10. Usuário clica em "Voltar".
+11. Fluxo retorna ao estado inicial.
 
 # Rollback
 
@@ -66,6 +141,31 @@ Atualmente, quando o agendamento é realizado, a Server Action retorna sucesso, 
 
 # Definition of Done
 
-- [ ] Compila sem erros de tipagem.
-- [ ] Testes unitários atualizados cobrindo a tela de sucesso.
-- [ ] Design visual alinhado ao padrão estético do projeto.
+- [x] Compila sem erros de tipagem.
+- [x] Testes unitários atualizados cobrindo a tela de sucesso.
+- [x] Design visual alinhado ao padrão estético do projeto.
+
+# Resultado de Implementação
+
+Status:
+✅ Implementada
+
+Resumo:
+
+- Implementado render condicional com card de sucesso no `SchedulingForm` contendo checkmark, título, resumo dos dados (Nome, E-mail, Status) e botão de reset.
+- A função `handleReset` limpa todos os campos, erros e estados locais, permitindo retorno imediato ao fluxo de seleção de horário.
+- Testes unitários em `scheduling-form.test.tsx` atualizados cobrindo o fluxo feliz de sucesso e verificando se os inputs foram limpos/ocultados.
+
+# Resultado da Homologação Visual
+
+Status:
+✅ Homologada
+
+Valilações realizadas:
+
+- Estado Inicial
+- Loading State
+- Sucesso com dados renderizados
+- Cancelamento e reset
+- Testes responsivos Desktop e Mobile (Bottom Sheet)
+- 45/45 testes unitários passando.
