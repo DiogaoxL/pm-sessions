@@ -69,3 +69,166 @@ O [Engineering Playbook](playbook/README.md) define a baseline de qualidade téc
 
 - 📋 [Template de Release Candidate](templates/RC-template.md)
 - 📋 [Template de Task](templates/task-template.md)
+
+# Atualização do Fluxo Oficial de Desenvolvimento (Spec-as-Code)
+
+## Objetivo
+
+Registrar uma melhoria permanente no processo após a RC-4.
+
+---
+
+# Nova Regra Obrigatória
+
+> Toda Release Candidate (RC) que possuir interface gráfica (UI) obrigatoriamente deve terminar com uma página navegável integrada ao App Router.
+
+Não é suficiente que existam apenas:
+
+- componentes React;
+- testes;
+- Server Actions;
+- serviços;
+- auditorias.
+
+A feature deve estar disponível para navegação e validação visual.
+
+---
+
+# Novo Gate Obrigatório
+
+Após a conclusão técnica da RC será executada uma nova etapa:
+
+## Integration Review
+
+### Estrutura
+
+- [ ] Existe `page.tsx`
+- [ ] Existe rota válida
+- [ ] A rota não retorna 404
+- [ ] A feature está integrada ao App Router
+- [ ] Navegação funcionando (quando aplicável)
+
+### Renderização
+
+- [ ] Página abre corretamente
+- [ ] Nenhum erro de runtime
+- [ ] Componentes renderizam corretamente
+
+### Estados Visuais
+
+Validar visualmente:
+
+- [ ] Loading
+- [ ] Empty State
+- [ ] Error State
+- [ ] Success State
+- [ ] Validation Errors
+- [ ] Pending
+- [ ] Disabled
+- [ ] Responsividade
+
+### Smoke Test
+
+Executar manualmente:
+
+1. Abrir a rota.
+2. Validar carregamento.
+3. Percorrer o fluxo completo.
+4. Confirmar comportamento esperado.
+5. Registrar evidências.
+
+---
+
+# Novo Fluxo Oficial
+
+Feature (Approved)
+│
+▼
+Implementation
+│
+▼
+Release Candidate (RC)
+│
+▼
+Task
+│
+▼
+@product-check
+Validação da especificação
+│
+▼
+@engineer
+Implementação
+│
+▼
+Auditoria Técnica
+│
+▼
+Testes Funcionais
+│
+▼
+@engineer-docs
+Atualização da documentação
+│
+▼
+Commit
+│
+▼
+...
+│
+▼
+RC Finalizado
+│
+▼
+Testes Integrados
+│
+▼
+Integration Review ⭐ NOVO
+
+- Página criada
+- Rota criada
+- Integração App Router
+- Smoke Test
+- Validação visual
+  │
+  ▼
+  @product-check
+  Homologação Funcional
+  │
+  ▼
+  Merge
+  │
+  ▼
+  Próximo RC
+
+---
+
+# Definition of Done (UI)
+
+Uma RC com interface somente poderá ser considerada concluída quando TODOS os itens abaixo forem verdadeiros:
+
+- Implementação concluída
+- Testes aprovados
+- Auditorias aprovadas
+- Página criada
+- Rota navegável
+- Integração ao App Router
+- Smoke Test executado
+- Validação visual concluída
+- Homologação funcional aprovada
+
+Caso algum item não seja atendido, a RC deverá permanecer com status:
+
+**Implementação Parcial**
+
+e não poderá ser considerada concluída.
+
+---
+
+# Estrutura de Tasks de Interface (UI)
+
+A partir da RC-4.1, toda Task de desenvolvimento que envolva modificação ou criação de elementos visuais (UI) deve obrigatoriamente incluir no seu arquivo de especificação:
+
+1. **Fluxo de Homologação Visual**: Mapeamento do comportamento visual para cada estado (Inicial, Loading, Sucesso, Erro, Cancelamento).
+2. **Estratégia de Mocks locais**: Como simular as ações assíncronas de ponta a ponta sem dependência de banco de dados ativo.
+3. **Jornada Completa do Usuário**: Roteiro de passos lógicos para testar manualmente a experiência final.

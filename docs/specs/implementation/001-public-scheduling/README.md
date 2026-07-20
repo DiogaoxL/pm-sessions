@@ -18,7 +18,7 @@ O candidato acessa o link ➔ Escolhe data e horário ➔ Preenche Nome, E-mail 
 
 ## Status
 
-- **Status**: `Em andamento`
+- **Status**: `Em andamento` — RC-4.1 em execução (Task 01 concluída e homologada)
 
 ## RCs
 
@@ -26,6 +26,7 @@ O candidato acessa o link ➔ Escolhe data e horário ➔ Preenche Nome, E-mail 
 - **RC-2**: [Services e Integração Google](RC-2/README.md)
 - **RC-3**: [Server Actions e Validações](RC-3/README.md)
 - **RC-4**: [UI e Componentes](RC-4/README.md)
+- **RC-4.1**: [Integração da Interface e Homologação Visual](RC-4.1/README.md)
 
 ## Dependências
 
