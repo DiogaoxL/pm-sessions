@@ -2,7 +2,24 @@
 
 [← Voltar para Feature](../README.md)
 
-**Status: IN_PROGRESS (86% Concluído)**
+**Status: ✅ RC-4 Finalizado**
+
+## Entregas do Ciclo
+
+- **Listagem pública**: Listagem de horários disponíveis agrupados por data e ordenados cronologicamente, com formatação localizada (pt-BR).
+- **Container de integração**: AvailableSlotsContainer encapsulando a busca via Server Action.
+- **Formulário**: Componente de apresentação `SchedulingForm` para captura de dados do candidato (Nome, E-mail, Telefone).
+- **Integração com Server Actions**: Submissão integrada a `scheduleSessionAction` com `useTransition` para loadings e concorrência.
+- **Tratamento de erros**: Mapeamento visual de `validationErrors` Zod por input e banner de erro global para exceções de domínio/infra.
+- **Cobertura de testes**: 18 novos testes unitários adicionados abrangendo fluxos de renderização, interações, transições e erros de UI.
+
+### Estatísticas Finais
+
+- **Tasks**: 7/7 Concluídas
+- **Cobertura**: 100%
+- **Typecheck**: PASS
+- **Lint**: PASS
+- **Tests**: 42/42 PASS
 
 ---
 
@@ -45,7 +62,7 @@ Este ciclo aborda estritamente a camada de visualização (UI) e a lógica de ap
 | [Task 04](task-04.md) | Criar Formulário de Agendamento Público              | `DONE` | Task 01      | 2h         | Média        |
 | [Task 05](task-05.md) | Integrar Formulário com scheduleSessionAction        | `DONE` | Task 04      | 3h         | Média        |
 | [Task 06](task-06.md) | Tratamento de Estados, Loading e Mensagens de Erro   | `DONE` | Task 03, 05  | 3h         | Média        |
-| [Task 07](task-07.md) | Testes Unitários de Componentes de UI                | `TODO` | Task 06      | 4h         | Alta         |
+| [Task 07](task-07.md) | Testes Unitários de Componentes de UI                | `DONE` | Task 06      | 4h         | Alta         |
 
 ---
 

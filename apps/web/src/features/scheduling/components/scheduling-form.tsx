@@ -23,6 +23,7 @@ export function SchedulingForm({
   const [phone, setPhone] = useState<string>('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -44,6 +45,7 @@ export function SchedulingForm({
         });
 
         if (result.success) {
+          setIsSuccess(true);
           if (onSuccess) {
             onSuccess(result.data);
           }
@@ -73,6 +75,37 @@ export function SchedulingForm({
       }
     });
   };
+
+  if (isSuccess) {
+    return (
+      <div className="w-full bg-white p-6 rounded-2xl border border-green-200 shadow-sm text-center space-y-4">
+        <div className="size-12 bg-green-50 rounded-full flex items-center justify-center mx-auto border border-green-200">
+          <svg
+            className="size-6 text-green-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-lg font-bold text-gray-900">Agendamento Confirmado!</h3>
+          <p className="text-xs text-gray-500">Seu horário foi reservado com sucesso.</p>
+        </div>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+          >
+            Voltar
+          </button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <form

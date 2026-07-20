@@ -24,7 +24,35 @@
 
 ## 2026-07-19
 
+## RC-4 — Task 07
+
+Data: 2026-07-19
+
+### Adicionado
+
+- Testes do TimeSlotCard
+- Testes do TimeSlotList
+- Testes do SchedulingSkeleton
+- Testes do AvailableSlotsContainer
+- Testes do SchedulingForm
+
+### Infraestrutura
+
+- Configuração do Testing Library
+- Configuração do jest-dom
+- Ajustes do setup global do Vitest
+
+### Resultado
+
+42/42 testes aprovados.
+
 ### Concluído
+
+- **Encerramento do RC-4 (UI e Componentes)**: Conclusão e homologação de todas as tarefas da camada de visualização e apresentação do cliente, cobrindo:
+  - Criação de componentes visuais acessíveis e responsivos (`TimeSlotCard`, `TimeSlotList`, `SchedulingSkeleton`, `SchedulingForm`);
+  - Integração com as Server Actions `getAvailableSlotsAction` e `scheduleSessionAction` com `useTransition` para loadings e controle de concorrência;
+  - Refinamento de tratamento de erros por input com mensagens do Zod e banner de erro global;
+  - Criação de uma suíte completa de testes de interface com Vitest e React Testing Library alcançando 100% de cobertura nos fluxos e branches principais.
 
 - **Encerramento do RC-3 (Server Actions e Validações)**: Conclusão e homologação de todas as tarefas de Presentation Boundary da Feature **001 - Public Scheduling**, cobrindo:
   - Validação rigorosa de dados de formulário via schema do Zod (`scheduleSessionSchema`);
@@ -40,6 +68,7 @@
 
 ### Adicionado
 
+- Execução da **RC-4 Task 07: Testes Unitários de Componentes de UI** (criação da suíte de testes de interface cobrindo TimeSlotCard, TimeSlotList, SchedulingSkeleton, AvailableSlotsContainer e SchedulingForm com mocks estruturados, validação de transições de loading do React 19 e testes de acessibilidade).
 - Execução da **RC-4 Task 06: Tratamento de Estados, Loading e Mensagens de Erro** (refinamento do tratamento de erros no formulário, exibição de banner global de erros de negócio e destaque visual de inputs com validação do Zod).
 - Execução da **RC-4 Task 05: Integrar Formulário com scheduleSessionAction** (integração do formulário com a Server Action `scheduleSessionAction` utilizando `useTransition` para tratar submissões concorrentes e callbacks de sucesso/erro desacoplados).
 - Execução da **RC-4 Task 04: Criar Formulário de Agendamento Público** (criação do componente de apresentação `SchedulingForm` para captura dos dados do candidato, com suporte a acessibilidade e inputs controlados).
@@ -64,3 +93,25 @@
 - Removida a duplicação prevista de lógica de verificação de duplicidade e inserção entre as Tasks 04 e 05.
 - Alterada a visibilidade do método `registerParticipant()` da Task 04 para método interno do `SchedulingService`, removendo-o da interface pública `ISchedulingService` para reforçar o encapsulamento e integridade do domínio.
 - Atualizada a especificação da Task 05 para reutilizar a lógica de `registerParticipant()` definida na Task 04 em vez de reimplementar a validação e inserção de participante.
+
+## 2026-07-20
+
+## RC-4.1 — Task 01
+
+Data: 2026-07-20
+
+### Adicionado
+
+- Criação da rota pública `/scheduling` integrada ao App Router do Next.js com o arquivo `apps/web/src/app/scheduling/page.tsx`.
+- Implementação da Server Action `getSessionBySlotAction` para resolver a dependência `timeSlot → session`, retornando a `sessionId` ativa correspondente ao slot selecionado.
+- Implementação de estratégia de mocks condicionais de desenvolvimento nas Server Actions `getAvailableSlotsAction`, `getSessionBySlotAction` e `scheduleSessionAction` para permitir homologação visual sem banco de dados ativo.
+- Implementação de Bottom Sheet responsivo para mobile (abaixo do breakpoint `md`), apresentando o formulário de agendamento diretamente ao fundo da tela após seleção do horário.
+- Controle de scroll bloqueado no `document.body` via `useEffect` enquanto o Bottom Sheet estiver ativo.
+- Estado de confirmação visual de agendamento bem-sucedido no `SchedulingForm` (card verde com mensagem e botão de retorno).
+
+### Homologado
+
+- Desktop: Layout de duas colunas funcionando corretamente sem regressões visuais.
+- Mobile: Bottom Sheet ativado ao selecionar horário, com scroll bloqueado, formulário acessível e todos os estados (loading, formulário, erro, sucesso) validados.
+- Fluxo completo de ponta a ponta validado com mocks: seleção → formulário → loading → sucesso → retorno.
+- Cenários de erro de negócio (`error@example.com` e `duplicate@example.com`) validados visualmente.

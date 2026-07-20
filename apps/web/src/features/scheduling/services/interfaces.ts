@@ -1,4 +1,4 @@
-import { Participant, TimeSlot } from '../repositories/interfaces';
+import { Participant, TimeSlot, Session } from '../repositories/interfaces';
 
 export interface ISchedulingService {
   getAvailableSlots(): Promise<TimeSlot[]>;
@@ -9,4 +9,5 @@ export interface ISchedulingService {
     sessionId: string,
     timeSlotId: string,
   ): Promise<Participant>;
+  getOpenSessionsBySlot(timeSlotId: string): Promise<Session[]>;
 }

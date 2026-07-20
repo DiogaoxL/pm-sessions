@@ -4,6 +4,7 @@ import {
   IParticipantRepository,
   Participant,
   TimeSlot,
+  Session,
 } from '../repositories/interfaces';
 import { ISchedulingService } from './interfaces';
 
@@ -73,5 +74,9 @@ export class SchedulingService implements ISchedulingService {
       await this.sessionRepository.decrementParticipants(sessionId);
       throw error;
     }
+  }
+
+  async getOpenSessionsBySlot(timeSlotId: string): Promise<Session[]> {
+    return this.sessionRepository.findOpenSessionsByTimeSlot(timeSlotId);
   }
 }

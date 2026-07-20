@@ -62,7 +62,7 @@ export function TimeSlotList({ slots, selectedSlotId, onSelect }: TimeSlotListPr
     <div className="w-full space-y-8">
       {groupedSlots.map((group) => (
         <section key={group.date} className="space-y-4">
-          <h3 className="text-base font-semibold text-gray-700 border-b border-gray-100 pb-2">
+          <h3 className="text-base font-semibold text-gray-700 dark:text-gray-200 border-b border-gray-100 dark:border-gray-800 pb-2">
             {formatHeaderDate(group.date)}
           </h3>
 

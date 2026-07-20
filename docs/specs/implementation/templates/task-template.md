@@ -43,6 +43,34 @@
 
 [Instruções de testes unitários ou comandos específicos]
 
+# Seção Visual e Homologação (Obrigatório para Tasks com UI)
+
+### Fluxo de Homologação Visual
+
+[Descrever como validar visualmente cada estado do componente/tela na interface gráfica:
+
+- Estado Inicial
+- Loading State
+- Sucesso
+- Erro
+- Cancelamento (se houver)
+  Garantir que toda interação tenha resposta visual clara, sem travamentos ou loaders infinitos.]
+
+### Estratégia de Mock para Desenvolvimento
+
+[Caso dependa de integrações ou banco de dados indisponíveis, documentar:
+
+- Como os mocks de desenvolvimento funcionarão localmente.
+- Dados simulados necessários.
+- Cenários para forçar fluxo de sucesso e de erro (ex: e-mails específicos que disparam erros de negócio).
+- Como remover os mocks quando a integração definitiva estiver pronta.]
+
+### Jornada Completa do Usuário
+
+[Mapear a jornada de homologação visual contínua da task:
+Entrar (abrir rota) -> Visualizar -> Interagir -> Receber Resposta -> Concluir
+Se houver dependência externa inexistente, descrever a estratégia temporária adotada.]
+
 # Rollback
 
 [Plano de reversão de código ou dados]
@@ -56,6 +84,7 @@
 - [ ] Compila sem erros de tipagem.
 - [ ] Lint estático aprovado.
 - [ ] Testes executados com sucesso.
+- [ ] (Se possuir UI) Rota navegável acessível e fluxo manual visual homologado com 100% de sucesso.
 
 # Commits sugeridos
 
