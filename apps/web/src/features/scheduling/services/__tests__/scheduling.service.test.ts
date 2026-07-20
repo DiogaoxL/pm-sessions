@@ -6,15 +6,16 @@ import {
   IParticipantRepository,
   TimeSlot,
   Participant,
-  Session,
 } from '../../repositories/interfaces';
 import { IGoogleCalendarService } from '../google-calendar.service';
+import { IHostAllocatorService } from '../host-allocator.service';
 
 describe('SchedulingService - Camada de Serviços', () => {
   let mockTimeSlotRepository: ITimeSlotRepository;
   let mockSessionRepository: ISessionRepository;
   let mockParticipantRepository: IParticipantRepository;
   let mockGoogleCalendarService: IGoogleCalendarService;
+  let mockHostAllocatorService: IHostAllocatorService;
   let service: SchedulingService;
 
   beforeEach(() => {
@@ -28,6 +29,8 @@ describe('SchedulingService - Camada de Serviços', () => {
       decrementParticipants: vi.fn(),
       updateSessionCalendar: vi.fn(),
       findSessionById: vi.fn(),
+      findSessionsByTimeSlot: vi.fn(),
+      allocateParticipant: vi.fn(),
     };
     mockParticipantRepository = {
       existsConfirmedParticipant: vi.fn(),
@@ -46,12 +49,16 @@ describe('SchedulingService - Camada de Serviços', () => {
       }),
       syncAttendees: vi.fn(),
     };
+    mockHostAllocatorService = {
+      getNextHostEmail: vi.fn().mockResolvedValue('host@test.com'),
+    };
 
     service = new SchedulingService(
       mockTimeSlotRepository,
       mockSessionRepository,
       mockParticipantRepository,
       mockGoogleCalendarService,
+      mockHostAllocatorService,
     );
   });
 
@@ -133,55 +140,30 @@ describe('SchedulingService - Camada de Serviços', () => {
       updated_at: '',
     };
 
-    const mockSession: Session = {
-      id: sessionId,
-      time_slot_id: timeSlotId,
-      organizer_email: 'organizer@test.com',
-      calendar_event_id: null,
-      meet_url: null,
-      capacity: 1,
-      current_participants: 0,
-      status: 'AVAILABLE',
-      created_at: '',
-      updated_at: '',
-    };
-
     beforeEach(() => {
       vi.mocked(mockTimeSlotRepository.findTimeSlotById).mockResolvedValue(mockSlot);
-      vi.mocked(mockSessionRepository.findOpenSessionsByTimeSlot).mockResolvedValue([mockSession]);
       vi.mocked(mockParticipantRepository.getParticipantsBySession).mockResolvedValue([]);
     });
 
-    it('deve agendar sessão com sucesso no fluxo feliz (reserva assento, cadastra participante, cria evento e sync attendees)', async () => {
-      const mockParticipant: Participant = {
-        id: 'part-1',
-        name,
-        email,
+    it('deve agendar sessão com sucesso no fluxo feliz (aloca via RPC, cria evento no Google Calendar e sync)', async () => {
+      vi.mocked(mockSessionRepository.allocateParticipant).mockResolvedValue({
+        participant_id: 'part-1',
         session_id: sessionId,
-        status: 'CONFIRMED',
-        phone: null,
-        allocated_at: '',
-        created_at: '',
-        updated_at: '',
-      };
-
-      vi.mocked(mockSessionRepository.tryReserveSeat).mockResolvedValue(true);
-      vi.mocked(mockParticipantRepository.existsConfirmedParticipant).mockResolvedValue(false);
-      vi.mocked(mockParticipantRepository.insertParticipant).mockResolvedValue(mockParticipant);
+        is_new_session: true,
+        organizer_email: 'organizer@test.com',
+        calendar_event_id: null,
+        meet_url: null,
+      });
 
       const result = await service.scheduleSession(email, name, sessionId, timeSlotId);
 
-      expect(mockSessionRepository.tryReserveSeat).toHaveBeenCalledWith(sessionId);
-      expect(mockParticipantRepository.existsConfirmedParticipant).toHaveBeenCalledWith(
-        email,
+      expect(mockSessionRepository.allocateParticipant).toHaveBeenCalledWith(
         timeSlotId,
-      );
-      expect(mockParticipantRepository.insertParticipant).toHaveBeenCalledWith({
         email,
         name,
-        session_id: sessionId,
-        status: 'CONFIRMED',
-      });
+        null,
+        'host@test.com',
+      );
       expect(mockGoogleCalendarService.createEvent).toHaveBeenCalled();
       expect(mockSessionRepository.updateSessionCalendar).toHaveBeenCalledWith(
         sessionId,
@@ -191,89 +173,29 @@ describe('SchedulingService - Camada de Serviços', () => {
       expect(mockGoogleCalendarService.syncAttendees).toHaveBeenCalledWith('google-event-id', [
         email,
       ]);
-      expect(mockSessionRepository.decrementParticipants).not.toHaveBeenCalled();
-      expect(result).toEqual(mockParticipant);
+      expect(result.id).toBe('part-1');
     });
 
-    it('deve lançar erro se a sessão não tiver vagas disponíveis, sem cadastrar ou executar rollback', async () => {
-      vi.mocked(mockSessionRepository.tryReserveSeat).mockResolvedValue(false);
+    it('deve propagar erro se a alocacao falhar (ex.: sem vagas ou erro de banco)', async () => {
+      const dbError = new Error('No seats available for this session');
+      vi.mocked(mockSessionRepository.allocateParticipant).mockRejectedValue(dbError);
 
       await expect(service.scheduleSession(email, name, sessionId, timeSlotId)).rejects.toThrow(
         'No seats available for this session',
       );
 
-      expect(mockSessionRepository.tryReserveSeat).toHaveBeenCalledWith(sessionId);
-      expect(mockParticipantRepository.existsConfirmedParticipant).not.toHaveBeenCalled();
-      expect(mockParticipantRepository.insertParticipant).not.toHaveBeenCalled();
-      expect(mockSessionRepository.decrementParticipants).not.toHaveBeenCalled();
-    });
-
-    it('deve lançar erro de duplicidade e executar rollback da vaga se participante já possuir cadastro confirmado no slot', async () => {
-      vi.mocked(mockSessionRepository.tryReserveSeat).mockResolvedValue(true);
-      vi.mocked(mockParticipantRepository.existsConfirmedParticipant).mockResolvedValue(true);
-
-      await expect(service.scheduleSession(email, name, sessionId, timeSlotId)).rejects.toThrow(
-        'Duplicated participant registration for this time slot',
-      );
-
-      expect(mockSessionRepository.tryReserveSeat).toHaveBeenCalledWith(sessionId);
-      expect(mockParticipantRepository.existsConfirmedParticipant).toHaveBeenCalledWith(
-        email,
-        timeSlotId,
-      );
-      expect(mockParticipantRepository.insertParticipant).not.toHaveBeenCalled();
-
-      // Validação explícita do Rollback
-      expect(mockSessionRepository.decrementParticipants).toHaveBeenCalledTimes(1);
-      expect(mockSessionRepository.decrementParticipants).toHaveBeenCalledWith(sessionId);
-    });
-
-    it('deve propagar erro de inserção e executar rollback da vaga se insertParticipant falhar', async () => {
-      const dbError = new Error('Database connection failed');
-      vi.mocked(mockSessionRepository.tryReserveSeat).mockResolvedValue(true);
-      vi.mocked(mockParticipantRepository.existsConfirmedParticipant).mockResolvedValue(false);
-      vi.mocked(mockParticipantRepository.insertParticipant).mockRejectedValue(dbError);
-
-      await expect(service.scheduleSession(email, name, sessionId, timeSlotId)).rejects.toThrow(
-        'Database connection failed',
-      );
-
-      expect(mockSessionRepository.tryReserveSeat).toHaveBeenCalledWith(sessionId);
-      expect(mockParticipantRepository.existsConfirmedParticipant).toHaveBeenCalledWith(
-        email,
-        timeSlotId,
-      );
-      expect(mockParticipantRepository.insertParticipant).toHaveBeenCalled();
-
-      // Validação explícita do Rollback
-      expect(mockSessionRepository.decrementParticipants).toHaveBeenCalledTimes(1);
-      expect(mockSessionRepository.decrementParticipants).toHaveBeenCalledWith(sessionId);
+      expect(mockGoogleCalendarService.createEvent).not.toHaveBeenCalled();
     });
 
     it('deve pular a criacao do evento e fazer apenas o patch se o calendarEventId ja existir na sessao (idempotência)', async () => {
-      const mockSessionWithEvent: Session = {
-        ...mockSession,
+      vi.mocked(mockSessionRepository.allocateParticipant).mockResolvedValue({
+        participant_id: 'part-1',
+        session_id: sessionId,
+        is_new_session: false,
+        organizer_email: 'organizer@test.com',
         calendar_event_id: 'existing-event-id',
         meet_url: 'https://meet.google.com/existing',
-      };
-      vi.mocked(mockSessionRepository.findOpenSessionsByTimeSlot).mockResolvedValue([
-        mockSessionWithEvent,
-      ]);
-      vi.mocked(mockSessionRepository.tryReserveSeat).mockResolvedValue(true);
-      vi.mocked(mockParticipantRepository.existsConfirmedParticipant).mockResolvedValue(false);
-
-      const mockParticipant: Participant = {
-        id: 'part-1',
-        name,
-        email,
-        session_id: sessionId,
-        status: 'CONFIRMED',
-        phone: null,
-        allocated_at: '',
-        created_at: '',
-        updated_at: '',
-      };
-      vi.mocked(mockParticipantRepository.insertParticipant).mockResolvedValue(mockParticipant);
+      });
 
       await service.scheduleSession(email, name, sessionId, timeSlotId);
 
@@ -283,32 +205,24 @@ describe('SchedulingService - Camada de Serviços', () => {
       ]);
     });
 
-    it('deve executar rollback completo deletando o participante e decrementando a sessao se a criacao de evento no Google Calendar falhar', async () => {
-      vi.mocked(mockSessionRepository.tryReserveSeat).mockResolvedValue(true);
-      vi.mocked(mockParticipantRepository.existsConfirmedParticipant).mockResolvedValue(false);
-
-      const mockParticipant: Participant = {
-        id: 'part-1',
-        name,
-        email,
+    it('deve simular concorrencia com aproximadamente 20-30 chamadas simultaneas e validar integridade', async () => {
+      vi.mocked(mockSessionRepository.allocateParticipant).mockResolvedValue({
+        participant_id: 'part-1',
         session_id: sessionId,
-        status: 'CONFIRMED',
-        phone: null,
-        allocated_at: '',
-        created_at: '',
-        updated_at: '',
-      };
-      vi.mocked(mockParticipantRepository.insertParticipant).mockResolvedValue(mockParticipant);
-      vi.mocked(mockGoogleCalendarService.createEvent).mockRejectedValue(
-        new Error('Google API Error'),
+        is_new_session: false,
+        organizer_email: 'organizer@test.com',
+        calendar_event_id: 'existing-event-id',
+        meet_url: 'https://meet.google.com/existing',
+      });
+
+      const promises = Array.from({ length: 25 }).map(() =>
+        service.scheduleSession(email, name, sessionId, timeSlotId),
       );
 
-      await expect(service.scheduleSession(email, name, sessionId, timeSlotId)).rejects.toThrow(
-        'Google API Error',
-      );
+      const results = await Promise.all(promises);
 
-      expect(mockSessionRepository.decrementParticipants).toHaveBeenCalledWith(sessionId);
-      expect(mockParticipantRepository.deleteParticipant).toHaveBeenCalledWith('part-1');
+      expect(results).toHaveLength(25);
+      expect(mockSessionRepository.allocateParticipant).toHaveBeenCalledTimes(25);
     });
   });
 

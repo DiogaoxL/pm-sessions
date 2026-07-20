@@ -7,8 +7,8 @@
 ## Status Geral
 
 - **Feature**: 003 - Session Allocation
-- **Status**: `Planejamento`
-- **Responsável**: —
+- **Status**: `Planejamento Operacional Aprovado`
+- **Responsável**: Lead Engineer / Product Agent
 
 ## Progresso Geral
 
@@ -18,11 +18,11 @@
 
 ## Release Candidates
 
-- **RC-1**: Algoritmo de Alocação Round-Robin
+- **RC-1**: Algoritmo de Alocação Round-Robin (0% concluído)
 
 ## Próxima Task
 
-A definir.
+- **RC-1 Task 01**: Modelagem e Consultas de Alocação de Sessão
 
 ## Bloqueios
 
@@ -30,4 +30,4 @@ Nenhum bloqueio registrado.
 
 ## Última Atualização
 
-- 2026-07-18
+- 2026-07-20 (Estrutura da RC-1 gerada e pronta para desenvolvimento)

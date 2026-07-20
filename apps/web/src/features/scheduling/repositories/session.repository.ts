@@ -121,4 +121,62 @@ export class SessionRepository implements ISessionRepository {
 
     return data;
   }
+
+  async findSessionsByTimeSlot(timeSlotId: string): Promise<Session[]> {
+    const { data, error } = await this.supabase
+      .from('sessions')
+      .select('*')
+      .eq('time_slot_id', timeSlotId)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      throw error;
+    }
+
+    return data || [];
+  }
+
+  async allocateParticipant(
+    timeSlotId: string,
+    email: string,
+    name: string,
+    phone: string | null,
+    organizerEmail: string,
+  ): Promise<{
+    participant_id: string;
+    session_id: string;
+    is_new_session: boolean;
+    organizer_email: string;
+    calendar_event_id: string | null;
+    meet_url: string | null;
+  }> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (this.supabase as any).rpc('allocate_participant', {
+      p_time_slot_id: timeSlotId,
+      p_email: email,
+      p_name: name,
+      p_phone: phone,
+      p_organizer_email: organizerEmail,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rows = data as any[];
+    if (!rows || rows.length === 0) {
+      throw new Error('Allocation returned empty result');
+    }
+
+    const result = rows[0];
+    return {
+      participant_id: result.participant_id,
+      session_id: result.session_id,
+      is_new_session: result.is_new_session,
+      organizer_email: result.organizer_email,
+      calendar_event_id: result.calendar_event_id,
+      meet_url: result.meet_url,
+    };
+  }
 }

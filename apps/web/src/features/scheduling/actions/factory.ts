@@ -4,6 +4,7 @@ import { TimeSlotRepository } from '../repositories/time-slot.repository';
 import { SessionRepository } from '../repositories/session.repository';
 import { ParticipantRepository } from '../repositories/participant.repository';
 import { GoogleCalendarService } from '../services/google-calendar.service';
+import { HostAllocatorService } from '../services/host-allocator.service';
 
 /**
  * Factory to dynamically instantiate the SchedulingService
@@ -16,11 +17,13 @@ export async function getSchedulingService(): Promise<SchedulingService> {
   const sessionRepository = new SessionRepository(supabase);
   const participantRepository = new ParticipantRepository(supabase);
   const googleCalendarService = new GoogleCalendarService();
+  const hostAllocator = new HostAllocatorService(supabase);
 
   return new SchedulingService(
     timeSlotRepository,
     sessionRepository,
     participantRepository,
     googleCalendarService,
+    hostAllocator,
   );
 }

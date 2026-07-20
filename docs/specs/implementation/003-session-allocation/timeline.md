@@ -4,15 +4,20 @@
 
 ---
 
+## Ordem Cronológica de Desenvolvimento (RC-1)
+
 ```text
-Planejamento
+Task 01: Modelagem e Consultas de Alocação de Sessão (Repositórios)
      │
      ▼
-RC-1 (Algoritmo de Alocação Round-Robin)
+Task 02: Algoritmo de Alocação e Abertura Sequencial (Negócio)
      │
      ▼
-QA (Testes Manuais/E2E)
+Task 03: Controle de Transação, Idempotência e Concorrência (Consistência)
      │
      ▼
-Produção
+Task 04: Integração Google Calendar e Meet por Sessão (Infraestrutura)
+     │
+     ▼
+Task 05: Orquestração e Validação de Fluxo de Ponta a Ponta (Frontend/Actions)
 ```

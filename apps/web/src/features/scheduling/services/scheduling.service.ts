@@ -8,6 +8,7 @@ import {
 } from '../repositories/interfaces';
 import { ISchedulingService } from './interfaces';
 import { IGoogleCalendarService } from './google-calendar.service';
+import { IHostAllocatorService } from './host-allocator.service';
 
 export class SchedulingService implements ISchedulingService {
   constructor(
@@ -15,6 +16,7 @@ export class SchedulingService implements ISchedulingService {
     private sessionRepository: ISessionRepository,
     private participantRepository: IParticipantRepository,
     private googleCalendarService: IGoogleCalendarService,
+    private hostAllocator: IHostAllocatorService,
   ) {}
 
   async getAvailableSlots(): Promise<TimeSlot[]> {
@@ -93,69 +95,65 @@ export class SchedulingService implements ISchedulingService {
     sessionId: string,
     timeSlotId: string,
   ): Promise<Participant> {
-    const seatReserved = await this.reserveSeat(sessionId);
-    if (!seatReserved) {
-      throw new Error('No seats available for this session');
+    const organizerEmail = await this.hostAllocator.getNextHostEmail();
+
+    const allocation = await this.sessionRepository.allocateParticipant(
+      timeSlotId,
+      email,
+      name,
+      null,
+      organizerEmail,
+    );
+
+    const slot = await this.timeSlotRepository.findTimeSlotById(timeSlotId);
+    if (!slot) {
+      throw new Error('Time slot details not found');
     }
 
-    let participant: Participant | null = null;
-    try {
-      participant = await this.registerParticipant(email, name, sessionId, timeSlotId);
+    let calendarEventId = allocation.calendar_event_id;
+    let meetUrl = allocation.meet_url;
 
-      // Orchestrate Google Calendar sync
-      const slot = await this.timeSlotRepository.findTimeSlotById(timeSlotId);
-      if (!slot) {
-        throw new Error('Time slot details not found');
-      }
-
-      // Fetch active sessions to find the current session details
-      const sessions = await this.sessionRepository.findOpenSessionsByTimeSlot(timeSlotId);
-      const targetSession = sessions.find((s) => s.id === sessionId);
-      if (!targetSession) {
-        throw new Error('Session details not found');
-      }
-
-      let calendarEventId = targetSession.calendar_event_id;
-      let meetUrl = targetSession.meet_url;
-
+    if (!calendarEventId) {
       const startDateTime = new Date(`${slot.date}T${slot.start_time}`);
       const endDateTime = new Date(`${slot.date}T${slot.end_time}`);
 
-      // Idempotency check: if event was not created yet
-      if (!calendarEventId) {
-        const eventResult = await this.googleCalendarService.createEvent(
-          `PM Sessions Interview - ${name}`,
-          startDateTime,
-          endDateTime,
-          targetSession.organizer_email,
-        );
-        calendarEventId = eventResult.eventId;
-        meetUrl = eventResult.meetUrl;
+      const eventResult = await this.googleCalendarService.createEvent(
+        `PM Sessions Interview - ${name}`,
+        startDateTime,
+        endDateTime,
+        allocation.organizer_email,
+      );
+      calendarEventId = eventResult.eventId;
+      meetUrl = eventResult.meetUrl;
 
-        await this.sessionRepository.updateSessionCalendar(sessionId, calendarEventId, meetUrl);
-      }
-
-      // Sync attendees list including this participant and other confirmed ones
-      const confirmedParticipants =
-        await this.participantRepository.getParticipantsBySession(sessionId);
-      const emails = Array.from(new Set(confirmedParticipants.map((p) => p.email)));
-      if (!emails.includes(email)) {
-        emails.push(email);
-      }
-
-      await this.googleCalendarService.syncAttendees(calendarEventId, emails);
-
-      return participant;
-    } catch (error) {
-      if (participant) {
-        // Complete rollback: decrement session participants and delete participant record from database
-        await this.sessionRepository.decrementParticipants(sessionId);
-        await this.participantRepository.deleteParticipant(participant.id);
-      } else {
-        await this.sessionRepository.decrementParticipants(sessionId);
-      }
-      throw error;
+      await this.sessionRepository.updateSessionCalendar(
+        allocation.session_id,
+        calendarEventId,
+        meetUrl,
+      );
     }
+
+    const confirmedParticipants = await this.participantRepository.getParticipantsBySession(
+      allocation.session_id,
+    );
+    const emails = Array.from(new Set(confirmedParticipants.map((p) => p.email)));
+    if (!emails.includes(email)) {
+      emails.push(email);
+    }
+
+    await this.googleCalendarService.syncAttendees(calendarEventId!, emails);
+
+    return {
+      id: allocation.participant_id,
+      session_id: allocation.session_id,
+      name,
+      email,
+      phone: null,
+      status: 'CONFIRMED',
+      allocated_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
   }
 
   async getOpenSessionsBySlot(timeSlotId: string): Promise<Session[]> {

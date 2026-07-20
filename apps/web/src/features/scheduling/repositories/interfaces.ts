@@ -48,6 +48,29 @@ export interface ISessionRepository {
    * Busca uma sessão por ID.
    */
   findSessionById(id: string): Promise<Session | null>;
+
+  /**
+   * Busca todas as sessões associadas a um time_slot_id, ordenadas por data de criação.
+   */
+  findSessionsByTimeSlot(timeSlotId: string): Promise<Session[]>;
+
+  /**
+   * Executa a alocação transacional do participante em uma sessão.
+   */
+  allocateParticipant(
+    timeSlotId: string,
+    email: string,
+    name: string,
+    phone: string | null,
+    organizerEmail: string,
+  ): Promise<{
+    participant_id: string;
+    session_id: string;
+    is_new_session: boolean;
+    organizer_email: string;
+    calendar_event_id: string | null;
+    meet_url: string | null;
+  }>;
 }
 
 export interface IParticipantRepository {
