@@ -56,7 +56,11 @@ export function AvailableSlotsContainer({
 
   if (error) {
     return (
-      <div className="w-full p-4 rounded-xl border border-red-200 bg-red-50 text-red-800 text-sm text-center">
+      <div
+        role="alert"
+        aria-live="assertive"
+        className="w-full p-4 rounded-xl border border-red-200 bg-red-50 text-red-800 text-sm text-center"
+      >
         <p className="font-semibold text-base">Não foi possível carregar os horários</p>
         <p className="mt-1 text-red-700">{error}</p>
       </div>

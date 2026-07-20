@@ -59,9 +59,10 @@ export function SchedulingForm({
               }
             });
             setFieldErrors(mappedErrors);
+          } else {
+            setGlobalError(result.error);
           }
 
-          setGlobalError(result.error);
           if (onError) {
             onError(result.error);
           }
@@ -114,7 +115,11 @@ export function SchedulingForm({
     >
       {/* Global Business Error Banner */}
       {globalError && (
-        <div className="p-4 rounded-xl border border-red-200 bg-red-50 text-red-800 text-sm">
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="p-4 rounded-xl border border-red-200 bg-red-50 text-red-800 text-sm"
+        >
           <p className="font-semibold">Não foi possível completar o agendamento</p>
           <p className="mt-1 text-red-700">{globalError}</p>
         </div>
@@ -133,6 +138,9 @@ export function SchedulingForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Seu nome"
+          autoComplete="name"
+          aria-invalid={!!fieldErrors.name}
+          aria-describedby={fieldErrors.name ? 'name-error' : undefined}
           className={cn(
             'w-full px-3.5 py-2 border rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 disabled:bg-gray-50 disabled:text-gray-400',
             fieldErrors.name
@@ -141,7 +149,9 @@ export function SchedulingForm({
           )}
         />
         {fieldErrors.name && (
-          <p className="text-xs text-red-600 mt-1 font-medium">{fieldErrors.name}</p>
+          <p id="name-error" className="text-xs text-red-600 mt-1 font-medium">
+            {fieldErrors.name}
+          </p>
         )}
       </div>
 
@@ -158,6 +168,9 @@ export function SchedulingForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="exemplo@email.com"
+          autoComplete="email"
+          aria-invalid={!!fieldErrors.email}
+          aria-describedby={fieldErrors.email ? 'email-error' : undefined}
           className={cn(
             'w-full px-3.5 py-2 border rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 disabled:bg-gray-50 disabled:text-gray-400',
             fieldErrors.email
@@ -166,7 +179,9 @@ export function SchedulingForm({
           )}
         />
         {fieldErrors.email && (
-          <p className="text-xs text-red-600 mt-1 font-medium">{fieldErrors.email}</p>
+          <p id="email-error" className="text-xs text-red-600 mt-1 font-medium">
+            {fieldErrors.email}
+          </p>
         )}
       </div>
 
@@ -182,6 +197,9 @@ export function SchedulingForm({
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="(00) 00000-0000"
+          autoComplete="tel"
+          aria-invalid={!!fieldErrors.phone}
+          aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
           className={cn(
             'w-full px-3.5 py-2 border rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 disabled:bg-gray-50 disabled:text-gray-400',
             fieldErrors.phone
@@ -190,7 +208,9 @@ export function SchedulingForm({
           )}
         />
         {fieldErrors.phone && (
-          <p className="text-xs text-red-600 mt-1 font-medium">{fieldErrors.phone}</p>
+          <p id="phone-error" className="text-xs text-red-600 mt-1 font-medium">
+            {fieldErrors.phone}
+          </p>
         )}
       </div>
 

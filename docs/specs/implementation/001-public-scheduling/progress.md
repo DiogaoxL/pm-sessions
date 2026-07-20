@@ -71,14 +71,15 @@
 - **RC-4 Task 05**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 24/24 PASS). Situação: Homologada (Integração do SchedulingForm com a Server Action scheduleSessionAction utilizando useTransition para controle de concorrência e gerenciamento de callbacks desacoplados onSuccess e onError).
 - **RC-4 Task 06**: Homologada. Testes: PASS (Typecheck / Lint / Testes - 24/24 PASS). Situação: Homologada (Refinamento do tratamento de erros no formulário de agendamento público, incluindo mapeamento visual de validationErrors do Zod por campo e exibição de banner de erro global para falhas de negócio ou infraestrutura).
 - **RC-4.1 Task 01**: Homologada. Testes: PASS (Vitest / Typecheck / Lint). Situação: Rota `/scheduling` e página criadas no App Router, com orquestração completa e layout responsivo com Bottom Sheet móvel. Mocks de desenvolvimento condicional de erros e sucesso implementados para homologação funcional.
+- **RC-4.1 Task 02**: Homologada. Testes: PASS (Vitest / Typecheck / Lint). Situação: Resolvidos pontos críticos de a11y (aria-invalid, aria-describedby, role="alert", aria-live="assertive", autoComplete) e UX (separação de erros Zod inline vs. erros globais de negócio).
 
 ---
 
-**RC-4.1 Status: IN PROGRESS (25% concluído) — Início em 2026-07-20**
+**RC-4.1 Status: IN PROGRESS (50% concluído) — Início em 2026-07-20**
 
 | Task                                                                                       | Status | Responsável   | Dependências | Estimativa | Complexidade |
 | ------------------------------------------------------------------------------------------ | ------ | ------------- | ------------ | ---------- | ------------ |
 | [RC-4.1 Task 01: Criar Rota e Página de Agendamento Público](RC-4.1/task-01.md)            | `DONE` | Lead Engineer | RC-4         | 4h         | Média        |
-| [RC-4.1 Task 02: Resolver Acessibilidade (a11y) e UX no Form e Banners](RC-4.1/task-02.md) | `TODO` | Lead Engineer | Task 01      | 3h         | Média        |
+| [RC-4.1 Task 02: Resolver Acessibilidade (a11y) e UX no Form e Banners](RC-4.1/task-02.md) | `DONE` | Lead Engineer | Task 01      | 3h         | Média        |
 | [RC-4.1 Task 03: Implementar Feedback Visual de Sucesso](RC-4.1/task-03.md)                | `TODO` | Lead Engineer | Task 02      | 2h         | Média        |
 | [RC-4.1 Task 04: Smoke Test e Sincronização de Documentação](RC-4.1/task-04.md)            | `TODO` | Lead Engineer | Task 03      | 2h         | Baixa        |
