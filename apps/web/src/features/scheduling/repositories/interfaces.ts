@@ -1,6 +1,8 @@
 import { Database } from '@/shared/types/database';
 
 export type TimeSlot = Database['public']['Tables']['time_slots']['Row'];
+export type TimeSlotInsert = Database['public']['Tables']['time_slots']['Insert'];
+export type TimeSlotUpdate = Database['public']['Tables']['time_slots']['Update'];
 export type Session = Database['public']['Tables']['sessions']['Row'];
 export type Participant = Database['public']['Tables']['participants']['Row'];
 export type ParticipantInsert = Database['public']['Tables']['participants']['Insert'];
@@ -15,6 +17,32 @@ export interface ITimeSlotRepository {
    * Busca um time slot específico por ID.
    */
   findTimeSlotById(id: string): Promise<TimeSlot | null>;
+
+  /**
+   * [Admin] Busca todos os time slots, ordenados cronologicamente.
+   */
+  findAllSlots(): Promise<TimeSlot[]>;
+
+  /**
+   * [Admin] Cria um novo time slot.
+   */
+  createTimeSlot(data: Omit<TimeSlotInsert, 'id' | 'created_at' | 'updated_at'>): Promise<TimeSlot>;
+
+  /**
+   * [Admin] Atualiza um time slot existente por ID.
+   */
+  updateTimeSlot(id: string, data: TimeSlotUpdate): Promise<TimeSlot>;
+
+  /**
+   * [Admin] Altera o status do slot para CLOSED.
+   */
+  closeTimeSlot(id: string): Promise<TimeSlot>;
+
+  /**
+   * [Admin] Verifica se um slot possui sessões com participantes ativos (CONFIRMED).
+   * Retorna true se houver ao menos um participante ativo.
+   */
+  hasActiveParticipants(id: string): Promise<boolean>;
 }
 
 export interface ISessionRepository {
@@ -71,6 +99,11 @@ export interface ISessionRepository {
     calendar_event_id: string | null;
     meet_url: string | null;
   }>;
+
+  /**
+   * [Admin] Atualiza a capacidade máxima de uma sessão e ajusta seu status.
+   */
+  updateSessionCapacity(sessionId: string, newCapacity: number): Promise<Session>;
 }
 
 export interface IParticipantRepository {
@@ -103,4 +136,9 @@ export interface IParticipantRepository {
    * Exclui o registro de um participante do banco.
    */
   deleteParticipant(id: string): Promise<void>;
+
+  /**
+   * [Admin] Move o participante para outra sessão (atualiza session_id).
+   */
+  updateParticipantSessionId(id: string, sessionId: string): Promise<Participant>;
 }

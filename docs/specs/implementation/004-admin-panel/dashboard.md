@@ -7,8 +7,8 @@
 ## Status Geral
 
 - **Feature**: 004 - Admin Panel
-- **Status**: `Planejamento`
-- **Responsável**: —
+- **Status**: `Planejamento Operacional Aprovado`
+- **Responsável**: Lead Product Agent
 
 ## Progresso Geral
 
@@ -18,11 +18,11 @@
 
 ## Release Candidates
 
-- **RC-1**: Dashboard Administrativo
+- **RC-1**: Painel Administrativo — Core e Operações (0% concluído)
 
 ## Próxima Task
 
-A definir.
+- **RC-1 Task 01**: Proteção de Rotas e Middleware Administrativo
 
 ## Bloqueios
 
@@ -30,4 +30,4 @@ Nenhum bloqueio registrado.
 
 ## Última Atualização
 
-- 2026-07-18
+- 2026-07-20 (Estrutura do plano de implementação operacional gerada e pronta)

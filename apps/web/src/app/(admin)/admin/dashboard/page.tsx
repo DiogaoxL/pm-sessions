@@ -1,6 +1,9 @@
 import { createServerClient } from '@/shared/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { LogoutButton } from '@/features/auth/components/logout-button';
+import { AdminStatsCards } from '@/features/admin/components/admin-stats-cards';
+import { AdminTimeSlotList } from '@/features/admin/components/admin-time-slot-list';
+import { AdminDashboardRepository } from '@/features/admin/repositories/admin-dashboard.repository';
 
 export const metadata = {
   title: 'Dashboard - PM Sessions',
@@ -24,6 +27,13 @@ export default async function DashboardPage() {
     .eq('auth_user_id', user.id)
     .maybeSingle();
 
+  const dashboardRepo = new AdminDashboardRepository(supabase);
+
+  const [stats, slotsWithSessions] = await Promise.all([
+    dashboardRepo.getDashboardStats(),
+    dashboardRepo.getTimeSlotsWithSessions(),
+  ]);
+
   return (
     <div className="flex flex-col flex-1 bg-neutral-950 text-white min-h-screen">
       {/* Header */}
@@ -46,25 +56,18 @@ export default async function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-12 flex flex-col gap-8">
-        <div className="p-8 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-xl flex flex-col gap-4">
-          <h1 className="text-3xl font-bold tracking-tight">Bem-vindo à Fundação 004!</h1>
-          <p className="text-neutral-400 max-w-2xl leading-relaxed">
-            A infraestrutura de autenticação via Supabase SSR, cookies, Google OAuth e segurança de
-            nível de linha (RLS) foi configurada e validada com sucesso.
-          </p>
-          <div className="flex flex-wrap gap-4 mt-4">
-            <div className="px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm">
-              Sessão persistida em Cookies SSR
-            </div>
-            <div className="px-4 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
-              Mapeamento de Administrador Concluído
-            </div>
-            <div className="px-4 py-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm">
-              Políticas de RLS Ativas
-            </div>
-          </div>
-        </div>
+      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-10 flex flex-col gap-10">
+        {/* Stats */}
+        <section>
+          <h1 className="text-2xl font-bold tracking-tight mb-5">Visão Geral</h1>
+          <AdminStatsCards stats={stats} />
+        </section>
+
+        {/* Time Slots and Sessions */}
+        <section>
+          <h2 className="text-xl font-semibold tracking-tight mb-5">Time Slots e Sessões</h2>
+          <AdminTimeSlotList slots={slotsWithSessions} />
+        </section>
       </main>
     </div>
   );

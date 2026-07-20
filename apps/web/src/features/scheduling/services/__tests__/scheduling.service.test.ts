@@ -22,6 +22,11 @@ describe('SchedulingService - Camada de Serviços', () => {
     mockTimeSlotRepository = {
       selectAvailableSlots: vi.fn(),
       findTimeSlotById: vi.fn(),
+      findAllSlots: vi.fn(),
+      createTimeSlot: vi.fn(),
+      updateTimeSlot: vi.fn(),
+      closeTimeSlot: vi.fn(),
+      hasActiveParticipants: vi.fn(),
     };
     mockSessionRepository = {
       findOpenSessionsByTimeSlot: vi.fn(),
@@ -31,6 +36,7 @@ describe('SchedulingService - Camada de Serviços', () => {
       findSessionById: vi.fn(),
       findSessionsByTimeSlot: vi.fn(),
       allocateParticipant: vi.fn(),
+      updateSessionCapacity: vi.fn(),
     };
     mockParticipantRepository = {
       existsConfirmedParticipant: vi.fn(),
@@ -39,6 +45,7 @@ describe('SchedulingService - Camada de Serviços', () => {
       findParticipantById: vi.fn(),
       updateParticipantStatus: vi.fn(),
       deleteParticipant: vi.fn(),
+      updateParticipantSessionId: vi.fn(),
     };
     mockGoogleCalendarService = {
       checkAvailability: vi.fn(),

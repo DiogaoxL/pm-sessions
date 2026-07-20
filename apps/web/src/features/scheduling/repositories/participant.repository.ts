@@ -91,4 +91,22 @@ export class ParticipantRepository implements IParticipantRepository {
       throw error;
     }
   }
+
+  /**
+   * [Admin] Move o participante para outra sessão, atualizando seu session_id.
+   */
+  async updateParticipantSessionId(id: string, sessionId: string): Promise<Participant> {
+    const { data, error } = await this.supabase
+      .from('participants')
+      .update({ session_id: sessionId })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
 }

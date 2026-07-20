@@ -179,4 +179,35 @@ export class SessionRepository implements ISessionRepository {
       meet_url: result.meet_url,
     };
   }
+
+  /**
+   * [Admin] Atualiza a capacidade de uma sessão e recalcula o status com base na ocupação atual.
+   */
+  async updateSessionCapacity(sessionId: string, newCapacity: number): Promise<Session> {
+    const { data: current, error: fetchError } = await this.supabase
+      .from('sessions')
+      .select('current_participants')
+      .eq('id', sessionId)
+      .single();
+
+    if (fetchError || !current) {
+      throw fetchError ?? new Error(`Session ${sessionId} not found`);
+    }
+
+    const newStatus: Session['status'] =
+      current.current_participants >= newCapacity ? 'FULL' : 'AVAILABLE';
+
+    const { data: updated, error: updateError } = await this.supabase
+      .from('sessions')
+      .update({ capacity: newCapacity, status: newStatus })
+      .eq('id', sessionId)
+      .select()
+      .single();
+
+    if (updateError || !updated) {
+      throw updateError ?? new Error('Failed to update session capacity');
+    }
+
+    return updated;
+  }
 }

@@ -1,6 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/shared/types/database';
-import { ITimeSlotRepository, TimeSlot } from './interfaces';
+import { ITimeSlotRepository, TimeSlot, TimeSlotInsert, TimeSlotUpdate } from './interfaces';
 
 export class TimeSlotRepository implements ITimeSlotRepository {
   constructor(private supabase: SupabaseClient<Database>) {}
@@ -60,5 +60,83 @@ export class TimeSlotRepository implements ITimeSlotRepository {
     }
 
     return data;
+  }
+
+  /**
+   * [Admin] Busca todos os time slots, ordenados cronologicamente (sem filtro de status).
+   */
+  async findAllSlots(): Promise<TimeSlot[]> {
+    const { data, error } = await this.supabase
+      .from('time_slots')
+      .select('*')
+      .order('date', { ascending: true })
+      .order('start_time', { ascending: true });
+
+    if (error) {
+      throw error;
+    }
+
+    return data || [];
+  }
+
+  /**
+   * [Admin] Cria um novo time slot e retorna o registro criado.
+   */
+  async createTimeSlot(
+    data: Omit<TimeSlotInsert, 'id' | 'created_at' | 'updated_at'>,
+  ): Promise<TimeSlot> {
+    const { data: created, error } = await this.supabase
+      .from('time_slots')
+      .insert(data)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return created;
+  }
+
+  /**
+   * [Admin] Atualiza campos de um time slot existente e retorna o registro atualizado.
+   */
+  async updateTimeSlot(id: string, data: TimeSlotUpdate): Promise<TimeSlot> {
+    const { data: updated, error } = await this.supabase
+      .from('time_slots')
+      .update(data)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return updated;
+  }
+
+  /**
+   * [Admin] Fecha o time slot (status = 'CLOSED') e retorna o registro atualizado.
+   */
+  async closeTimeSlot(id: string): Promise<TimeSlot> {
+    return this.updateTimeSlot(id, { status: 'CLOSED' });
+  }
+
+  /**
+   * [Admin] Verifica se o slot possui ao menos um participante CONFIRMED em qualquer de suas sessões.
+   */
+  async hasActiveParticipants(id: string): Promise<boolean> {
+    const { count, error } = await this.supabase
+      .from('participants')
+      .select('id, sessions!inner(time_slot_id)', { count: 'exact', head: true })
+      .eq('sessions.time_slot_id', id)
+      .eq('status', 'CONFIRMED');
+
+    if (error) {
+      throw error;
+    }
+
+    return (count ?? 0) > 0;
   }
 }

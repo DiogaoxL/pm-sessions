@@ -8,5 +8,6 @@ export const ROUTES = {
     afterLogin: '/admin/dashboard',
     afterLogout: '/login',
     unauthorized: '/login?error=unauthorized',
+    forbidden: '/?error=forbidden',
   },
 } as const;

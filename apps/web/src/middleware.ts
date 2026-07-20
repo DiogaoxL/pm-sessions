@@ -37,6 +37,9 @@ export async function middleware(request: NextRequest) {
 
   const isProtectedRoute = ROUTES.protected.some((route) => pathname.startsWith(route));
   const isAuthRoute = ROUTES.auth.some((route) => pathname.startsWith(route));
+  const isAdminRoute = pathname.startsWith('/admin');
+  // Prevent redirect loops: the forbidden page is not an admin route guard target
+  const isForbiddenPage = pathname === '/';
 
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
@@ -48,6 +51,30 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = ROUTES.redirects.afterLogin;
     return NextResponse.redirect(url);
+  }
+
+  // Admin route guard: verify the user has the 'admin' role in the admins table.
+  // Only applies to /admin/* routes and not to the forbidden landing page to prevent loops.
+  if (user && isAdminRoute && !isForbiddenPage) {
+    const { data: adminRecord } = await supabase
+      .from('admins')
+      .select('role')
+      .eq('auth_user_id', user.id)
+      .maybeSingle();
+
+    const isAdmin = adminRecord?.role === 'admin' || adminRecord?.role === 'super_admin';
+
+    if (!isAdmin) {
+      console.warn('[middleware] Access denied to admin route', {
+        pathname,
+        userId: user.id,
+        adminRecord,
+      });
+      const url = request.nextUrl.clone();
+      url.pathname = '/';
+      url.search = '?error=forbidden';
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;

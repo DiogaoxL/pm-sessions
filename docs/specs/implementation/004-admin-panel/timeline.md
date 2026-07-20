@@ -4,15 +4,20 @@
 
 ---
 
+## Ordem Cronológica de Desenvolvimento (RC-1)
+
 ```text
-Planejamento
+Task 01: Proteção de Rotas e Middleware Administrativo (Segurança)
      │
      ▼
-RC-1 (Dashboard Administrativo)
+Task 02: Gerenciamento Administrativo de Time Slots (Dados/CRUD)
      │
      ▼
-QA (Testes Manuais/E2E)
+Task 03: Visualização do Dashboard e Listagens (Frontend/Interface)
      │
      ▼
-Produção
+Task 04: Regras de Negócio e Modificação de Participantes (Backend/Negócio)
+     │
+     ▼
+Task 05: Sincronização Automática com Google Calendar (Integração/API)
 ```
