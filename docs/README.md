@@ -94,7 +94,11 @@ docs/
 ├── architecture.md
 ├── architecture-decisions.md
 ├── business-context-lite.md
-└── technical-context-lite.md
+├── technical-context-lite.md
+├── onion-cycles.md
+└── development/
+    ├── sprint-2-Kickoff.md
+    └── sprint-2-closing-report.md
 ```
 
 ---
@@ -115,6 +119,8 @@ A documentação do projeto está organizada em camadas.
 | docs/product      | Documentos estratégicos do produto  |
 | Sessions          | Registro de sessões                 |
 | Design            | Documentos de design                |
+| Onion Cycles      | Ciclos de desenvolvimento Onion     |
+| Sprint 2 Report   | Relatório de fechamento da Sprint 2 |
 
 ---
 
