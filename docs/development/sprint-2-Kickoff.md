@@ -95,7 +95,7 @@ Usuário consegue visualizar horários disponíveis.
 
 Status:
 
-⬜ Não iniciado
+✅ Concluído
 
 ---
 
@@ -115,7 +115,7 @@ Horários reais retornam da API.
 
 Status:
 
-⬜ Não iniciado
+✅ Concluído
 
 ---
 
@@ -135,7 +135,7 @@ Evento criado com Meet.
 
 Status:
 
-⬜ Não iniciado
+✅ Concluído
 
 ---
 
@@ -155,7 +155,7 @@ Administrador consegue visualizar sessões.
 
 Status:
 
-⬜ Não iniciado
+✅ Concluído
 
 ---
 
@@ -175,7 +175,7 @@ Participantes cadastrados automaticamente.
 
 Status:
 
-⬜ Não iniciado
+✅ Concluído
 
 ---
 
@@ -195,7 +195,7 @@ Arquivo CSV gerado.
 
 Status:
 
-⬜ Não iniciado
+⬜ Não iniciado (Postergado para a Sprint 3)
 
 ---
 

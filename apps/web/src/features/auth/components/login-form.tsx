@@ -3,15 +3,36 @@
 import { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { signInWithGoogle } from '../actions/sign-in-with-google';
+import { useSearchParams } from 'next/navigation';
 
 export function LoginForm() {
   const [isPending, startTransition] = useTransition();
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get('error');
 
   const handleLogin = () => {
     startTransition(async () => {
       await signInWithGoogle();
     });
   };
+
+  const getErrorMessage = (error: string | null) => {
+    if (!error) return null;
+    switch (error) {
+      case 'unauthorized':
+        return 'Acesso não autorizado. Esta conta de e-mail não está cadastrada como administrador.';
+      case 'forbidden':
+        return 'Acesso negado. Você não possui permissões administrativas para acessar esta área.';
+      case 'server':
+        return 'Ocorreu um erro no servidor durante a autenticação. Por favor, tente novamente.';
+      case 'session_expired':
+        return 'Sua sessão expirou por inatividade. Por favor, faça login novamente.';
+      default:
+        return 'Falha na autenticação. Por favor, tente novamente.';
+    }
+  };
+
+  const errorMessage = getErrorMessage(errorParam);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-900 text-white p-4">
@@ -23,6 +44,15 @@ export function LoginForm() {
           <h1 className="text-2xl font-bold tracking-tight">PM Sessions</h1>
           <p className="text-sm text-neutral-400 mt-2">Área Administrativa</p>
         </div>
+
+        {errorMessage && (
+          <div
+            role="alert"
+            className="w-full mb-6 p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 text-sm text-left font-medium"
+          >
+            {errorMessage}
+          </div>
+        )}
 
         <Button
           onClick={handleLogin}

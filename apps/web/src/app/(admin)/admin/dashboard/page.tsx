@@ -4,6 +4,7 @@ import { LogoutButton } from '@/features/auth/components/logout-button';
 import { AdminStatsCards } from '@/features/admin/components/admin-stats-cards';
 import { AdminTimeSlotList } from '@/features/admin/components/admin-time-slot-list';
 import { AdminDashboardRepository } from '@/features/admin/repositories/admin-dashboard.repository';
+import { CalendarAuthBanner } from '@/features/admin/components/calendar-auth-banner';
 
 export const metadata = {
   title: 'Dashboard - PM Sessions',
@@ -57,6 +58,9 @@ export default async function DashboardPage() {
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-10 flex flex-col gap-10">
+        {/* Google Calendar Permission Warn Banner */}
+        <CalendarAuthBanner />
+
         {/* Stats */}
         <section>
           <h1 className="text-2xl font-bold tracking-tight mb-5">Visão Geral</h1>
