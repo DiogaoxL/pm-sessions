@@ -25,14 +25,14 @@ export async function GET(request: Request) {
 
         if (!isAuthorized) {
           await supabase.auth.signOut();
-          return NextResponse.redirect(`${origin}${ROUTES.redirects.unauthorized}`);
+          return NextResponse.redirect(`${origin}/auth/error?error=unauthorized`);
         }
 
         return NextResponse.redirect(`${origin}${ROUTES.redirects.afterLogin}`);
       }
     }
 
-    return NextResponse.redirect(`${origin}${ROUTES.redirects.unauthorized}`);
+    return NextResponse.redirect(`${origin}/auth/error?error=invalid_session`);
   } catch (err: unknown) {
     const timestamp = new Date().toISOString();
     const errorMessage = err instanceof Error ? err.message : String(err);
@@ -43,6 +43,6 @@ export async function GET(request: Request) {
         `timestamp: ${timestamp}`,
     );
 
-    return NextResponse.redirect(`${origin}${ROUTES.redirects.afterLogout}?error=server`);
+    return NextResponse.redirect(`${origin}/auth/error?error=server`);
   }
 }

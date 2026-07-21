@@ -1,33 +1,13 @@
-# Dashboard — 005 Authentication
+# Release Dashboard — Feature 005
 
-[← Voltar para Feature](README.md)
+## Status de Implementação Geral
 
----
+**Percentual Inicial**: `0%`
 
-## Status Geral
-
-- **Feature**: 005 - Authentication
-- **Status**: `Produção`
-- **Responsável**: Lead Engineer
-
-## Progresso Geral
-
-```text
-██████████████ 100%
-```
-
-## Release Candidates
-
-- **RC-1**: Autenticação Supabase SSR
-
-## Próxima Task
-
-Nenhuma (concluída).
-
-## Bloqueios
-
-Nenhum bloqueio registrado.
-
-## Última Atualização
-
-- 2026-07-18
+| Task        | Título                                            | Progresso | Status      |
+| :---------- | :------------------------------------------------ | :-------- | :---------- |
+| **Task 01** | Configuração e Fluxo de Autenticação Google OAuth | `0%`      | 🔴 Pendente |
+| **Task 02** | Verificação de Autorização e Role Admin           | `0%`      | 🔴 Pendente |
+| **Task 03** | Fluxo de Logout e Invalidação de Sessão           | `0%`      | 🔴 Pendente |
+| **Task 04** | Persistência, Tratamento de Erros e Expiração     | `0%`      | 🔴 Pendente |
+| **Task 05** | Tratamento de Escopos Google Calendar             | `0%`      | 🔴 Pendente |

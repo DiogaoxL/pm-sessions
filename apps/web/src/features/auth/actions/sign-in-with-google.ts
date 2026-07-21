@@ -14,6 +14,12 @@ export async function signInWithGoogle() {
     provider: 'google',
     options: {
       redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+      scopes:
+        'openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events',
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
     },
   });
 
