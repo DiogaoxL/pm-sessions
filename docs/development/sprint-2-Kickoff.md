@@ -179,23 +179,99 @@ Status:
 
 ---
 
-## Etapa 6 — Export CSV
+## Etapa 6 — Admin Management UI (RC 006)
 
 Especificação:
 
-007-export-csv.md
+006-admin-management-ui
 
 Objetivo:
 
-Exportação administrativa.
+Interface administrativa de gerenciamento e sincronização com Google Calendar.
 
 Critério de aceite:
 
-Arquivo CSV gerado.
+CRUD completo de slots/sessões e cancelamento/alteração de horários com notificações no Calendar.
 
 Status:
 
-⬜ Não iniciado (Postergado para a Sprint 3)
+✅ Concluído
+
+---
+
+## Etapa 7 — Public Participant Flow (RC 007)
+
+Especificação:
+
+007-participants-public-flow
+
+Objetivo:
+
+Refinamento do fluxo público de candidatos e experiência de agendamento.
+
+Critério de aceite:
+
+Fluxo de inscrição robusto, com validações de UI/UX completas.
+
+Status:
+
+⏳ Próxima Etapa
+
+---
+
+## Etapa 8 — Google Infrastructure Integration (RC 008)
+
+Especificação:
+
+008-google-infrastructure-integration
+
+Objetivo:
+
+Integração final e robustez da API do Google Calendar e Meet em ambiente real.
+
+Critério de aceite:
+
+OAuth institucional ativo em produção, concorrência e tratamento de falhas transacionais validados.
+
+Status:
+
+⏳ Planejada
+
+---
+
+## Etapa 9 — Deploy & Production Hardening (RC 009)
+
+Especificação:
+
+009-deploy-production-hardening
+
+Objetivo:
+
+Hardening de produção, RLS no Supabase, segurança e Go-Live.
+
+Critério de aceite:
+
+Deploy produtivo na Vercel ativo, segredos/ENV validados e smoke tests verdes.
+
+Status:
+
+⏳ Planejada
+
+---
+
+## Etapa 10 — Reports & Export (RC 010)
+
+Especificação:
+
+010-reports-export
+
+Objetivo:
+
+Exportação física de relatórios de inscritos em CSV/XLSX.
+
+Status:
+
+⬜ Prorrogada para a Sprint 3 (Backlog)
 
 ---
 
@@ -220,7 +296,9 @@ A Sprint será considerada concluída quando:
 - Google Meet criado.
 - Sessão salva.
 - Dashboard funcionando.
-- Exportação CSV funcionando.
+- Integração com a infraestrutura do google calendar
+- Deploy no vercel
+- Exportação CSV funcionando. (prorrogada para sprint 3)
 
 ---
 

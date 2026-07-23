@@ -39,13 +39,14 @@ const mockSession: Session = {
 function makeSessionRepo(overrides: Partial<ISessionRepository> = {}): ISessionRepository {
   return {
     findOpenSessionsByTimeSlot: vi.fn(),
-    tryReserveSeat: vi.fn().mockResolvedValue(true),
-    decrementParticipants: vi.fn().mockResolvedValue(undefined),
+    removeParticipant: vi.fn().mockResolvedValue(undefined),
+    moveParticipant: vi.fn().mockResolvedValue(undefined),
     updateSessionCalendar: vi.fn(),
     findSessionById: vi.fn().mockResolvedValue(mockSession),
     findSessionsByTimeSlot: vi.fn(),
     allocateParticipant: vi.fn(),
     updateSessionCapacity: vi.fn(),
+    createSession: vi.fn(),
     ...overrides,
   };
 }
@@ -77,6 +78,8 @@ function makeCalendarService(
     filterFreeSlots: vi.fn(),
     createEvent: vi.fn(),
     syncAttendees: vi.fn().mockResolvedValue(undefined),
+    deleteEvent: vi.fn().mockResolvedValue(undefined),
+    updateEventTime: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }
@@ -94,6 +97,17 @@ async function simulateRemoveParticipantAction(
     return { success: false, error: 'Participant not found' };
   }
 
+  // Under the new RPC architecture, we retrieve a cancelled participant state after removeParticipant (which calls the RPC)
+  let callCount = 0;
+  vi.mocked(participantRepo.findParticipantById).mockImplementation(async (id: string) => {
+    callCount++;
+    return {
+      ...mockParticipant,
+      id,
+      status: callCount > 1 ? 'CANCELLED' : 'CONFIRMED',
+    };
+  });
+
   const removed = await adminService.removeParticipant(participantId);
   const session = await sessionRepo.findSessionById(removed.session_id);
 
@@ -109,8 +123,13 @@ async function simulateRemoveParticipantAction(
         organizer_email: session.organizer_email,
         error: calendarError,
       });
-      await participantRepo.updateParticipantStatus(participantId, 'CONFIRMED');
-      await sessionRepo.tryReserveSeat(removed.session_id);
+      await sessionRepo.allocateParticipant(
+        session.time_slot_id,
+        removed.email,
+        removed.name,
+        removed.phone || null,
+        session.organizer_email,
+      );
       return { success: false, error: 'Calendar sync failed, rolled back' };
     }
   }
@@ -139,8 +158,7 @@ describe('Admin Actions — Google Calendar Integration (Task 05)', () => {
       );
 
       expect(result.success).toBe(true);
-      expect(participantRepo.updateParticipantStatus).toHaveBeenCalledWith('part-1', 'CANCELLED');
-      expect(sessionRepo.decrementParticipants).toHaveBeenCalledWith('session-1');
+      expect(sessionRepo.removeParticipant).toHaveBeenCalledWith('part-1');
       expect(calendarService.syncAttendees).toHaveBeenCalledWith('gcal-event-1', []);
     });
 
@@ -157,9 +175,14 @@ describe('Admin Actions — Google Calendar Integration (Task 05)', () => {
       expect(result.success).toBe(false);
       expect(result.error).toContain('Calendar sync failed');
 
-      // Rollback: participant restored to CONFIRMED and seat re-reserved
-      expect(participantRepo.updateParticipantStatus).toHaveBeenCalledWith('part-1', 'CONFIRMED');
-      expect(sessionRepo.tryReserveSeat).toHaveBeenCalledWith('session-1');
+      // Rollback: participant re-allocated via RPC
+      expect(sessionRepo.allocateParticipant).toHaveBeenCalledWith(
+        mockSession.time_slot_id,
+        mockParticipant.email,
+        mockParticipant.name,
+        null,
+        mockSession.organizer_email,
+      );
     });
 
     it('deve emitir log estruturado ao falhar sincronização com Google Calendar', async () => {

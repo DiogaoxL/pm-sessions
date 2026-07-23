@@ -1,6 +1,6 @@
 import React, { useState, useTransition } from 'react';
 import { Participant } from '../repositories/interfaces';
-import { scheduleSessionAction } from '../actions';
+import { scheduleSessionAction } from '../actions/schedule-session';
 import { cn } from '@/lib/utils';
 
 interface SchedulingFormProps {

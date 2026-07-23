@@ -90,11 +90,12 @@ export class AdminParticipantService implements IAdminParticipantService {
       throw new ParticipantNotFoundError(participantId);
     }
 
-    const updated = await this.participantRepository.updateParticipantStatus(
-      participantId,
-      'CANCELLED',
-    );
-    await this.sessionRepository.decrementParticipants(participant.session_id);
+    await this.sessionRepository.removeParticipant(participantId);
+
+    const updated = await this.participantRepository.findParticipantById(participantId);
+    if (!updated) {
+      throw new ParticipantNotFoundError(participantId);
+    }
 
     return updated;
   }
@@ -119,60 +120,46 @@ export class AdminParticipantService implements IAdminParticipantService {
       throw new ParticipantNotFoundError(participantId);
     }
 
-    const targetSession = await this.sessionRepository.findSessionById(targetSessionId);
-    if (!targetSession) {
-      throw new SessionNotFoundError(targetSessionId);
-    }
-
-    if (targetSession.status === 'FINISHED') {
-      throw new SessionFinishedError(targetSessionId);
-    }
-
-    if (targetSession.current_participants >= targetSession.capacity) {
-      throw new SessionFullError(targetSessionId);
-    }
-
-    // Prevent moving to the same session
-    if (participant.session_id === targetSessionId) {
-      throw new ParticipantAlreadyInSessionError(participantId, targetSessionId);
-    }
-
-    // Check if participant already exists in target session (different participant record, same email)
-    const targetParticipants =
-      await this.participantRepository.getParticipantsBySession(targetSessionId);
-    const alreadyInTarget = targetParticipants.some((p) => p.email === participant.email);
-    if (alreadyInTarget) {
-      throw new ParticipantAlreadyInSessionError(participantId, targetSessionId);
-    }
-
     const sourceSession = await this.sessionRepository.findSessionById(participant.session_id);
     if (!sourceSession) {
       throw new SessionNotFoundError(participant.session_id);
     }
 
-    // 1. Decrement source session
-    await this.sessionRepository.decrementParticipants(participant.session_id);
-
-    // 2. Reserve seat on target session
-    const reserved = await this.sessionRepository.tryReserveSeat(targetSessionId);
-    if (!reserved) {
-      // Rollback: restore source session
-      await this.sessionRepository.tryReserveSeat(participant.session_id);
-      throw new SessionFullError(targetSessionId);
+    try {
+      await this.sessionRepository.moveParticipant(participantId, targetSessionId);
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'code' in error) {
+        const errObj = error as Record<string, unknown>;
+        if (errObj.code === 'P0001') {
+          throw new SessionFullError(targetSessionId);
+        }
+        if (errObj.code === 'P0002') {
+          throw new ParticipantNotFoundError(participantId);
+        }
+        if (errObj.code === 'P0004') {
+          throw new ParticipantAlreadyInSessionError(participantId, targetSessionId);
+        }
+        if (errObj.code === 'P0005') {
+          throw new SessionNotFoundError(targetSessionId);
+        }
+        if (errObj.code === 'P0006') {
+          throw new SessionFinishedError(targetSessionId);
+        }
+      }
+      throw error;
     }
 
-    // 3. Update participant to point to target session
-    const updatedParticipant = await this.participantRepository.updateParticipantSessionId(
-      participantId,
-      targetSessionId,
-    );
-
+    const updatedParticipant = await this.participantRepository.findParticipantById(participantId);
     const updatedTarget = await this.sessionRepository.findSessionById(targetSessionId);
+
+    if (!updatedParticipant) {
+      throw new ParticipantNotFoundError(participantId);
+    }
 
     return {
       participant: updatedParticipant,
       sourceSession,
-      targetSession: updatedTarget ?? targetSession,
+      targetSession: updatedTarget ?? sourceSession,
     };
   }
 

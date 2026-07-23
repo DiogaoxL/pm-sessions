@@ -8,6 +8,10 @@ vi.mock('../factory', () => ({
   getSchedulingService: vi.fn(),
 }));
 
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
+}));
+
 describe('scheduleSessionAction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -28,7 +32,6 @@ describe('scheduleSessionAction', () => {
 
     const mockSchedulingService = {
       getAvailableSlots: vi.fn(),
-      reserveSeat: vi.fn(),
       registerParticipant: vi.fn(),
       scheduleSession: vi.fn().mockResolvedValue(mockParticipant),
     };
@@ -87,7 +90,6 @@ describe('scheduleSessionAction', () => {
   it('deve tratar erro de falta de vagas amigavelmente', async () => {
     const mockSchedulingService = {
       getAvailableSlots: vi.fn(),
-      reserveSeat: vi.fn(),
       registerParticipant: vi.fn(),
       scheduleSession: vi.fn().mockRejectedValue(new Error('No seats available for this session')),
     };
@@ -114,7 +116,6 @@ describe('scheduleSessionAction', () => {
   it('deve tratar erro de participante duplicado amigavelmente', async () => {
     const mockSchedulingService = {
       getAvailableSlots: vi.fn(),
-      reserveSeat: vi.fn(),
       registerParticipant: vi.fn(),
       scheduleSession: vi
         .fn()
@@ -143,7 +144,6 @@ describe('scheduleSessionAction', () => {
   it('deve mascarar erros técnicos genéricos/inesperados', async () => {
     const mockSchedulingService = {
       getAvailableSlots: vi.fn(),
-      reserveSeat: vi.fn(),
       registerParticipant: vi.fn(),
       scheduleSession: vi
         .fn()

@@ -56,8 +56,8 @@ const mockTargetSession: Session = {
 function makeMockSessionRepo(overrides: Partial<ISessionRepository> = {}): ISessionRepository {
   return {
     findOpenSessionsByTimeSlot: vi.fn(),
-    tryReserveSeat: vi.fn().mockResolvedValue(true),
-    decrementParticipants: vi.fn().mockResolvedValue(undefined),
+    removeParticipant: vi.fn().mockResolvedValue(undefined),
+    moveParticipant: vi.fn().mockResolvedValue(undefined),
     updateSessionCalendar: vi.fn(),
     findSessionById: vi.fn().mockImplementation((id: string) => {
       if (id === 'session-1') return Promise.resolve(mockSession);
@@ -67,6 +67,7 @@ function makeMockSessionRepo(overrides: Partial<ISessionRepository> = {}): ISess
     findSessionsByTimeSlot: vi.fn(),
     allocateParticipant: vi.fn(),
     updateSessionCapacity: vi.fn().mockResolvedValue({ ...mockSession, capacity: 5 }),
+    createSession: vi.fn(),
     ...overrides,
   };
 }
@@ -109,10 +110,19 @@ describe('AdminParticipantService', () => {
 
   describe('removeParticipant', () => {
     it('deve cancelar participante e decrementar a sessão', async () => {
+      let callCount = 0;
+      vi.mocked(participantRepo.findParticipantById).mockImplementation(async (id: string) => {
+        callCount++;
+        return {
+          ...mockParticipant,
+          id,
+          status: callCount > 1 ? 'CANCELLED' : 'CONFIRMED',
+        };
+      });
+
       const result = await service.removeParticipant('part-1');
 
-      expect(participantRepo.updateParticipantStatus).toHaveBeenCalledWith('part-1', 'CANCELLED');
-      expect(sessionRepo.decrementParticipants).toHaveBeenCalledWith('session-1');
+      expect(sessionRepo.removeParticipant).toHaveBeenCalledWith('part-1');
       expect(result.status).toBe('CANCELLED');
     });
 
@@ -134,25 +144,24 @@ describe('AdminParticipantService', () => {
 
   describe('moveParticipant', () => {
     it('deve mover participante para sessão de destino com sucesso', async () => {
-      vi.mocked(participantRepo.getParticipantsBySession).mockResolvedValue([]);
+      let callCount = 0;
+      vi.mocked(participantRepo.findParticipantById).mockImplementation(async (id: string) => {
+        callCount++;
+        return {
+          ...mockParticipant,
+          id,
+          session_id: callCount > 1 ? 'session-2' : 'session-1',
+        };
+      });
 
       const result = await service.moveParticipant('part-1', 'session-2');
 
-      expect(sessionRepo.decrementParticipants).toHaveBeenCalledWith('session-1');
-      expect(sessionRepo.tryReserveSeat).toHaveBeenCalledWith('session-2');
-      expect(participantRepo.updateParticipantSessionId).toHaveBeenCalledWith(
-        'part-1',
-        'session-2',
-      );
+      expect(sessionRepo.moveParticipant).toHaveBeenCalledWith('part-1', 'session-2');
       expect(result.participant.session_id).toBe('session-2');
     });
 
     it('deve lançar SessionFinishedError ao mover para sessão encerrada', async () => {
-      vi.mocked(sessionRepo.findSessionById).mockImplementation((id: string) =>
-        id === 'session-2'
-          ? Promise.resolve({ ...mockTargetSession, status: 'FINISHED' })
-          : Promise.resolve(mockSession),
-      );
+      vi.mocked(sessionRepo.moveParticipant).mockRejectedValue({ code: 'P0006' });
 
       await expect(service.moveParticipant('part-1', 'session-2')).rejects.toThrow(
         SessionFinishedError,
@@ -160,11 +169,7 @@ describe('AdminParticipantService', () => {
     });
 
     it('deve lançar SessionFullError ao mover para sessão lotada', async () => {
-      vi.mocked(sessionRepo.findSessionById).mockImplementation((id: string) =>
-        id === 'session-2'
-          ? Promise.resolve({ ...mockTargetSession, current_participants: 3, capacity: 3 })
-          : Promise.resolve(mockSession),
-      );
+      vi.mocked(sessionRepo.moveParticipant).mockRejectedValue({ code: 'P0001' });
 
       await expect(service.moveParticipant('part-1', 'session-2')).rejects.toThrow(
         SessionFullError,
@@ -172,9 +177,7 @@ describe('AdminParticipantService', () => {
     });
 
     it('deve lançar ParticipantAlreadyInSessionError se o email já está na sessão destino', async () => {
-      vi.mocked(participantRepo.getParticipantsBySession).mockResolvedValue([
-        { ...mockParticipant, id: 'part-other', session_id: 'session-2' },
-      ]);
+      vi.mocked(sessionRepo.moveParticipant).mockRejectedValue({ code: 'P0004' });
 
       await expect(service.moveParticipant('part-1', 'session-2')).rejects.toThrow(
         ParticipantAlreadyInSessionError,
@@ -182,20 +185,11 @@ describe('AdminParticipantService', () => {
     });
 
     it('deve lançar ParticipantAlreadyInSessionError ao mover para a mesma sessão', async () => {
+      vi.mocked(sessionRepo.moveParticipant).mockRejectedValue({ code: 'P0004' });
+
       await expect(service.moveParticipant('part-1', 'session-1')).rejects.toThrow(
         ParticipantAlreadyInSessionError,
       );
-    });
-
-    it('deve reverter e lançar SessionFullError se tryReserveSeat falhar', async () => {
-      vi.mocked(participantRepo.getParticipantsBySession).mockResolvedValue([]);
-      vi.mocked(sessionRepo.tryReserveSeat).mockResolvedValue(false);
-
-      await expect(service.moveParticipant('part-1', 'session-2')).rejects.toThrow(
-        SessionFullError,
-      );
-      // Should have tried to restore source seat
-      expect(sessionRepo.tryReserveSeat).toHaveBeenCalledWith('session-1');
     });
   });
 

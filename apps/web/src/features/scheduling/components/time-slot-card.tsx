@@ -31,7 +31,7 @@ export function TimeSlotCard({ slot, selected = false, onClick }: TimeSlotCardPr
       aria-pressed={selected}
       aria-label={`Horário das ${formattedStart} às ${formattedEnd}. Status: ${
         isAvailable ? 'Disponível' : 'Indisponível'
-      }. Vagas: ${slot.capacity}.`}
+      }. Vagas: ${slot.availableSeats ?? slot.capacity}.`}
       className={cn(
         'w-full p-4 rounded-xl border text-left transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500',
         isAvailable
@@ -55,7 +55,7 @@ export function TimeSlotCard({ slot, selected = false, onClick }: TimeSlotCardPr
               : 'bg-gray-200 text-gray-600',
           )}
         >
-          {isAvailable ? `${slot.capacity} vagas` : 'Esgotado'}
+          {isAvailable ? `${slot.availableSeats ?? slot.capacity} vagas` : 'Esgotado'}
         </span>
       </div>
     </button>

@@ -22,72 +22,35 @@ export class SessionRepository implements ISessionRepository {
     return data || [];
   }
 
-  /**
-   * Tenta reservar uma vaga na sessão usando concorrência otimista (Optimistic Locking).
-   * Incrementa current_participants apenas se o valor obtido no fetch não se alterou.
-   * Retorna true se a vaga foi reservada com sucesso; false caso contrário.
-   */
-  async tryReserveSeat(sessionId: string): Promise<boolean> {
-    // 1. Consulta o estado atual da sessão
-    const { data: session, error: fetchError } = await this.supabase
-      .from('sessions')
-      .select('current_participants, capacity')
-      .eq('id', sessionId)
-      .single();
+  async removeParticipant(participantId: string): Promise<void> {
+    const { error } = await (
+      this.supabase.rpc as unknown as (
+        name: string,
+        args: Record<string, unknown>,
+      ) => PromiseLike<{ error: { message: string; code?: string } | null }>
+    )('remove_participant', {
+      p_participant_id: participantId,
+    });
 
-    if (fetchError || !session) {
-      return false;
+    if (error) {
+      throw error;
     }
-
-    // Se já estiver cheia, rejeita a reserva
-    if (session.current_participants >= session.capacity) {
-      return false;
-    }
-
-    const nextParticipants = session.current_participants + 1;
-    const nextStatus = nextParticipants === session.capacity ? 'FULL' : 'AVAILABLE';
-
-    // 2. Executa a atualização atômica baseada no valor lido anteriormente (optimistic lock)
-    const { data, error: updateError } = await this.supabase
-      .from('sessions')
-      .update({
-        current_participants: nextParticipants,
-        status: nextStatus,
-      })
-      .eq('id', sessionId)
-      .eq('current_participants', session.current_participants)
-      .select();
-
-    if (updateError || !data || data.length === 0) {
-      return false;
-    }
-
-    return true;
   }
 
-  /**
-   * Executa rollback simples reduzindo current_participants em 1 e redefinindo o status para AVAILABLE.
-   */
-  async decrementParticipants(sessionId: string): Promise<void> {
-    const { data: session, error: fetchError } = await this.supabase
-      .from('sessions')
-      .select('current_participants')
-      .eq('id', sessionId)
-      .single();
+  async moveParticipant(participantId: string, targetSessionId: string): Promise<void> {
+    const { error } = await (
+      this.supabase.rpc as unknown as (
+        name: string,
+        args: Record<string, unknown>,
+      ) => PromiseLike<{ error: { message: string; code?: string } | null }>
+    )('move_participant', {
+      p_participant_id: participantId,
+      p_target_session_id: targetSessionId,
+    });
 
-    if (fetchError || !session) {
-      return;
+    if (error) {
+      throw error;
     }
-
-    const nextParticipants = Math.max(0, session.current_participants - 1);
-
-    await this.supabase
-      .from('sessions')
-      .update({
-        current_participants: nextParticipants,
-        status: 'AVAILABLE',
-      })
-      .eq('id', sessionId);
   }
 
   async updateSessionCalendar(
@@ -150,6 +113,14 @@ export class SessionRepository implements ISessionRepository {
     calendar_event_id: string | null;
     meet_url: string | null;
   }> {
+    console.log(
+      '[TRACE 4.1] allocate_participant RPC — chamando Supabase. timeSlotId:',
+      timeSlotId,
+      'email:',
+      email,
+      'organizer:',
+      organizerEmail,
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (this.supabase as any).rpc('allocate_participant', {
       p_time_slot_id: timeSlotId,
@@ -159,17 +130,30 @@ export class SessionRepository implements ISessionRepository {
       p_organizer_email: organizerEmail,
     });
 
+    console.log('[TRACE 4.2] allocate_participant RPC — resposta bruta:', {
+      data: JSON.stringify(data),
+      error: JSON.stringify(error),
+    });
+
     if (error) {
+      console.error('[TRACE 4.2] RPC ERRO:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
       throw error;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rows = data as any[];
     if (!rows || rows.length === 0) {
+      console.error('[TRACE 4.3] RPC retornou array vazio. data:', JSON.stringify(data));
       throw new Error('Allocation returned empty result');
     }
 
     const result = rows[0];
+
     return {
       participant_id: result.participant_id,
       session_id: result.session_id,
@@ -180,34 +164,44 @@ export class SessionRepository implements ISessionRepository {
     };
   }
 
-  /**
-   * [Admin] Atualiza a capacidade de uma sessão e recalcula o status com base na ocupação atual.
-   */
   async updateSessionCapacity(sessionId: string, newCapacity: number): Promise<Session> {
-    const { data: current, error: fetchError } = await this.supabase
-      .from('sessions')
-      .select('current_participants')
-      .eq('id', sessionId)
-      .single();
+    const { data, error } = await (
+      this.supabase.rpc as unknown as (
+        name: string,
+        args: Record<string, unknown>,
+      ) => PromiseLike<{ data: Session[] | null; error: { message: string; code?: string } | null }>
+    )('update_session_capacity', {
+      p_session_id: sessionId,
+      p_new_capacity: newCapacity,
+    });
 
-    if (fetchError || !current) {
-      throw fetchError ?? new Error(`Session ${sessionId} not found`);
+    if (error || !data || data.length === 0) {
+      throw error ?? new Error('Failed to update session capacity');
     }
 
-    const newStatus: Session['status'] =
-      current.current_participants >= newCapacity ? 'FULL' : 'AVAILABLE';
+    return data[0];
+  }
 
-    const { data: updated, error: updateError } = await this.supabase
-      .from('sessions')
-      .update({ capacity: newCapacity, status: newStatus })
-      .eq('id', sessionId)
-      .select()
-      .single();
+  async createSession(
+    timeSlotId: string,
+    organizerEmail: string,
+    capacity: number,
+  ): Promise<Session> {
+    const { data, error } = await (
+      this.supabase.rpc as unknown as (
+        name: string,
+        args: Record<string, unknown>,
+      ) => PromiseLike<{ data: Session[] | null; error: { message: string; code?: string } | null }>
+    )('create_session_manual', {
+      p_time_slot_id: timeSlotId,
+      p_organizer_email: organizerEmail,
+      p_capacity: capacity,
+    });
 
-    if (updateError || !updated) {
-      throw updateError ?? new Error('Failed to update session capacity');
+    if (error || !data || data.length === 0) {
+      throw error ?? new Error('Failed to create session manually');
     }
 
-    return updated;
+    return data[0];
   }
 }

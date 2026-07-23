@@ -13,6 +13,8 @@ export interface IGoogleCalendarService {
     organizerEmail: string,
   ): Promise<{ eventId: string; meetUrl: string | null }>;
   syncAttendees(eventId: string, attendees: string[]): Promise<void>;
+  deleteEvent(eventId: string): Promise<void>;
+  updateEventTime(eventId: string, title: string, startTime: Date, endTime: Date): Promise<void>;
 }
 
 export class GoogleCalendarService implements IGoogleCalendarService {
@@ -149,6 +151,62 @@ export class GoogleCalendarService implements IGoogleCalendarService {
     } catch (error) {
       console.error('Error syncing attendees:', error);
       throw new Error('Failed to sync attendees in Google Calendar');
+    }
+  }
+
+  async deleteEvent(eventId: string): Promise<void> {
+    try {
+      await this.calendarClient.events.delete({
+        calendarId: 'primary',
+        eventId,
+        sendUpdates: 'all',
+      });
+    } catch (error: unknown) {
+      // Se o evento ja foi deletado ou nao existe mais, prossegue silenciosamente
+      if (error && typeof error === 'object') {
+        const errObj = error as Record<string, unknown>;
+        if (
+          errObj.code === 404 ||
+          errObj.code === 410 ||
+          (typeof errObj.message === 'string' && errObj.message.includes('Not Found'))
+        ) {
+          console.warn(
+            `Event ${eventId} not found or already deleted on Google Calendar. Skipping.`,
+          );
+          return;
+        }
+      }
+      console.error('Error deleting calendar event:', error);
+      throw new Error('Failed to delete event in Google Calendar');
+    }
+  }
+
+  async updateEventTime(
+    eventId: string,
+    title: string,
+    startTime: Date,
+    endTime: Date,
+  ): Promise<void> {
+    try {
+      await this.calendarClient.events.patch({
+        calendarId: 'primary',
+        eventId,
+        sendUpdates: 'all',
+        requestBody: {
+          summary: title,
+          start: {
+            dateTime: startTime.toISOString(),
+            timeZone: 'America/Sao_Paulo',
+          },
+          end: {
+            dateTime: endTime.toISOString(),
+            timeZone: 'America/Sao_Paulo',
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Error updating calendar event:', error);
+      throw new Error('Failed to update event in Google Calendar');
     }
   }
 }

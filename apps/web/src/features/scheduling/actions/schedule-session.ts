@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { scheduleSessionSchema } from './schemas';
 import { getSchedulingService } from './factory';
 import { Participant } from '../repositories/interfaces';
+import { revalidatePath } from 'next/cache';
 
 export type ScheduleSessionResponse =
   | {
@@ -20,10 +21,13 @@ export type ScheduleSessionResponse =
  * Server Action to handle candidate public scheduling form submission.
  */
 export async function scheduleSessionAction(inputData: unknown): Promise<ScheduleSessionResponse> {
+  console.log('[TRACE 1] scheduleSessionAction — ENTROU. Payload:', JSON.stringify(inputData));
+
   // 1. Validate inputs using Zod Schema
   const result = scheduleSessionSchema.safeParse(inputData);
 
   if (!result.success) {
+    console.log('[TRACE 1] VALIDATION FAILED:', result.error.flatten());
     return {
       success: false,
       error: 'Dados inválidos',
@@ -32,6 +36,7 @@ export async function scheduleSessionAction(inputData: unknown): Promise<Schedul
   }
 
   const { email, name, sessionId, timeSlotId } = result.data;
+  console.log('[TRACE 1] SAIU validação OK. sessionId:', sessionId, 'timeSlotId:', timeSlotId);
 
   // Development bypass logic for visual testing
   if (process.env.NODE_ENV === 'development' && sessionId === 'mock-session-1') {
@@ -65,20 +70,40 @@ export async function scheduleSessionAction(inputData: unknown): Promise<Schedul
   }
 
   try {
-    // 2. Instantiate scheduling service via Factory
+    console.log('[TRACE 2] getSchedulingService — ENTROU');
     const schedulingService = await getSchedulingService();
+    console.log('[TRACE 2] getSchedulingService — SAIU OK');
 
-    // 3. Invoke public schedule session orchestrator service
+    console.log('[TRACE 3] scheduleSession — ENTROU. args:', {
+      email,
+      name,
+      sessionId,
+      timeSlotId,
+    });
     const participant = await schedulingService.scheduleSession(email, name, sessionId, timeSlotId);
+    console.log('[TRACE 3] scheduleSession — SAIU OK. participant:', JSON.stringify(participant));
+
+    revalidatePath('/scheduling');
 
     return {
       success: true,
       data: participant,
     };
   } catch (error) {
+    console.error('[TRACE ERROR] scheduleSessionAction CAPTUROU EXCEÇÃO:', {
+      name: error instanceof Error ? error.name : typeof error,
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      details: (error as any)?.details,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      hint: (error as any)?.hint,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      code: (error as any)?.code,
+    });
+
     const errorMessage = error instanceof Error ? error.message : '';
 
-    // 4. Map known business domain errors to user-friendly messages
     if (errorMessage.includes('No seats available')) {
       return {
         success: false,
@@ -93,8 +118,6 @@ export async function scheduleSessionAction(inputData: unknown): Promise<Schedul
       };
     }
 
-    // 5. Hide unexpected database or technical errors behind a generic error
-    console.error('Unexpected error in scheduleSessionAction:', error);
     return {
       success: false,
       error: 'Ocorreu um erro ao processar o seu agendamento. Tente novamente mais tarde.',

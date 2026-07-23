@@ -27,6 +27,7 @@ describe('Persistência - Repositórios de Scheduling', () => {
   beforeEach(() => {
     mockSupabase = {
       from: vi.fn(),
+      rpc: vi.fn(),
     };
   });
 
@@ -92,93 +93,37 @@ describe('Persistência - Repositórios de Scheduling', () => {
         const result = await repository.findOpenSessionsByTimeSlot('slot-1');
 
         expect(mockSupabase.from).toHaveBeenCalledWith('sessions');
-        expect(builder.eq).toHaveBeenCalledWith('time_slot_id', 'slot-1');
-        expect(builder.eq).toHaveBeenCalledWith('status', 'AVAILABLE');
+        expect(builder.eq).toHaveBeenNthCalledWith(1, 'time_slot_id', 'slot-1');
+        expect(builder.eq).toHaveBeenNthCalledWith(2, 'status', 'AVAILABLE');
         expect(result).toEqual(mockSessions);
       });
     });
 
-    describe('tryReserveSeat (Optimistic Locking)', () => {
-      it('deve reservar vaga com sucesso quando há vagas e não há alteração concorrente', async () => {
-        const sessionData = { id: 'session-1', current_participants: 0, capacity: 1 };
+    describe('removeParticipant (RPC)', () => {
+      it('deve chamar a RPC remove_participant', async () => {
+        const rpcBuilder = new MockQueryBuilder({ data: null, error: null });
+        mockSupabase.rpc.mockReturnValueOnce(rpcBuilder);
 
-        const fetchBuilder = new MockQueryBuilder({ data: sessionData, error: null });
-        const updateBuilder = new MockQueryBuilder({
-          data: [{ ...sessionData, current_participants: 1, status: 'FULL' }],
-          error: null,
+        const repository = new SessionRepository(mockSupabase);
+        await repository.removeParticipant('part-1');
+
+        expect(mockSupabase.rpc).toHaveBeenCalledWith('remove_participant', {
+          p_participant_id: 'part-1',
         });
-
-        // Mock das chamadas sequenciais do from()
-        mockSupabase.from.mockReturnValueOnce(fetchBuilder).mockReturnValueOnce(updateBuilder);
-
-        const repository = new SessionRepository(mockSupabase);
-        const success = await repository.tryReserveSeat('session-1');
-
-        expect(success).toBe(true);
-        expect(mockSupabase.from).toHaveBeenNthCalledWith(1, 'sessions');
-        expect(mockSupabase.from).toHaveBeenNthCalledWith(2, 'sessions');
-        expect(updateBuilder.update).toHaveBeenCalledWith({
-          current_participants: 1,
-          status: 'FULL',
-        });
-        expect(updateBuilder.eq).toHaveBeenLastCalledWith('current_participants', 0);
-      });
-
-      it('deve falhar e retornar false se a sessão já estiver em sua capacidade máxima', async () => {
-        const sessionData = { id: 'session-1', current_participants: 1, capacity: 1 };
-        const fetchBuilder = new MockQueryBuilder({ data: sessionData, error: null });
-        mockSupabase.from.mockReturnValueOnce(fetchBuilder);
-
-        const repository = new SessionRepository(mockSupabase);
-        const success = await repository.tryReserveSeat('session-1');
-
-        expect(success).toBe(false);
-      });
-
-      it('deve retornar false se ocorrer concorrência (conflito de versão no optimistic check)', async () => {
-        const sessionData = { id: 'session-1', current_participants: 0, capacity: 2 };
-        const fetchBuilder = new MockQueryBuilder({ data: sessionData, error: null });
-        const updateBuilder = new MockQueryBuilder({ data: [], error: null });
-
-        mockSupabase.from.mockReturnValueOnce(fetchBuilder).mockReturnValueOnce(updateBuilder);
-
-        const repository = new SessionRepository(mockSupabase);
-        const success = await repository.tryReserveSeat('session-1');
-
-        expect(success).toBe(false);
       });
     });
 
-    describe('decrementParticipants (Rollback)', () => {
-      it('deve decrementar o participante e restaurar status para AVAILABLE', async () => {
-        const sessionData = { id: 'session-1', current_participants: 1 };
-        const fetchBuilder = new MockQueryBuilder({ data: sessionData, error: null });
-        const updateBuilder = new MockQueryBuilder({ data: null, error: null });
-
-        mockSupabase.from.mockReturnValueOnce(fetchBuilder).mockReturnValueOnce(updateBuilder);
+    describe('moveParticipant (RPC)', () => {
+      it('deve chamar a RPC move_participant', async () => {
+        const rpcBuilder = new MockQueryBuilder({ data: null, error: null });
+        mockSupabase.rpc.mockReturnValueOnce(rpcBuilder);
 
         const repository = new SessionRepository(mockSupabase);
-        await repository.decrementParticipants('session-1');
+        await repository.moveParticipant('part-1', 'session-2');
 
-        expect(updateBuilder.update).toHaveBeenCalledWith({
-          current_participants: 0,
-          status: 'AVAILABLE',
-        });
-      });
-
-      it('nunca deve decrementar para valor abaixo de zero', async () => {
-        const sessionData = { id: 'session-1', current_participants: 0 };
-        const fetchBuilder = new MockQueryBuilder({ data: sessionData, error: null });
-        const updateBuilder = new MockQueryBuilder({ data: null, error: null });
-
-        mockSupabase.from.mockReturnValueOnce(fetchBuilder).mockReturnValueOnce(updateBuilder);
-
-        const repository = new SessionRepository(mockSupabase);
-        await repository.decrementParticipants('session-1');
-
-        expect(updateBuilder.update).toHaveBeenCalledWith({
-          current_participants: 0,
-          status: 'AVAILABLE',
+        expect(mockSupabase.rpc).toHaveBeenCalledWith('move_participant', {
+          p_participant_id: 'part-1',
+          p_target_session_id: 'session-2',
         });
       });
     });

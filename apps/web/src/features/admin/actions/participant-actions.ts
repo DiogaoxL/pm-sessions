@@ -81,8 +81,13 @@ export async function removeParticipantAction(participantId: string) {
           },
         );
 
-        await participantRepository.updateParticipantStatus(participantId, 'CONFIRMED');
-        await sessionRepository.tryReserveSeat(removed.session_id);
+        await sessionRepository.allocateParticipant(
+          session.time_slot_id,
+          removed.email,
+          removed.name,
+          removed.phone || null,
+          session.organizer_email,
+        );
 
         return {
           success: false,
@@ -180,5 +185,20 @@ export async function updateSessionCapacityAction(sessionId: string, newCapacity
     return { success: true, data: session } as const;
   } catch (error) {
     return { success: false, error: mapDomainError(error) } as const;
+  }
+}
+
+export async function createSessionAction(
+  timeSlotId: string,
+  organizerEmail: string,
+  capacity: number,
+) {
+  try {
+    const { sessionRepository } = await getAdminServices();
+    const session = await sessionRepository.createSession(timeSlotId, organizerEmail, capacity);
+    return { success: true, data: session } as const;
+  } catch (error) {
+    console.error('[admin] createSessionAction error:', error);
+    return { success: false, error: 'Falha ao criar sessão manualmente.' } as const;
   }
 }

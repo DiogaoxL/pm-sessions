@@ -1,7 +1,7 @@
 -- PM Sessions - Session Allocation transactional RPC
 -- Implementacao da alocacao transacional de participantes em sessoes simultaneas
 
-CREATE OR REPLACE FUNCTION allocate_participant(
+CREATE OR REPLACE FUNCTION public.allocate_participant(
     p_time_slot_id UUID,
     p_email TEXT,
     p_name TEXT,
@@ -63,20 +63,9 @@ BEGIN
     LIMIT 1
     FOR UPDATE SKIP LOCKED;
 
-    -- 3. If no session is available, create a new one
+    -- 3. If no session is available, raise session full exception
     IF v_session_id IS NULL THEN
-        -- Get capacity from time slot
-        SELECT capacity
-        INTO v_default_capacity
-        FROM public.time_slots
-        WHERE id = p_time_slot_id;
-
-        -- Create a new session with the host provided
-        INSERT INTO public.sessions (time_slot_id, organizer_email, capacity, current_participants, status)
-        VALUES (p_time_slot_id, p_organizer_email, v_default_capacity, 0, 'AVAILABLE')
-        RETURNING id, public.sessions.organizer_email, public.sessions.calendar_event_id, public.sessions.meet_url, public.sessions.capacity, public.sessions.current_participants
-        INTO v_session_id, v_organizer_email, v_calendar_event_id, v_meet_url, v_capacity, v_current;
-        v_is_new_session := TRUE;
+        RAISE EXCEPTION USING MESSAGE = 'SESSION_FULL', ERRCODE = 'P0001';
     END IF;
 
     -- 4. Try to increment current_participants and check capacity
@@ -103,7 +92,7 @@ BEGIN
     organizer_email := v_organizer_email;
     calendar_event_id := v_calendar_event_id;
     meet_url := v_meet_url;
-    
+
     RETURN NEXT;
 END;
 $$;

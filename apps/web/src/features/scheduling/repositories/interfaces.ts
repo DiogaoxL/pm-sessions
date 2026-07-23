@@ -1,6 +1,8 @@
 import { Database } from '@/shared/types/database';
 
-export type TimeSlot = Database['public']['Tables']['time_slots']['Row'];
+export type TimeSlot = Database['public']['Tables']['time_slots']['Row'] & {
+  availableSeats?: number;
+};
 export type TimeSlotInsert = Database['public']['Tables']['time_slots']['Insert'];
 export type TimeSlotUpdate = Database['public']['Tables']['time_slots']['Update'];
 export type Session = Database['public']['Tables']['sessions']['Row'];
@@ -39,6 +41,16 @@ export interface ITimeSlotRepository {
   closeTimeSlot(id: string): Promise<TimeSlot>;
 
   /**
+   * [Admin] Executa o fechamento do slot, cancelamento de participantes e reset de sessoes atomicamente.
+   */
+  closeTimeSlotAtomic(id: string): Promise<void>;
+
+  /**
+   * [Admin] Remove um time slot permanentemente do banco de dados.
+   */
+  deleteTimeSlot(id: string): Promise<void>;
+
+  /**
    * [Admin] Verifica se um slot possui sessões com participantes ativos (CONFIRMED).
    * Retorna true se houver ao menos um participante ativo.
    */
@@ -52,16 +64,14 @@ export interface ISessionRepository {
   findOpenSessionsByTimeSlot(timeSlotId: string): Promise<Session[]>;
 
   /**
-   * Incrementa atômica e seguramente a capacidade de participantes da sessão,
-   * checando se current_participants < capacity.
-   * Retorna true se atualizado com sucesso; false caso contrário (sessão cheia).
+   * Remove um participante de forma transacional usando a RPC remove_participant.
    */
-  tryReserveSeat(sessionId: string): Promise<boolean>;
+  removeParticipant(participantId: string): Promise<void>;
 
   /**
-   * Decrementa a quantidade de participantes (usado para rollback).
+   * Move um participante de forma transacional usando a RPC move_participant.
    */
-  decrementParticipants(sessionId: string): Promise<void>;
+  moveParticipant(participantId: string, targetSessionId: string): Promise<void>;
 
   /**
    * Atualiza as colunas de integração de calendário na sessão.
@@ -100,10 +110,12 @@ export interface ISessionRepository {
     meet_url: string | null;
   }>;
 
-  /**
-   * [Admin] Atualiza a capacidade máxima de uma sessão e ajusta seu status.
-   */
   updateSessionCapacity(sessionId: string, newCapacity: number): Promise<Session>;
+
+  /**
+   * Cria uma nova sessão manualmente chamando a RPC create_session_manual.
+   */
+  createSession(timeSlotId: string, organizerEmail: string, capacity: number): Promise<Session>;
 }
 
 export interface IParticipantRepository {

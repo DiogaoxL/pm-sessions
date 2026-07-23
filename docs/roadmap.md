@@ -46,15 +46,15 @@ Deploy
 
 # Status Geral
 
-| Fase                      | Status                 |
-| ------------------------- | ---------------------- |
-| Foundation                | ✅ Concluída           |
-| Planning                  | ✅ Concluído           |
-| Sprint 1 — Infrastructure | ⏳ Pronta para iniciar |
-| Sprint 2 — Core MVP       | 🔒 Bloqueada           |
-| Sprint 3 — Experience     | 🔒 Bloqueada           |
-| MVP                       | 🔒 Bloqueado           |
-| Production                | 🔒 Bloqueada           |
+| Fase                                   | Status          |
+| -------------------------------------- | --------------- |
+| Foundation                             | ✅ Concluída    |
+| Planning                               | ✅ Concluído    |
+| Sprint 1 — Infrastructure              | ✅ Concluída    |
+| Sprint 2 — Core MVP & Production Ready | ⏳ Em Andamento |
+| Sprint 3 — Experience & Evolution      | 🔒 Bloqueada    |
+| MVP                                    | 🔒 Bloqueado    |
+| Production                             | 🔒 Bloqueada    |
 
 ---
 
@@ -142,50 +142,45 @@ Status
 
 ---
 
-# Sprint 2 — Core MVP
+# Sprint 2 — Core MVP & Production Ready
 
 ## Objetivo
 
-Implementar o fluxo completo de agendamento de entrevistas.
+Implementar o fluxo completo de agendamento de entrevistas e estabilização de produção do MVP (Go-Live ready).
 
 ## Escopo
 
-- Public Scheduling
-- Session Allocation
-- Participants
-- Admin Panel
-- Convites automáticos
-- Integração completa com Google Calendar
+- Admin Panel & Management UI (RC 006)
+- Public Participant Flow & Scheduling UI (RC 007)
+- Google Calendar & Meet Integration (OAuth e falhas) (RC 008)
+- Deploy na Vercel & Hardening de Produção (RC 009)
 
 ## Critério de Conclusão
 
-Um candidato consegue realizar um agendamento completo, recebendo automaticamente o convite da entrevista.
+Um candidato realiza agendamentos concorrentes em produção de forma segura, com e-mails e Google Meet sincronizados, e o admin opera o dashboard com controle total.
 
 Status
 
-🔒 Bloqueada
+⏳ Em Andamento
 
 ---
 
-# Sprint 3 — Experience
+# Sprint 3 — Experience & Evolution
 
 ## Objetivo
 
-Preparar o MVP para utilização pela equipe da Pulse.
+Evolução do produto, relatórios avançados e refinamento operacional.
 
 ## Escopo
 
-- Refinamento da interface
-- Responsividade
-- Exportação CSV
-- Dashboard
-- Testes integrados
-- Correções
-- Homologação
+- Reports & Export (CSV, XLSX) (RC 010)
+- Refinamento avançado de interface e responsividade
+- Testes integrados de regressão
+- Correções pós Go-Live
 
 ## Critério de Conclusão
 
-A equipe consegue operar um processo seletivo completo utilizando apenas o PM Sessions.
+O sistema opera de ponta a ponta com capacidade de exportação física e métricas de desempenho consolidadas.
 
 Status
 

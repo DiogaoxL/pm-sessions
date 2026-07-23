@@ -9,11 +9,13 @@ import { SchedulingSkeleton } from './scheduling-skeleton';
 interface AvailableSlotsContainerProps {
   selectedSlotId?: string;
   onSelectSlot?: (slot: TimeSlot) => void;
+  refreshKey?: number;
 }
 
 export function AvailableSlotsContainer({
   selectedSlotId,
   onSelectSlot,
+  refreshKey = 0,
 }: AvailableSlotsContainerProps) {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,7 +50,7 @@ export function AvailableSlotsContainer({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [refreshKey]);
 
   if (loading) {
     return <SchedulingSkeleton />;

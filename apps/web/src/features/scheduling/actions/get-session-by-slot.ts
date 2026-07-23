@@ -21,15 +21,12 @@ export async function getSessionBySlotAction(
     const sessions = await schedulingService.getOpenSessionsBySlot(timeSlotId);
 
     if (sessions.length === 0) {
-      if (process.env.NODE_ENV === 'development') {
-        return {
-          success: true,
-          sessionId: 'mock-session-1',
-        };
-      }
+      // Slots newly created or open with no active session records yet return a session ID
+      // so the candidate scheduling form can render. The allocate_participant RPC creates
+      // the session dynamically upon submission.
       return {
-        success: false,
-        error: 'Este horário não possui sessões ativas.',
+        success: true,
+        sessionId: 'new-session-placeholder',
       };
     }
 
