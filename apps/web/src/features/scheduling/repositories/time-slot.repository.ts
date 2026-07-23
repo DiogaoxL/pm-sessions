@@ -123,6 +123,32 @@ export class TimeSlotRepository implements ITimeSlotRepository {
     return this.updateTimeSlot(id, { status: 'CLOSED' });
   }
 
+  async closeTimeSlotAtomic(id: string): Promise<void> {
+    const { error } = await (
+      this.supabase.rpc as unknown as (
+        name: string,
+        args: Record<string, unknown>,
+      ) => PromiseLike<{ error: { message: string; code?: string } | null }>
+    )('close_time_slot_manual', {
+      p_time_slot_id: id,
+    });
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * [Admin] Remove o time slot permanentemente do banco de dados.
+   */
+  async deleteTimeSlot(id: string): Promise<void> {
+    const { error } = await this.supabase.from('time_slots').delete().eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+  }
+
   /**
    * [Admin] Verifica se o slot possui ao menos um participante CONFIRMED em qualquer de suas sessões.
    */

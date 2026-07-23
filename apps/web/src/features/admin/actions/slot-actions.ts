@@ -64,6 +64,39 @@ export async function closeSlotAction(id: string) {
   }
 }
 
+export async function deleteSlotAction(id: string) {
+  try {
+    const { adminTimeSlotService } = await getAdminServices();
+    await adminTimeSlotService.deleteSlot(id);
+    return { success: true } as const;
+  } catch (error) {
+    if (error instanceof AdminSlotAlreadyHasParticipantsError) {
+      return {
+        success: false,
+        error: 'Não é possível excluir um slot com participantes ativos.',
+      } as const;
+    }
+    console.error('[admin] deleteSlotAction error:', error);
+    return { success: false, error: 'Falha ao excluir o time slot.' } as const;
+  }
+}
+
+export async function syncSlotCalendarEventsAction(
+  id: string,
+  date: string,
+  startTime: string,
+  endTime: string,
+) {
+  try {
+    const { adminTimeSlotService } = await getAdminServices();
+    await adminTimeSlotService.syncSlotCalendarEvents(id, date, startTime, endTime);
+    return { success: true } as const;
+  } catch (error) {
+    console.error('[admin] syncSlotCalendarEventsAction error:', error);
+    return { success: false, error: 'Falha ao sincronizar o calendário.' } as const;
+  }
+}
+
 // --- Dashboard Actions ---
 
 export async function getDashboardStatsAction() {

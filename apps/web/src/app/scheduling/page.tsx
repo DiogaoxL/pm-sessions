@@ -12,6 +12,7 @@ export default function PublicSchedulingPage() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [loadingSession, setLoadingSession] = useState<boolean>(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
   // Block background scroll when bottom sheet is active on mobile
   React.useEffect(() => {
@@ -99,6 +100,7 @@ export default function PublicSchedulingPage() {
             </p>
 
             <AvailableSlotsContainer
+              refreshKey={refreshKey}
               selectedSlotId={selectedSlot?.id}
               onSelectSlot={handleSelectSlot}
             />
@@ -152,7 +154,9 @@ export default function PublicSchedulingPage() {
                   <SchedulingForm
                     sessionId={sessionId}
                     timeSlotId={selectedSlot.id}
-                    onSuccess={() => {}}
+                    onSuccess={() => {
+                      setRefreshKey((prev) => prev + 1);
+                    }}
                     onCancel={handleCancelSelection}
                   />
                 </div>
@@ -227,7 +231,9 @@ export default function PublicSchedulingPage() {
                 <SchedulingForm
                   sessionId={sessionId}
                   timeSlotId={selectedSlot.id}
-                  onSuccess={() => {}}
+                  onSuccess={() => {
+                    setRefreshKey((prev) => prev + 1);
+                  }}
                   onCancel={handleCancelSelection}
                 />
               </div>

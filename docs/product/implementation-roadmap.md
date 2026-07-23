@@ -20,23 +20,31 @@
 
 ---
 
-# Sprint 2
+# Sprint 2 (Core MVP & Production Ready)
 
-⬜ 001-public-scheduling
+✅ 001-public-scheduling
 
-⬜ 002-google-calendar
+✅ 002-google-calendar
 
-⬜ 003-session-allocation
+✅ 003-session-allocation
 
-⬜ 004-admin-panel
+✅ 004-admin-panel
 
-⬜ 006-participants
+✅ 006-participants
 
-⬜ 007-export-csv
+✅ 006-admin-management-ui (RC 006)
+
+⏳ 007-participants-public-flow (RC 007)
+
+⏳ 008-google-infrastructure-integration (RC 008)
+
+⏳ 009-deploy-production-hardening (RC 009)
 
 ---
 
-# Sprint 3
+# Sprint 3 (Experience & Evolution)
+
+⬜ 010-reports-export (Export CSV/XLSX) (RC 010)
 
 ⬜ Analytics
 
@@ -68,7 +76,7 @@ Foundation
 
 Sprint 2
 
-□□□□□□□□□□□□□□ 0%
+████████████░░░░░░░░ 60%
 
 Sprint 3
 
@@ -77,23 +85,3 @@ Sprint 3
 Sprint 4
 
 □□□□□□□□□□□□□□ 0%
-
----
-
-# Status Geral
-
-Foundation
-
-✅ Concluída
-
-Core MVP
-
-⬜ Em andamento
-
-Product Evolution
-
-⬜ Não iniciado
-
-Scale
-
-⬜ Não iniciado

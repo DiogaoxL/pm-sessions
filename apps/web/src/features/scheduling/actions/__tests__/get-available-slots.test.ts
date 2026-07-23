@@ -29,7 +29,6 @@ describe('getAvailableSlotsAction', () => {
 
     const mockSchedulingService = {
       getAvailableSlots: vi.fn().mockResolvedValue(mockSlots),
-      reserveSeat: vi.fn(),
       registerParticipant: vi.fn(),
       scheduleSession: vi.fn(),
     };

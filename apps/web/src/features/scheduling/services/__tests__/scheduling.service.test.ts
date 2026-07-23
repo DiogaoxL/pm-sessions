@@ -26,17 +26,21 @@ describe('SchedulingService - Camada de Serviços', () => {
       createTimeSlot: vi.fn(),
       updateTimeSlot: vi.fn(),
       closeTimeSlot: vi.fn(),
+      closeTimeSlotAtomic: vi.fn(),
+      deleteTimeSlot: vi.fn(),
       hasActiveParticipants: vi.fn(),
     };
+
     mockSessionRepository = {
       findOpenSessionsByTimeSlot: vi.fn(),
-      tryReserveSeat: vi.fn(),
-      decrementParticipants: vi.fn(),
+      removeParticipant: vi.fn(),
+      moveParticipant: vi.fn(),
       updateSessionCalendar: vi.fn(),
       findSessionById: vi.fn(),
-      findSessionsByTimeSlot: vi.fn(),
+      findSessionsByTimeSlot: vi.fn().mockResolvedValue([]),
       allocateParticipant: vi.fn(),
       updateSessionCapacity: vi.fn(),
+      createSession: vi.fn(),
     };
     mockParticipantRepository = {
       existsConfirmedParticipant: vi.fn(),
@@ -55,6 +59,8 @@ describe('SchedulingService - Camada de Serviços', () => {
         meetUrl: 'https://meet.google.com/test',
       }),
       syncAttendees: vi.fn(),
+      deleteEvent: vi.fn(),
+      updateEventTime: vi.fn(),
     };
     mockHostAllocatorService = {
       getNextHostEmail: vi.fn().mockResolvedValue('host@test.com'),
@@ -83,6 +89,21 @@ describe('SchedulingService - Camada de Serviços', () => {
           updated_at: '',
         },
       ];
+      const mockSessions = [
+        {
+          id: 'session-1',
+          time_slot_id: 'slot-1',
+          organizer_email: 'host@test.com',
+          capacity: 1,
+          current_participants: 0,
+          status: 'AVAILABLE' as const,
+          created_at: '',
+          updated_at: '',
+          calendar_event_id: null,
+          meet_url: null,
+        },
+      ];
+      vi.mocked(mockSessionRepository.findSessionsByTimeSlot).mockResolvedValue(mockSessions);
       vi.mocked(mockTimeSlotRepository.selectAvailableSlots).mockResolvedValue(mockSlots);
 
       const result = await service.getAvailableSlots();
@@ -92,7 +113,12 @@ describe('SchedulingService - Camada de Serviços', () => {
         '2026-07-20',
         mockSlots,
       );
-      expect(result).toEqual(mockSlots);
+      expect(result).toEqual([
+        {
+          ...mockSlots[0],
+          availableSeats: 1,
+        },
+      ]);
     });
 
     it('deve usar fallback dos slots do banco de dados quando o Google Calendar falhar', async () => {
@@ -108,6 +134,21 @@ describe('SchedulingService - Camada de Serviços', () => {
           updated_at: '',
         },
       ];
+      const mockSessions = [
+        {
+          id: 'session-1',
+          time_slot_id: 'slot-1',
+          organizer_email: 'host@test.com',
+          capacity: 1,
+          current_participants: 0,
+          status: 'AVAILABLE' as const,
+          created_at: '',
+          updated_at: '',
+          calendar_event_id: null,
+          meet_url: null,
+        },
+      ];
+      vi.mocked(mockSessionRepository.findSessionsByTimeSlot).mockResolvedValue(mockSessions);
       vi.mocked(mockTimeSlotRepository.selectAvailableSlots).mockResolvedValue(mockSlots);
       vi.mocked(mockGoogleCalendarService.filterFreeSlots).mockRejectedValue(
         new Error('Google API Error'),
@@ -115,18 +156,12 @@ describe('SchedulingService - Camada de Serviços', () => {
 
       const result = await service.getAvailableSlots();
 
-      expect(result).toEqual(mockSlots);
-    });
-  });
-
-  describe('reserveSeat', () => {
-    it('deve delegar a reserva de assento para o sessionRepository', async () => {
-      vi.mocked(mockSessionRepository.tryReserveSeat).mockResolvedValue(true);
-
-      const result = await service.reserveSeat('session-1');
-
-      expect(mockSessionRepository.tryReserveSeat).toHaveBeenCalledWith('session-1');
-      expect(result).toBe(true);
+      expect(result).toEqual([
+        {
+          ...mockSlots[0],
+          availableSeats: 1,
+        },
+      ]);
     });
   });
 
@@ -266,11 +301,7 @@ describe('SchedulingService - Camada de Serviços', () => {
 
       await service.cancelSession(participantId);
 
-      expect(mockParticipantRepository.updateParticipantStatus).toHaveBeenCalledWith(
-        participantId,
-        'CANCELLED',
-      );
-      expect(mockSessionRepository.decrementParticipants).toHaveBeenCalledWith(sessionId);
+      expect(mockSessionRepository.removeParticipant).toHaveBeenCalledWith(participantId);
       expect(mockGoogleCalendarService.syncAttendees).toHaveBeenCalledWith('google-event-id', []);
     });
   });
