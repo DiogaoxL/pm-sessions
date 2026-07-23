@@ -52,6 +52,7 @@ describe('SchedulingService - Camada de Serviços', () => {
       updateParticipantSessionId: vi.fn(),
     };
     mockGoogleCalendarService = {
+      isCalendarConfigured: vi.fn().mockReturnValue(true),
       checkAvailability: vi.fn(),
       filterFreeSlots: vi.fn().mockImplementation((dateStr, slots) => Promise.resolve(slots)),
       createEvent: vi.fn().mockResolvedValue({
@@ -156,6 +157,47 @@ describe('SchedulingService - Camada de Serviços', () => {
 
       const result = await service.getAvailableSlots();
 
+      expect(result).toEqual([
+        {
+          ...mockSlots[0],
+          availableSeats: 1,
+        },
+      ]);
+    });
+
+    it('deve pular a filtragem do Google Calendar e usar dados do banco quando não configurado', async () => {
+      const mockSlots: TimeSlot[] = [
+        {
+          id: 'slot-1',
+          date: '2026-07-20',
+          start_time: '09:00:00',
+          end_time: '10:00:00',
+          status: 'OPEN',
+          created_at: '',
+          updated_at: '',
+        },
+      ];
+      const mockSessions = [
+        {
+          id: 'session-1',
+          time_slot_id: 'slot-1',
+          organizer_email: 'host@test.com',
+          capacity: 1,
+          current_participants: 0,
+          status: 'AVAILABLE' as const,
+          created_at: '',
+          updated_at: '',
+          calendar_event_id: null,
+          meet_url: null,
+        },
+      ];
+      vi.mocked(mockSessionRepository.findSessionsByTimeSlot).mockResolvedValue(mockSessions);
+      vi.mocked(mockTimeSlotRepository.selectAvailableSlots).mockResolvedValue(mockSlots);
+      vi.mocked(mockGoogleCalendarService.isCalendarConfigured).mockReturnValue(false);
+
+      const result = await service.getAvailableSlots();
+
+      expect(mockGoogleCalendarService.filterFreeSlots).not.toHaveBeenCalled();
       expect(result).toEqual([
         {
           ...mockSlots[0],

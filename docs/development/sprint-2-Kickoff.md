@@ -215,7 +215,7 @@ Fluxo de inscrição robusto, com validações de UI/UX completas.
 
 Status:
 
-⏳ Próxima Etapa
+✅ Concluído
 
 ---
 

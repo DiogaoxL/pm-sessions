@@ -6,7 +6,10 @@ export type TimeSlot = Database['public']['Tables']['time_slots']['Row'] & {
 export type TimeSlotInsert = Database['public']['Tables']['time_slots']['Insert'];
 export type TimeSlotUpdate = Database['public']['Tables']['time_slots']['Update'];
 export type Session = Database['public']['Tables']['sessions']['Row'];
-export type Participant = Database['public']['Tables']['participants']['Row'];
+export type Participant = Database['public']['Tables']['participants']['Row'] & {
+  organizer_email?: string;
+  calendar_event_id?: string | null;
+};
 export type ParticipantInsert = Database['public']['Tables']['participants']['Insert'];
 
 export interface ITimeSlotRepository {

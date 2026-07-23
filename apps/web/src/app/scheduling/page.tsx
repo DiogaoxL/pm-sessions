@@ -52,6 +52,24 @@ export default function PublicSchedulingPage() {
     setSessionError(null);
   };
 
+  const handleSlotsLoaded = React.useCallback(
+    (newSlots: TimeSlot[]) => {
+      if (selectedSlot) {
+        const stillAvailable = newSlots.find(
+          (s) => s.id === selectedSlot.id && s.status === 'OPEN',
+        );
+        if (!stillAvailable) {
+          alert(
+            'O horário selecionado foi encerrado ou preenchido. Por favor, selecione outro horário.',
+          );
+          setSelectedSlot(null);
+          setSessionId(null);
+        }
+      }
+    },
+    [selectedSlot],
+  );
+
   // Helper to format date nicely
   const formatDate = (dateStr: string) => {
     const [year, month, day] = dateStr.split('-').map(Number);
@@ -103,6 +121,7 @@ export default function PublicSchedulingPage() {
               refreshKey={refreshKey}
               selectedSlotId={selectedSlot?.id}
               onSelectSlot={handleSelectSlot}
+              onSlotsLoaded={handleSlotsLoaded}
             />
           </div>
         </div>

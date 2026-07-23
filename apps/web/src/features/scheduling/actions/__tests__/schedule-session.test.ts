@@ -59,6 +59,7 @@ describe('scheduleSessionAction', () => {
       'John Doe',
       'session-1',
       'slot-1',
+      '123456789',
     );
   });
 
@@ -109,7 +110,7 @@ describe('scheduleSessionAction', () => {
 
     expect(result).toEqual({
       success: false,
-      error: 'Esta sessão já não possui vagas disponíveis.',
+      error: 'SESSION_FULL',
     });
   });
 
@@ -137,7 +138,7 @@ describe('scheduleSessionAction', () => {
 
     expect(result).toEqual({
       success: false,
-      error: 'Você já está cadastrado para este horário.',
+      error: 'Este e-mail já está inscrito nesta sessão.',
     });
   });
 

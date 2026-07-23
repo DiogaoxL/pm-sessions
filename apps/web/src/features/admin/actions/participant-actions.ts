@@ -1,6 +1,7 @@
 'use server';
 
 import { getAdminServices } from './factory';
+import { revalidatePath } from 'next/cache';
 import {
   ParticipantNotFoundError,
   SessionNotFoundError,
@@ -96,6 +97,8 @@ export async function removeParticipantAction(participantId: string) {
       }
     }
 
+    revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
     return { success: true, data: removed } as const;
   } catch (error) {
     return { success: false, error: mapDomainError(error) } as const;
@@ -170,6 +173,8 @@ export async function moveParticipantAction(participantId: string, targetSession
       }
     }
 
+    revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
     return { success: true, data: participant } as const;
   } catch (error) {
     return { success: false, error: mapDomainError(error) } as const;
@@ -182,6 +187,8 @@ export async function updateSessionCapacityAction(sessionId: string, newCapacity
   try {
     const { adminParticipantService } = await getAdminServices();
     const session = await adminParticipantService.updateSessionCapacity(sessionId, newCapacity);
+    revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
     return { success: true, data: session } as const;
   } catch (error) {
     return { success: false, error: mapDomainError(error) } as const;
@@ -196,6 +203,8 @@ export async function createSessionAction(
   try {
     const { sessionRepository } = await getAdminServices();
     const session = await sessionRepository.createSession(timeSlotId, organizerEmail, capacity);
+    revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
     return { success: true, data: session } as const;
   } catch (error) {
     console.error('[admin] createSessionAction error:', error);

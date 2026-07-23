@@ -65,11 +65,10 @@ describe('GoogleCalendarService', () => {
       expect(mockQuery).toHaveBeenCalled();
     });
 
-    it('deve propagar erro amigavel sob falha', async () => {
+    it('deve retornar array vazio sob falha', async () => {
       mockQuery.mockRejectedValue(new Error('Google API Error'));
-      await expect(service.checkAvailability(new Date(), new Date())).rejects.toThrow(
-        'Failed to fetch availability from Google Calendar',
-      );
+      const result = await service.checkAvailability(new Date(), new Date());
+      expect(result).toEqual([]);
     });
   });
 

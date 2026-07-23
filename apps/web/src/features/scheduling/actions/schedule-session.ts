@@ -35,8 +35,15 @@ export async function scheduleSessionAction(inputData: unknown): Promise<Schedul
     };
   }
 
-  const { email, name, sessionId, timeSlotId } = result.data;
-  console.log('[TRACE 1] SAIU validação OK. sessionId:', sessionId, 'timeSlotId:', timeSlotId);
+  const { email, name, sessionId, timeSlotId, phone } = result.data;
+  console.log(
+    '[TRACE 1] SAIU validação OK. sessionId:',
+    sessionId,
+    'timeSlotId:',
+    timeSlotId,
+    'phone:',
+    phone,
+  );
 
   // Development bypass logic for visual testing
   if (process.env.NODE_ENV === 'development' && sessionId === 'mock-session-1') {
@@ -49,7 +56,7 @@ export async function scheduleSessionAction(inputData: unknown): Promise<Schedul
     if (email === 'duplicate@example.com') {
       return {
         success: false,
-        error: 'Você já está cadastrado para este horário.',
+        error: 'Este e-mail já está inscrito nesta sessão.',
       };
     }
 
@@ -79,11 +86,19 @@ export async function scheduleSessionAction(inputData: unknown): Promise<Schedul
       name,
       sessionId,
       timeSlotId,
+      phone,
     });
-    const participant = await schedulingService.scheduleSession(email, name, sessionId, timeSlotId);
+    const participant = await schedulingService.scheduleSession(
+      email,
+      name,
+      sessionId,
+      timeSlotId,
+      phone,
+    );
     console.log('[TRACE 3] scheduleSession — SAIU OK. participant:', JSON.stringify(participant));
 
     revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
 
     return {
       success: true,
@@ -102,19 +117,29 @@ export async function scheduleSessionAction(inputData: unknown): Promise<Schedul
       code: (error as any)?.code,
     });
 
-    const errorMessage = error instanceof Error ? error.message : '';
+    const errObj = error as Record<string, unknown>;
+    const isSessionFull =
+      errObj.code === 'P0001' ||
+      (typeof errObj.message === 'string' && errObj.message.includes('SESSION_FULL')) ||
+      (typeof errObj.message === 'string' && errObj.message.includes('No seats available'));
 
-    if (errorMessage.includes('No seats available')) {
+    if (isSessionFull) {
       return {
         success: false,
-        error: 'Esta sessão já não possui vagas disponíveis.',
+        error: 'SESSION_FULL',
       };
     }
 
-    if (errorMessage.includes('Duplicated participant')) {
+    const errorMessage = error instanceof Error ? error.message : '';
+
+    if (
+      errorMessage.includes('Duplicated participant') ||
+      errorMessage.includes('EMAIL_ALREADY_REGISTERED') ||
+      errorMessage.includes('registration for this time slot')
+    ) {
       return {
         success: false,
-        error: 'Você já está cadastrado para este horário.',
+        error: 'Este e-mail já está inscrito nesta sessão.',
       };
     }
 

@@ -49,11 +49,29 @@ export function TimeSlotList({ slots, selectedSlotId, onSelect }: TimeSlotListPr
 
   if (slots.length === 0) {
     return (
-      <div className="w-full py-12 text-center text-gray-500 border border-dashed border-gray-200 rounded-2xl bg-gray-50/50">
-        <p className="text-base font-medium">Nenhum horário disponível no momento.</p>
-        <p className="text-sm text-gray-400 mt-1">
-          Por favor, tente novamente mais tarde ou entre em contato com o suporte.
-        </p>
+      <div className="w-full py-16 text-center border border-dashed border-[#2B3A55] rounded-3xl bg-[#162133]/40 space-y-3">
+        <div className="size-12 bg-[#2B3A55]/30 rounded-full flex items-center justify-center mx-auto text-[#AEB8C5]">
+          <svg
+            className="size-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-lg font-bold text-white">Nenhum horário disponível</h3>
+          <p className="text-sm text-[#AEB8C5] max-w-sm mx-auto">
+            No momento não existem horários abertos para agendamento. Novas sessões serão
+            disponibilizadas em breve.
+          </p>
+        </div>
       </div>
     );
   }

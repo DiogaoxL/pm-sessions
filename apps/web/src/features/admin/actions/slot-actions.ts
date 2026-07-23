@@ -3,6 +3,7 @@
 import { getAdminServices } from './factory';
 import { TimeSlotInsert, TimeSlotUpdate } from '../../scheduling/repositories/interfaces';
 import { AdminSlotAlreadyHasParticipantsError } from '../services/admin-time-slot.service';
+import { revalidatePath } from 'next/cache';
 
 // --- Time Slot Actions ---
 
@@ -23,6 +24,8 @@ export async function createSlotAction(
   try {
     const { adminTimeSlotService } = await getAdminServices();
     const slot = await adminTimeSlotService.createSlot(data);
+    revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
     return { success: true, data: slot } as const;
   } catch (error) {
     console.error('[admin] createSlotAction error:', error);
@@ -34,6 +37,8 @@ export async function updateSlotAction(id: string, data: TimeSlotUpdate) {
   try {
     const { adminTimeSlotService } = await getAdminServices();
     const slot = await adminTimeSlotService.updateSlot(id, data);
+    revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
     return { success: true, data: slot } as const;
   } catch (error) {
     if (error instanceof AdminSlotAlreadyHasParticipantsError) {
@@ -51,6 +56,8 @@ export async function closeSlotAction(id: string) {
   try {
     const { adminTimeSlotService } = await getAdminServices();
     const slot = await adminTimeSlotService.closeSlot(id);
+    revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
     return { success: true, data: slot } as const;
   } catch (error) {
     if (error instanceof AdminSlotAlreadyHasParticipantsError) {
@@ -68,6 +75,8 @@ export async function deleteSlotAction(id: string) {
   try {
     const { adminTimeSlotService } = await getAdminServices();
     await adminTimeSlotService.deleteSlot(id);
+    revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
     return { success: true } as const;
   } catch (error) {
     if (error instanceof AdminSlotAlreadyHasParticipantsError) {
@@ -90,6 +99,8 @@ export async function syncSlotCalendarEventsAction(
   try {
     const { adminTimeSlotService } = await getAdminServices();
     await adminTimeSlotService.syncSlotCalendarEvents(id, date, startTime, endTime);
+    revalidatePath('/scheduling');
+    revalidatePath('/admin/dashboard');
     return { success: true } as const;
   } catch (error) {
     console.error('[admin] syncSlotCalendarEventsAction error:', error);
