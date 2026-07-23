@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { TimeSlotWithSessions } from '../../admin/repositories/admin-dashboard.repository';
 import { useToast } from './ui/toaster';
@@ -710,6 +710,41 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
                                           <span className="text-xs text-neutral-500 block">
                                             Host: {session.organizer_email}
                                           </span>
+                                          <div className="flex items-center gap-2 mt-1.5">
+                                            {session.calendar_event_id ? (
+                                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-950/40 text-emerald-400 border border-emerald-500/20">
+                                                <span className="size-1.5 rounded-full bg-emerald-400" />
+                                                Calendar criado
+                                              </span>
+                                            ) : session.current_participants > 0 ? (
+                                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-amber-950/40 text-amber-400 border border-amber-500/20">
+                                                <span className="size-1.5 rounded-full bg-amber-400" />
+                                                Calendar aguardando configuração
+                                              </span>
+                                            ) : (
+                                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900 text-neutral-500 border border-neutral-800">
+                                                <span className="size-1.5 rounded-full bg-neutral-700" />
+                                                Sem convite
+                                              </span>
+                                            )}
+
+                                            {session.meet_url ? (
+                                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-950/40 text-emerald-400 border border-emerald-500/20">
+                                                <span className="size-1.5 rounded-full bg-emerald-400" />
+                                                Meet criado
+                                              </span>
+                                            ) : session.current_participants > 0 ? (
+                                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-amber-950/40 text-amber-400 border border-amber-500/20">
+                                                <span className="size-1.5 rounded-full bg-amber-400" />
+                                                Meet aguardando configuração
+                                              </span>
+                                            ) : (
+                                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900 text-neutral-500 border border-neutral-800">
+                                                <span className="size-1.5 rounded-full bg-neutral-700" />
+                                                Sem meet
+                                              </span>
+                                            )}
+                                          </div>
                                         </div>
 
                                         <div className="flex items-center gap-1.5">

@@ -10,6 +10,12 @@ vi.mock('../../actions/schedule-session', () => ({
   scheduleSessionAction: vi.fn(),
 }));
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    refresh: vi.fn(),
+  }),
+}));
+
 describe('SchedulingForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();

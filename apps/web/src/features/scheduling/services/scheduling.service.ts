@@ -10,6 +10,14 @@ import { ISchedulingService } from './interfaces';
 import { IGoogleCalendarService } from './google-calendar.service';
 import { IHostAllocatorService } from './host-allocator.service';
 
+let hasLoggedConfigWarning = false;
+function logConfigWarningOnce() {
+  if (!hasLoggedConfigWarning) {
+    console.info('[Google Calendar] Integração não configurada. Utilizando disponibilidade local.');
+    hasLoggedConfigWarning = true;
+  }
+}
+
 export class SchedulingService implements ISchedulingService {
   constructor(
     private timeSlotRepository: ITimeSlotRepository,
@@ -23,28 +31,37 @@ export class SchedulingService implements ISchedulingService {
     const dbSlots = await this.timeSlotRepository.selectAvailableSlots();
     if (dbSlots.length === 0) return [];
 
-    const slotsByDate: Record<string, TimeSlot[]> = {};
-    for (const slot of dbSlots) {
-      if (!slotsByDate[slot.date]) {
-        slotsByDate[slot.date] = [];
-      }
-      slotsByDate[slot.date].push(slot);
-    }
-
     const filteredSlots: TimeSlot[] = [];
-    for (const [dateStr, slots] of Object.entries(slotsByDate)) {
-      try {
-        const freeTimeSlots = await this.googleCalendarService.filterFreeSlots(dateStr, slots);
-        const freeKeys = new Set(freeTimeSlots.map((s) => s.start_time + s.end_time));
-        for (const slot of slots) {
-          if (freeKeys.has(slot.start_time + slot.end_time)) {
-            filteredSlots.push(slot);
-          }
+
+    if (!this.googleCalendarService.isCalendarConfigured()) {
+      logConfigWarningOnce();
+      filteredSlots.push(...dbSlots);
+    } else {
+      const slotsByDate: Record<string, TimeSlot[]> = {};
+      for (const slot of dbSlots) {
+        if (!slotsByDate[slot.date]) {
+          slotsByDate[slot.date] = [];
         }
-      } catch (error) {
-        console.error(`Failed to filter slots for date ${dateStr}:`, error);
-        // Fallback: under Google Calendar API failures, keep the slots from DB to avoid blocking the user
-        filteredSlots.push(...slots);
+        slotsByDate[slot.date].push(slot);
+      }
+
+      for (const [dateStr, slots] of Object.entries(slotsByDate)) {
+        try {
+          const freeTimeSlots = await this.googleCalendarService.filterFreeSlots(dateStr, slots);
+          const freeKeys = new Set(freeTimeSlots.map((s) => s.start_time + s.end_time));
+          for (const slot of slots) {
+            if (freeKeys.has(slot.start_time + slot.end_time)) {
+              filteredSlots.push(slot);
+            }
+          }
+        } catch (error) {
+          console.warn(
+            `[Google Calendar] Falha ao filtrar horários para a data ${dateStr}:`,
+            error,
+          );
+          // Fallback: under Google Calendar API failures, keep the slots from DB to avoid blocking the user
+          filteredSlots.push(...slots);
+        }
       }
     }
 
@@ -116,7 +133,13 @@ export class SchedulingService implements ISchedulingService {
     name: string,
     sessionId: string,
     timeSlotId: string,
+    phone?: string | null,
   ): Promise<Participant> {
+    const exists = await this.participantRepository.existsConfirmedParticipant(email, timeSlotId);
+    if (exists) {
+      throw new Error('EMAIL_ALREADY_REGISTERED');
+    }
+
     console.log('[TRACE 3.1] getNextHostEmail — ENTROU');
     const organizerEmail = await this.hostAllocator.getNextHostEmail();
     console.log('[TRACE 3.1] getNextHostEmail — SAIU. organizerEmail:', organizerEmail);
@@ -133,7 +156,7 @@ export class SchedulingService implements ISchedulingService {
       timeSlotId,
       email,
       name,
-      null,
+      phone || null,
       organizerEmail,
     );
     console.log(
@@ -206,11 +229,12 @@ export class SchedulingService implements ISchedulingService {
       session_id: allocation.session_id,
       name,
       email,
-      phone: null,
+      phone: phone || null,
       status: 'CONFIRMED',
       allocated_at: new Date().toISOString(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      organizer_email: allocation.organizer_email,
     };
   }
 

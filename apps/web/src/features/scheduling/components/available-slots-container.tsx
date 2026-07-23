@@ -10,12 +10,32 @@ interface AvailableSlotsContainerProps {
   selectedSlotId?: string;
   onSelectSlot?: (slot: TimeSlot) => void;
   refreshKey?: number;
+  onSlotsLoaded?: (slots: TimeSlot[]) => void;
+}
+
+function areSlotsEqual(a: TimeSlot[], b: TimeSlot[]) {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (
+      a[i].id !== b[i].id ||
+      a[i].status !== b[i].status ||
+      a[i].capacity !== b[i].capacity ||
+      a[i].date !== b[i].date ||
+      a[i].start_time !== b[i].start_time ||
+      a[i].end_time !== b[i].end_time ||
+      a[i].availableSeats !== b[i].availableSeats
+    ) {
+      return false;
+    }
+  }
+  return true;
 }
 
 export function AvailableSlotsContainer({
   selectedSlotId,
   onSelectSlot,
   refreshKey = 0,
+  onSlotsLoaded,
 }: AvailableSlotsContainerProps) {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -30,7 +50,15 @@ export function AvailableSlotsContainer({
         if (!isMounted) return;
 
         if (result.success) {
-          setSlots(result.data);
+          setSlots((prevSlots) => {
+            if (areSlotsEqual(prevSlots, result.data)) {
+              return prevSlots;
+            }
+            return result.data;
+          });
+          if (onSlotsLoaded) {
+            onSlotsLoaded(result.data);
+          }
           setError(null);
         } else {
           setError(result.error);
@@ -47,10 +75,13 @@ export function AvailableSlotsContainer({
 
     loadSlots();
 
+    const interval = setInterval(loadSlots, 3000);
+
     return () => {
       isMounted = false;
+      clearInterval(interval);
     };
-  }, [refreshKey]);
+  }, [refreshKey, onSlotsLoaded]);
 
   if (loading) {
     return <SchedulingSkeleton />;

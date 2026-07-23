@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 
 export interface IGoogleCalendarService {
+  isCalendarConfigured(): boolean;
   checkAvailability(startTime: Date, endTime: Date): Promise<{ start: Date; end: Date }[]>;
   filterFreeSlots(
     dateStr: string,
@@ -37,6 +38,14 @@ export class GoogleCalendarService implements IGoogleCalendarService {
     });
   }
 
+  isCalendarConfigured(): boolean {
+    return !!(
+      process.env.GOOGLE_CLIENT_ID &&
+      process.env.GOOGLE_CLIENT_SECRET &&
+      process.env.GOOGLE_REFRESH_TOKEN
+    );
+  }
+
   async checkAvailability(startTime: Date, endTime: Date): Promise<{ start: Date; end: Date }[]> {
     try {
       const response = await this.calendarClient.freebusy.query({
@@ -53,8 +62,11 @@ export class GoogleCalendarService implements IGoogleCalendarService {
         end: new Date(period.end!),
       }));
     } catch (error) {
-      console.error('Error fetching calendar availability:', error);
-      throw new Error('Failed to fetch availability from Google Calendar');
+      console.warn(
+        '[Google Calendar] Falha ao consultar disponibilidade no Google Calendar (serviço indisponível ou erro de rede):',
+        error,
+      );
+      return [];
     }
   }
 

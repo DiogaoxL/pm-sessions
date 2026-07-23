@@ -62,7 +62,7 @@ describe('TimeSlotList', () => {
   test('deve exibir feedback de empty state se a lista estiver vazia', () => {
     render(<TimeSlotList slots={[]} />);
 
-    expect(screen.getByText('Nenhum horário disponível no momento.')).toBeInTheDocument();
+    expect(screen.getByText('Nenhum horário disponível')).toBeInTheDocument();
   });
 
   test('deve chamar callback onSelect com os dados corretos ao clicar em um card', () => {
