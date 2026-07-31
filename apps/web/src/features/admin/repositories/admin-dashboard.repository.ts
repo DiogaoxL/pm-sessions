@@ -28,29 +28,47 @@ export class AdminDashboardRepository implements IAdminDashboardRepository {
    * Retorna métricas consolidadas para o Dashboard.
    */
   async getDashboardStats(): Promise<AdminDashboardStats> {
-    const [participantsResult, slotsResult, sessionsResult] = await Promise.all([
-      this.supabase
-        .from('participants')
-        .select('id', { count: 'exact', head: true })
-        .eq('status', 'CONFIRMED'),
-      this.supabase
-        .from('time_slots')
-        .select('id', { count: 'exact', head: true })
-        .eq('status', 'OPEN'),
-      this.supabase
-        .from('sessions')
-        .select('id', { count: 'exact', head: true })
-        .eq('status', 'AVAILABLE'),
-    ]);
+    const { count: totalParticipants, error: participantsError } = await this.supabase
+      .from('participants')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'CONFIRMED');
 
-    if (participantsResult.error) throw participantsResult.error;
-    if (slotsResult.error) throw slotsResult.error;
-    if (sessionsResult.error) throw sessionsResult.error;
+    if (participantsError) throw participantsError;
+
+    const { data: openSlots, error: slotsError } = await this.supabase
+      .from('time_slots')
+      .select('id')
+      .eq('status', 'OPEN');
+
+    if (slotsError) throw slotsError;
+
+    const { data: activeSessionsList, error: sessionsError } = await this.supabase
+      .from('sessions')
+      .select('time_slot_id, capacity, current_participants, status')
+      .in('status', ['AVAILABLE', 'FULL']);
+
+    if (sessionsError) throw sessionsError;
+
+    const activeSessionsCount = activeSessionsList?.length ?? 0;
+
+    const openSlotIds = new Set(openSlots?.map((s) => s.id) || []);
+    const slotsWithVacancies = new Set(
+      activeSessionsList
+        ?.filter((s) => s.status === 'AVAILABLE' && s.current_participants < s.capacity)
+        .map((s) => s.time_slot_id) || [],
+    );
+
+    let availableSlotsCount = 0;
+    for (const slotId of openSlotIds) {
+      if (slotsWithVacancies.has(slotId)) {
+        availableSlotsCount++;
+      }
+    }
 
     return {
-      totalParticipants: participantsResult.count ?? 0,
-      availableSlots: slotsResult.count ?? 0,
-      activeSessions: sessionsResult.count ?? 0,
+      totalParticipants: totalParticipants ?? 0,
+      availableSlots: availableSlotsCount,
+      activeSessions: activeSessionsCount,
     };
   }
 

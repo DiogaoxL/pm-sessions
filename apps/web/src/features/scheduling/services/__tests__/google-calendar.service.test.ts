@@ -78,7 +78,7 @@ describe('GoogleCalendarService', () => {
         data: {
           calendars: {
             primary: {
-              busy: [{ start: '2026-07-20T14:00:00Z', end: '2026-07-20T15:00:00Z' }],
+              busy: [{ start: '2026-07-20T14:00:00-03:00', end: '2026-07-20T15:00:00-03:00' }],
             },
           },
         },
@@ -111,7 +111,6 @@ describe('GoogleCalendarService', () => {
         'Interview Session',
         new Date('2026-07-20T14:00:00Z'),
         new Date('2026-07-20T15:00:00Z'),
-        'admin@example.com',
       );
 
       expect(result.eventId).toBe('google-event-123');
@@ -121,9 +120,9 @@ describe('GoogleCalendarService', () => {
 
     it('deve propagar erro amigavel se insert falhar', async () => {
       mockInsert.mockRejectedValue(new Error('Google API Error'));
-      await expect(
-        service.createEvent('Test', new Date(), new Date(), 'admin@example.com'),
-      ).rejects.toThrow('Failed to create event in Google Calendar');
+      await expect(service.createEvent('Test', new Date(), new Date())).rejects.toThrow(
+        'Failed to create event in Google Calendar',
+      );
     });
   });
 
@@ -131,7 +130,7 @@ describe('GoogleCalendarService', () => {
     it('deve disparar requisicao patch com a lista de e-mails', async () => {
       mockPatch.mockResolvedValue({});
 
-      await service.syncAttendees('event-id-123', ['attendee@example.com']);
+      await service.syncAttendees('event-id-123', ['attendee@example.com'], 'Test Description');
 
       expect(mockPatch).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -139,6 +138,7 @@ describe('GoogleCalendarService', () => {
           sendUpdates: 'all',
           requestBody: {
             attendees: [{ email: 'attendee@example.com' }],
+            description: 'Test Description',
           },
         }),
       );
@@ -146,7 +146,7 @@ describe('GoogleCalendarService', () => {
 
     it('deve propagar erro amigavel se patch falhar', async () => {
       mockPatch.mockRejectedValue(new Error('Google API Error'));
-      await expect(service.syncAttendees('event-id', [])).rejects.toThrow(
+      await expect(service.syncAttendees('event-id', [], 'Desc')).rejects.toThrow(
         'Failed to sync attendees in Google Calendar',
       );
     });

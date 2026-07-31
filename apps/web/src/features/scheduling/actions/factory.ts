@@ -1,4 +1,4 @@
-import { createServerClient } from '@/shared/lib/supabase/server';
+import { supabaseAdmin } from '@/shared/lib/supabase/admin';
 import { SchedulingService } from '../services/scheduling.service';
 import { TimeSlotRepository } from '../repositories/time-slot.repository';
 import { SessionRepository } from '../repositories/session.repository';
@@ -11,13 +11,11 @@ import { HostAllocatorService } from '../services/host-allocator.service';
  * with its repository dependencies using the server Supabase client.
  */
 export async function getSchedulingService(): Promise<SchedulingService> {
-  const supabase = await createServerClient();
-
-  const timeSlotRepository = new TimeSlotRepository(supabase);
-  const sessionRepository = new SessionRepository(supabase);
-  const participantRepository = new ParticipantRepository(supabase);
+  const timeSlotRepository = new TimeSlotRepository(supabaseAdmin);
+  const sessionRepository = new SessionRepository(supabaseAdmin);
+  const participantRepository = new ParticipantRepository(supabaseAdmin);
   const googleCalendarService = new GoogleCalendarService();
-  const hostAllocator = new HostAllocatorService(supabase);
+  const hostAllocator = new HostAllocatorService(supabaseAdmin, googleCalendarService);
 
   return new SchedulingService(
     timeSlotRepository,

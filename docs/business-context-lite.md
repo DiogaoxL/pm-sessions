@@ -1,336 +1,44 @@
-# Business Context
+# Business Context — PM Sessions
 
-> Documento de Contexto de Negócio
-
----
-
-# Visão do Produto
-
-O PM Sessions é uma plataforma web desenvolvida para automatizar a orquestração de entrevistas em grupo e sessões simultâneas, simplificando a operação da equipe da Pulse Mais e proporcionando uma experiência intuitiva para candidatos.
-
-O produto utiliza o Google Calendar como agenda oficial e distribui automaticamente os participantes entre sessões paralelas de um mesmo horário, eliminando limitações presentes nas ferramentas tradicionais de agendamento.
+This document outlines the product vision, user personas, Journeys, and final business rules of the scheduling system.
 
 ---
 
-# Problema de Negócio
+## 1. Product Vision
 
-A equipe da Pulse Mais realiza programas que possuem entrevistas como etapa obrigatória do processo seletivo.
-
-O processo atual apresenta desafios operacionais:
-
-- distribuição manual dos candidatos;
-- criação manual das salas;
-- envio manual dos links das entrevistas;
-- dificuldade para acompanhar vagas disponíveis;
-- impossibilidade de criar múltiplas sessões simultâneas utilizando ferramentas convencionais.
-
-Esses fatores aumentam o tempo operacional e elevam a possibilidade de erros.
+PM Sessions is a platform built for Pulse Mais to automate the orchestration of group interviews and parallel scheduling sessions. The product uses Google Calendar as the single source of truth for meetings, dynamically allocating candidates to available sessions and generating Google Meet links on demand.
 
 ---
 
-# Objetivos do Produto
+## 2. Personas and Journeys
 
-O produto deverá:
+### Administrador
 
-- automatizar o processo de agendamento;
-- reduzir atividades operacionais da equipe;
-- permitir múltiplas sessões no mesmo horário;
-- utilizar o Google Calendar como agenda oficial;
-- enviar automaticamente os convites aos candidatos;
-- proporcionar uma experiência semelhante às melhores ferramentas de agendamento do mercado.
+A recruiter or coordinator managing candidate sessions.
 
----
+- **Journey:**
+  1. Authenticates using Google OAuth.
+  2. Creates Time Slots and configures capacity/session limits.
+  3. Tracks attendee counts and details in the Admin Dashboard.
+  4. Manually closes/opens slots, or deletes slots with option toggles.
+  5. Exports attendee lists to CSV formats.
 
-# Personas
+### Candidato
 
-## Administrador
+A applicant booking an interview slot.
 
-Responsável pela organização das entrevistas.
-
-### Objetivos
-
-- configurar horários;
-- acompanhar inscrições;
-- visualizar participantes;
-- exportar listas;
-- administrar sessões.
+- **Journey:**
+  1. Accesses the public scheduling page `/agendamento`.
+  2. Selects an open date and time slot.
+  3. Fills out the booking form (Name, Email, Phone).
+  4. Receives a Google Calendar invitation containing the Google Meet link.
 
 ---
 
-## Candidato
-
-Pessoa inscrita em um programa da Pulse Mais.
-
-### Objetivos
-
-- escolher uma data disponível;
-- escolher um horário;
-- confirmar participação;
-- receber automaticamente o convite.
-
----
-
-# Jornada do Administrador
-
-1. Realiza login com Google.
-2. Autoriza acesso ao Google Calendar.
-3. Visualiza seus horários disponíveis.
-4. Configura capacidade por sessão.
-5. Configura quantidade máxima de sessões paralelas.
-6. Publica os horários.
-7. Acompanha as inscrições.
-8. Exporta participantes quando necessário.
-
----
-
-# Jornada do Candidato
-
-1. Acessa a página pública.
-2. Visualiza calendário.
-3. Escolhe uma data.
-4. Escolhe um horário.
-5. Preenche Nome.
-6. Preenche E-mail.
-7. Preenche Telefone.
-8. Confirma o agendamento.
-9. Recebe o convite do Google Calendar.
-
----
-
-# Regras de Negócio
-
-## RN-001
-
-O administrador é responsável por definir os horários disponíveis para entrevistas.
-
----
-
-## RN-002
-
-Cada horário possui uma capacidade máxima de participantes por sessão.
-
-Exemplo:
-
-09:00
-
-Capacidade: 4 participantes
-
----
-
-## RN-003
-
-Cada horário poderá possuir múltiplas sessões paralelas.
-
-Exemplo:
-
-09:00
-
-Sala 1
-
-Sala 2
-
-Sala 3
-
----
-
-## RN-004
-
-O candidato nunca escolhe a sala.
-
-A distribuição é totalmente automática.
-
----
-
-## RN-005
-
-Apenas uma sessão permanece aberta por vez.
-
-Enquanto houver vagas na Sala 1, nenhuma outra sala poderá receber candidatos.
-
----
-
-## RN-006
-
-Ao atingir a capacidade máxima da sessão atual, o sistema deverá liberar automaticamente a próxima sessão.
-
----
-
-## RN-007
-
-Ao atingir o número máximo de sessões configuradas, o horário será considerado indisponível.
-
----
-
-## RN-008
-
-Cada sessão deverá possuir um evento próprio no Google Calendar.
-
----
-
-## RN-009
-
-Cada evento deverá possuir um Google Meet associado.
-
----
-
-## RN-010
-
-Após a confirmação do agendamento, o candidato deverá receber automaticamente o convite do Google Calendar.
-
----
-
-## RN-011
-
-Os participantes não poderão visualizar informações de outros participantes.
-
----
-
-## RN-012
-
-Somente administradores autenticados poderão visualizar participantes.
-
----
-
-## RN-013
-
-O administrador poderá remover participantes de uma sessão.
-
-Após a remoção, a vaga volta a ficar disponível.
-
----
-
-## RN-014
-
-O administrador poderá exportar os participantes de qualquer sessão.
-
----
-
-## RN-015
-
-A existência de eventos previamente cadastrados na agenda do entrevistador não impedirá a criação de novas Sessions.
-
-O PM Sessions utilizará apenas os horários previamente disponibilizados pelo administrador como fonte oficial de disponibilidade. A agenda pessoal do entrevistador não determina automaticamente a disponibilidade dos horários publicados.
-
----
-
-# Regras de Distribuição
-
-O sistema sempre deverá preencher completamente uma sessão antes de iniciar a próxima.
-
-Exemplo:
-
-09:00
-
-Sala 1
-
-4/4
-
-↓
-
-Sala 2
-
-0/4
-
-↓
-
-Sala 3
-
-0/4
-
-Nunca:
-
-Sala 1
-
-2/4
-
-Sala 2
-
-2/4
-
----
-
-# Campos do Agendamento
-
-Obrigatórios
-
-- Nome
-- E-mail
-- Telefone
-
-Opcional
-
-- Observações
-
----
-
-# Critérios de Aceite
-
-## Agendamento
-
-- o candidato consegue visualizar horários disponíveis;
-- consegue concluir o agendamento;
-- recebe o convite automaticamente.
-
----
-
-## Distribuição
-
-- participantes são distribuídos automaticamente;
-- nenhuma sessão posterior recebe candidatos antes da anterior lotar.
-
----
-
-## Administração
-
-- administrador consegue visualizar participantes;
-- consegue remover participantes;
-- consegue exportar participantes.
-
----
-
-# MVP
-
-O MVP contempla:
-
-- login Google;
-- integração Google Calendar;
-- integração Google Meet;
-- calendário público;
-- distribuição automática;
-- painel administrativo;
-- exportação CSV.
-
----
-
-# Fora do MVP
-
-- lista de espera;
-- reagendamento pelo candidato;
-- notificações WhatsApp;
-- múltiplos calendários;
-- aplicativo mobile;
-- analytics avançado.
-
----
-
-# Glossário
-
-**Horário**
-
-Faixa de tempo disponibilizada para entrevistas.
-
-**Sessão**
-
-Evento específico dentro de um horário.
-
-**Capacidade**
-
-Quantidade máxima de participantes de uma sessão.
-
-**Administrador**
-
-Usuário responsável pela gestão das entrevistas.
-
-**Candidato**
-
-Pessoa que agenda uma entrevista.
+## 3. Core Business Rules
+
+- **Slot Closing (Fechar Slot):** When closed, a slot's status changes to `CLOSED`. The slot is immediately removed from the public scheduling page. However, all Google Calendar events, Google Meet links, and registered participants remain intact. This ensures historic recording data, transcriptions, and invite records are preserved.
+- **Smart Deletion (Excluir Slot):** Deletion allows two operational modes:
+  1. **Apenas da Plataforma (default):** Removes the slot and its session entries from the database, but leaves all Google Calendar events untouched. Useful for historical record keeping.
+  2. **Plataforma + Google Calendar:** Removes the database records and deletes the corresponding events from the Google Calendar.
+- **Auto Session Allocation:** The system populates sessions sequentially. Candidates are only placed into a subsequent parallel session once the active session reaches its maximum capacity.

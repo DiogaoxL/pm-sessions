@@ -69,7 +69,28 @@ export async function removeParticipantAction(participantId: string) {
       try {
         const remaining = await participantRepository.getParticipantsBySession(removed.session_id);
         const emails = remaining.map((p) => p.email);
-        await googleCalendarService.syncAttendees(session.calendar_event_id, emails);
+
+        if (emails.length === 0) {
+          // Se não restam participantes, remove o evento do calendário e limpa a sessão no banco
+          await googleCalendarService.deleteEvent(session.calendar_event_id);
+          await sessionRepository.updateSessionCalendar(session.id, null, null);
+        } else {
+          // Caso contrário, sincroniza a nova lista de e-mails
+          const participantsLines = remaining.map((p) => `${p.name} — ${p.email}`).join('\n');
+          const eventDescription = [
+            'Participantes:',
+            participantsLines,
+            '',
+            'Sessão:',
+            `${remaining.length}/${session.capacity} participantes`,
+          ].join('\n');
+
+          await googleCalendarService.syncAttendees(
+            session.calendar_event_id,
+            emails,
+            eventDescription,
+          );
+        }
       } catch (calendarError) {
         // Rollback: restaura estado do participante e incrementa sessão
         console.error(
@@ -115,8 +136,12 @@ export async function removeParticipantAction(participantId: string) {
  * Em caso de falha no Google Calendar, faz rollback da movimentação local.
  */
 export async function moveParticipantAction(participantId: string, targetSessionId: string) {
-  const { adminParticipantService, participantRepository, googleCalendarService } =
-    await getAdminServices();
+  const {
+    adminParticipantService,
+    participantRepository,
+    sessionRepository,
+    googleCalendarService,
+  } = await getAdminServices();
 
   try {
     // 1. Move localmente (Task 04)
@@ -130,7 +155,25 @@ export async function moveParticipantAction(participantId: string, targetSession
           sourceSession.id,
         );
         const sourceEmails = sourceParticipants.map((p) => p.email);
-        await googleCalendarService.syncAttendees(sourceSession.calendar_event_id, sourceEmails);
+
+        if (sourceEmails.length === 0) {
+          await googleCalendarService.deleteEvent(sourceSession.calendar_event_id);
+          await sessionRepository.updateSessionCalendar(sourceSession.id, null, null);
+        } else {
+          const sourceLines = sourceParticipants.map((p) => `${p.name} — ${p.email}`).join('\n');
+          const sourceDesc = [
+            'Participantes:',
+            sourceLines,
+            '',
+            'Sessão:',
+            `${sourceParticipants.length}/${sourceSession.capacity} participantes`,
+          ].join('\n');
+          await googleCalendarService.syncAttendees(
+            sourceSession.calendar_event_id,
+            sourceEmails,
+            sourceDesc,
+          );
+        }
       } catch (calendarError) {
         console.error('[admin] moveParticipantAction — Source Calendar sync failed, rolling back', {
           session_id: sourceSession.id,
@@ -155,7 +198,20 @@ export async function moveParticipantAction(participantId: string, targetSession
           targetSession.id,
         );
         const targetEmails = targetParticipants.map((p) => p.email);
-        await googleCalendarService.syncAttendees(targetSession.calendar_event_id, targetEmails);
+
+        const targetLines = targetParticipants.map((p) => `${p.name} — ${p.email}`).join('\n');
+        const targetDesc = [
+          'Participantes:',
+          targetLines,
+          '',
+          'Sessão:',
+          `${targetParticipants.length}/${targetSession.capacity} participantes`,
+        ].join('\n');
+        await googleCalendarService.syncAttendees(
+          targetSession.calendar_event_id,
+          targetEmails,
+          targetDesc,
+        );
       } catch (calendarError) {
         console.error('[admin] moveParticipantAction — Target Calendar sync failed, rolling back', {
           session_id: targetSession.id,
@@ -181,12 +237,56 @@ export async function moveParticipantAction(participantId: string, targetSession
   }
 }
 
-// --- Update Session Capacity Action (Task 04) ---
-
 export async function updateSessionCapacityAction(sessionId: string, newCapacity: number) {
+  const {
+    adminParticipantService,
+    participantRepository,
+    sessionRepository,
+    googleCalendarService,
+  } = await getAdminServices();
+
+  const originalSession = await sessionRepository.findSessionById(sessionId);
+  if (!originalSession) {
+    return { success: false, error: 'Sessão não encontrada' } as const;
+  }
+
   try {
-    const { adminParticipantService } = await getAdminServices();
     const session = await adminParticipantService.updateSessionCapacity(sessionId, newCapacity);
+
+    if (session.calendar_event_id) {
+      try {
+        const participants = await participantRepository.getParticipantsBySession(sessionId);
+        const emails = participants.map((p) => p.email);
+        const participantsLines = participants.map((p) => `${p.name} — ${p.email}`).join('\n');
+
+        const eventDescription = [
+          'Participantes:',
+          participantsLines,
+          '',
+          'Sessão:',
+          `${participants.length}/${newCapacity} participantes`,
+        ].join('\n');
+
+        await googleCalendarService.syncAttendees(
+          session.calendar_event_id,
+          emails,
+          eventDescription,
+        );
+      } catch (calendarError) {
+        console.error(
+          '[admin] updateSessionCapacityAction — Google Calendar sync failed, rolling back capacity update',
+          calendarError,
+        );
+        // Rollback capacity update
+        await adminParticipantService.updateSessionCapacity(sessionId, originalSession.capacity);
+        return {
+          success: false,
+          error:
+            'Falha ao sincronizar a capacidade com o Google Calendar. A alteração foi revertida.',
+        } as const;
+      }
+    }
+
     revalidatePath('/scheduling');
     revalidatePath('/admin/dashboard');
     return { success: true, data: session } as const;
@@ -199,10 +299,16 @@ export async function createSessionAction(
   timeSlotId: string,
   organizerEmail: string,
   capacity: number,
+  title?: string,
 ) {
   try {
     const { sessionRepository } = await getAdminServices();
-    const session = await sessionRepository.createSession(timeSlotId, organizerEmail, capacity);
+    const session = await sessionRepository.createSession(
+      timeSlotId,
+      organizerEmail,
+      capacity,
+      title,
+    );
     revalidatePath('/scheduling');
     revalidatePath('/admin/dashboard');
     return { success: true, data: session } as const;

@@ -25,5 +25,13 @@ export async function createServerClient() {
         }
       },
     },
+    global: {
+      fetch: (url, options) => {
+        return fetch(url, {
+          ...options,
+          cache: 'no-store',
+        });
+      },
+    },
   });
 }

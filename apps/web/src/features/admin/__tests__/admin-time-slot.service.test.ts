@@ -60,6 +60,8 @@ describe('AdminTimeSlotService', () => {
       getNextHostEmail: vi.fn().mockResolvedValue('host@test.com'),
     };
     mockGoogleCalendar = {
+      isCalendarConfigured: vi.fn().mockReturnValue(true),
+      getPrimaryCalendarEmail: vi.fn().mockResolvedValue('host@test.com'),
       checkAvailability: vi.fn(),
       filterFreeSlots: vi.fn(),
       createEvent: vi.fn(),
@@ -106,27 +108,116 @@ describe('AdminTimeSlotService', () => {
   });
 
   describe('closeSlot', () => {
-    it('deve fechar o slot, remover do Google Calendar e rodar closeTimeSlotAtomic', async () => {
+    it('Caso 1: deve fechar o slot alterando apenas o status para CLOSED no banco, sem chamar Google Calendar', async () => {
+      vi.mocked(repo.closeTimeSlot).mockResolvedValue({ ...mockSlot, status: 'CLOSED' });
+
+      const result = await service.closeSlot('slot-1');
+      expect(mockGoogleCalendar.deleteEvent).not.toHaveBeenCalled();
+      expect(repo.closeTimeSlot).toHaveBeenCalledWith('slot-1');
+      expect(result.status).toBe('CLOSED');
+    });
+  });
+
+  describe('updateSlot / Reabrir Slot', () => {
+    it('Caso 2: deve reabrir o slot alterando o status de volta para OPEN', async () => {
+      await service.updateSlot('slot-1', { status: 'OPEN' });
+      expect(repo.updateTimeSlot).toHaveBeenCalledWith('slot-1', { status: 'OPEN' });
+    });
+  });
+
+  describe('deleteSlot', () => {
+    it('Caso 1: deve excluir apenas do Dashboard quando deleteCalendarEvents = false (evento continua existindo no Google)', async () => {
+      vi.mocked(repo.findTimeSlotById).mockResolvedValue({ ...mockSlot, status: 'CLOSED' });
       vi.mocked(mockSessionRepo.findSessionsByTimeSlot).mockResolvedValue([
         {
           id: 'session-1',
           time_slot_id: 'slot-1',
           organizer_email: 'host@test.com',
           capacity: 5,
-          current_participants: 2,
+          current_participants: 0,
           calendar_event_id: 'cal-event-1',
           meet_url: null,
+          title: 'Entrevista em Grupo',
           created_at: '',
           updated_at: '',
           status: 'AVAILABLE',
         },
       ]);
-      vi.mocked(repo.findTimeSlotById).mockResolvedValue({ ...mockSlot, status: 'CLOSED' });
 
-      const result = await service.closeSlot('slot-1');
+      await service.deleteSlot('slot-1', false);
+      expect(mockGoogleCalendar.deleteEvent).not.toHaveBeenCalled();
+      expect(repo.deleteTimeSlot).toHaveBeenCalledWith('slot-1');
+    });
+
+    it('Caso 2: deve excluir Dashboard + Google Calendar quando deleteCalendarEvents = true', async () => {
+      vi.mocked(repo.findTimeSlotById).mockResolvedValue({ ...mockSlot, status: 'CLOSED' });
+      vi.mocked(mockSessionRepo.findSessionsByTimeSlot).mockResolvedValue([
+        {
+          id: 'session-1',
+          time_slot_id: 'slot-1',
+          organizer_email: 'host@test.com',
+          capacity: 5,
+          current_participants: 0,
+          calendar_event_id: 'cal-event-1',
+          meet_url: null,
+          title: 'Entrevista em Grupo',
+          created_at: '',
+          updated_at: '',
+          status: 'AVAILABLE',
+        },
+      ]);
+
+      await service.deleteSlot('slot-1', true);
       expect(mockGoogleCalendar.deleteEvent).toHaveBeenCalledWith('cal-event-1');
-      expect(repo.closeTimeSlotAtomic).toHaveBeenCalledWith('slot-1');
-      expect(result.status).toBe('CLOSED');
+      expect(repo.deleteTimeSlot).toHaveBeenCalledWith('slot-1');
+    });
+
+    it('Caso 3: deve lançar erro amigável e manter banco de dados íntegro quando a exclusão do Calendar falhar', async () => {
+      vi.mocked(repo.findTimeSlotById).mockResolvedValue({ ...mockSlot, status: 'CLOSED' });
+      vi.mocked(mockSessionRepo.findSessionsByTimeSlot).mockResolvedValue([
+        {
+          id: 'session-1',
+          time_slot_id: 'slot-1',
+          organizer_email: 'host@test.com',
+          capacity: 5,
+          current_participants: 0,
+          calendar_event_id: 'cal-event-1',
+          meet_url: null,
+          title: 'Entrevista em Grupo',
+          created_at: '',
+          updated_at: '',
+          status: 'AVAILABLE',
+        },
+      ]);
+      vi.mocked(mockGoogleCalendar.deleteEvent).mockRejectedValue(new Error('Google API Error'));
+
+      await expect(service.deleteSlot('slot-1', true)).rejects.toThrow(
+        'Não foi possível excluir o evento do Google Calendar. Nenhuma alteração foi realizada.',
+      );
+      expect(repo.deleteTimeSlot).not.toHaveBeenCalled();
+    });
+
+    it('Caso 4: deve continuar fluxo de exclusão normalmente se slot não possuir calendar_event_id', async () => {
+      vi.mocked(repo.findTimeSlotById).mockResolvedValue({ ...mockSlot, status: 'CLOSED' });
+      vi.mocked(mockSessionRepo.findSessionsByTimeSlot).mockResolvedValue([
+        {
+          id: 'session-1',
+          time_slot_id: 'slot-1',
+          organizer_email: 'host@test.com',
+          capacity: 5,
+          current_participants: 0,
+          calendar_event_id: null,
+          meet_url: null,
+          title: 'Entrevista em Grupo',
+          created_at: '',
+          updated_at: '',
+          status: 'AVAILABLE',
+        },
+      ]);
+
+      await service.deleteSlot('slot-1', true);
+      expect(mockGoogleCalendar.deleteEvent).not.toHaveBeenCalled();
+      expect(repo.deleteTimeSlot).toHaveBeenCalledWith('slot-1');
     });
   });
 });

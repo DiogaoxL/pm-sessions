@@ -81,7 +81,7 @@ export interface ISessionRepository {
    */
   updateSessionCalendar(
     sessionId: string,
-    calendarEventId: string,
+    calendarEventId: string | null,
     meetUrl: string | null,
   ): Promise<void>;
 
@@ -118,7 +118,12 @@ export interface ISessionRepository {
   /**
    * Cria uma nova sessão manualmente chamando a RPC create_session_manual.
    */
-  createSession(timeSlotId: string, organizerEmail: string, capacity: number): Promise<Session>;
+  createSession(
+    timeSlotId: string,
+    organizerEmail: string,
+    capacity: number,
+    title?: string,
+  ): Promise<Session>;
 }
 
 export interface IParticipantRepository {

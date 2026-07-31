@@ -41,6 +41,8 @@ export class TimeSlotRepository implements ITimeSlotRepository {
       .order('date', { ascending: true })
       .order('start_time', { ascending: true });
 
+    console.log('[PUBLIC] Slots encontrados:', data);
+
     if (error) {
       throw error;
     }

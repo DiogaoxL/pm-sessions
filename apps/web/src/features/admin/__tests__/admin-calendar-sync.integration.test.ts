@@ -32,6 +32,7 @@ const mockSession: Session = {
   capacity: 3,
   current_participants: 1,
   status: 'AVAILABLE',
+  title: 'Entrevista em Grupo',
   created_at: '',
   updated_at: '',
 };
@@ -74,6 +75,8 @@ function makeCalendarService(
   overrides: Partial<IGoogleCalendarService> = {},
 ): IGoogleCalendarService {
   return {
+    isCalendarConfigured: vi.fn().mockReturnValue(true),
+    getPrimaryCalendarEmail: vi.fn().mockResolvedValue('host@test.com'),
     checkAvailability: vi.fn(),
     filterFreeSlots: vi.fn(),
     createEvent: vi.fn(),
@@ -115,7 +118,7 @@ async function simulateRemoveParticipantAction(
     try {
       const remaining = await participantRepo.getParticipantsBySession(removed.session_id);
       const emails = remaining.map((p: Participant) => p.email);
-      await calendarService.syncAttendees(session.calendar_event_id, emails);
+      await calendarService.syncAttendees(session.calendar_event_id, emails, 'Description');
     } catch (calendarError) {
       console.error('[test] Calendar sync failed, rolling back', {
         session_id: removed.session_id,
@@ -159,7 +162,7 @@ describe('Admin Actions — Google Calendar Integration (Task 05)', () => {
 
       expect(result.success).toBe(true);
       expect(sessionRepo.removeParticipant).toHaveBeenCalledWith('part-1');
-      expect(calendarService.syncAttendees).toHaveBeenCalledWith('gcal-event-1', []);
+      expect(calendarService.syncAttendees).toHaveBeenCalledWith('gcal-event-1', [], 'Description');
     });
 
     it('deve reverter remoção local quando Google Calendar falhar', async () => {

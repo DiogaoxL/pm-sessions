@@ -1,4 +1,4 @@
-import { createServerClient } from '@/shared/lib/supabase/server';
+import { supabaseAdmin } from '@/shared/lib/supabase/admin';
 import { TimeSlotRepository } from '../../scheduling/repositories/time-slot.repository';
 import { SessionRepository } from '../../scheduling/repositories/session.repository';
 import { ParticipantRepository } from '../../scheduling/repositories/participant.repository';
@@ -12,14 +12,12 @@ import { HostAllocatorService } from '../../scheduling/services/host-allocator.s
  * Factory que instancia os serviços administrativos com suas dependências.
  */
 export async function getAdminServices() {
-  const supabase = await createServerClient();
-
-  const timeSlotRepository = new TimeSlotRepository(supabase);
-  const sessionRepository = new SessionRepository(supabase);
-  const participantRepository = new ParticipantRepository(supabase);
-  const adminDashboardRepository = new AdminDashboardRepository(supabase);
+  const timeSlotRepository = new TimeSlotRepository(supabaseAdmin);
+  const sessionRepository = new SessionRepository(supabaseAdmin);
+  const participantRepository = new ParticipantRepository(supabaseAdmin);
+  const adminDashboardRepository = new AdminDashboardRepository(supabaseAdmin);
   const googleCalendarService = new GoogleCalendarService();
-  const hostAllocator = new HostAllocatorService(supabase);
+  const hostAllocator = new HostAllocatorService(supabaseAdmin, googleCalendarService);
 
   const adminTimeSlotService = new AdminTimeSlotService(
     timeSlotRepository,

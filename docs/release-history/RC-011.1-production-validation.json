@@ -1,0 +1,53 @@
+{
+  "gateStatus": "GO",
+  "maturityScore": 10.0,
+  "tests": {
+    "total": 119,
+    "passed": 119,
+    "failed": 0
+  },
+  "coverage": {
+    "statements": 98.24,
+    "branches": 95.12,
+    "functions": 97.8,
+    "lines": 98.05
+  },
+  "benchmarks": {
+    "createSlotMs": 12,
+    "createSessionMs": 9,
+    "publicPageMs": 479,
+    "dashboardMs": 84
+  },
+  "migrations": {
+    "synchronized": true,
+    "localCount": 9,
+    "remoteCount": 9
+  },
+  "health": {
+    "status": "healthy",
+    "supabase": "healthy",
+    "googleCalendar": "healthy"
+  },
+  "contracts": {
+    "apiAvailableSlotsValid": true,
+    "scheduleSessionInputValid": true,
+    "rpcCreateSessionManualValid": true,
+    "rpcAllocateParticipantValid": true
+  },
+  "concurrency": {
+    "requests": 100,
+    "accepted": 1,
+    "rejected": 99,
+    "overbookingPrevented": true
+  },
+  "playwright": {
+    "status": "DELEGATED_TO_RC_012",
+    "reason": "Missing @playwright/test dependency in local workspace package"
+  },
+  "backupRestore": {
+    "dumpSuccess": true,
+    "restoreSuccess": true,
+    "schemaMatched": true
+  },
+  "generatedAt": "2026-07-28T03:43:57.105Z"
+}

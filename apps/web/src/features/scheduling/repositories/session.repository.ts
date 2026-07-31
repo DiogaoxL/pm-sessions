@@ -55,7 +55,7 @@ export class SessionRepository implements ISessionRepository {
 
   async updateSessionCalendar(
     sessionId: string,
-    calendarEventId: string,
+    calendarEventId: string | null,
     meetUrl: string | null,
   ): Promise<void> {
     const { error } = await this.supabase
@@ -186,6 +186,7 @@ export class SessionRepository implements ISessionRepository {
     timeSlotId: string,
     organizerEmail: string,
     capacity: number,
+    title?: string,
   ): Promise<Session> {
     const { data, error } = await (
       this.supabase.rpc as unknown as (
@@ -196,6 +197,7 @@ export class SessionRepository implements ISessionRepository {
       p_time_slot_id: timeSlotId,
       p_organizer_email: organizerEmail,
       p_capacity: capacity,
+      p_title: title || 'Entrevista em Grupo',
     });
 
     if (error || !data || data.length === 0) {

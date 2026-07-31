@@ -8,6 +8,7 @@ import { CalendarAuthBanner } from '@/features/admin/components/calendar-auth-ba
 import { ToastProvider } from '@/features/admin/components/ui/toaster';
 import { AdminToolbar } from '@/features/admin/components/ui/admin-toolbar';
 import { AdminSection } from '@/features/admin/components/ui/admin-section';
+import { DashboardRefresher } from '@/features/admin/components/dashboard-refresher';
 
 export const metadata = {
   title: 'Dashboard - PM Sessions',
@@ -43,6 +44,7 @@ export default async function DashboardPage() {
 
   return (
     <ToastProvider>
+      <DashboardRefresher />
       <div className="flex flex-col flex-1 bg-neutral-950 text-white min-h-screen">
         {/* Header */}
         <header className="border-b border-neutral-800 bg-neutral-900/50 backdrop-blur-md sticky top-0 z-50">

@@ -1,0 +1,54 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`UI Component Snapshot Testing > should match snapshot of TimeSlotCard when status is CLOSED/full 1`] = `
+<button
+  aria-label="Horário das 14:00 às 15:00. Status: Indisponível. Vagas: 0."
+  aria-pressed="false"
+  class="w-full p-4 rounded-xl border text-left transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 border-gray-100 text-gray-400 cursor-not-allowed"
+  disabled=""
+  type="button"
+>
+  <div
+    class="flex items-center justify-between"
+  >
+    <span
+      class="font-semibold text-lg"
+    >
+      14:00
+       - 
+      15:00
+    </span>
+    <span
+      class="text-xs px-2.5 py-1 rounded-full font-medium bg-gray-200 text-gray-600"
+    >
+      Esgotado
+    </span>
+  </div>
+</button>
+`;
+
+exports[`UI Component Snapshot Testing > should match snapshot of TimeSlotCard when status is OPEN 1`] = `
+<button
+  aria-label="Horário das 14:00 às 15:00. Status: Disponível. Vagas: 2."
+  aria-pressed="false"
+  class="w-full p-4 rounded-xl border text-left transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-500 bg-white border-gray-200 text-gray-800 hover:border-gray-300 hover:bg-gray-50 cursor-pointer"
+  type="button"
+>
+  <div
+    class="flex items-center justify-between"
+  >
+    <span
+      class="font-semibold text-lg"
+    >
+      14:00
+       - 
+      15:00
+    </span>
+    <span
+      class="text-xs px-2.5 py-1 rounded-full font-medium bg-green-100 text-green-800"
+    >
+      2 vagas
+    </span>
+  </div>
+</button>
+`;

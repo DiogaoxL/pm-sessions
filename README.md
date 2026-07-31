@@ -1,111 +1,103 @@
 # PM Sessions
 
-> Plataforma corporativa de orquestração de processos seletivos e sessões em grupo.
+> Enterprise dynamic interview scheduling orchestration platform.
 
 ---
 
-## 1. Descrição do Projeto & Objetivo
+## 1. Stack & Architecture
 
-O **PM Sessions** é uma solução corporativa estruturada no modelo monorepo para facilitar a gestão de disponibilidade, reserva de horários (time slots) e o andamento de sessões de dinâmica em grupo para processos seletivos. O sistema integra-se de forma nativa ao Google Calendar e utiliza Supabase para persistência e autenticação de administradores.
-
----
-
-## 2. Stack Tecnológico
-
-- **Monorepo & Workspace Manager**: `pnpm`
-- **Core Framework**: Next.js 16 (App Router & React 19)
-- **Database & Authentication**: Supabase (PostgreSQL, Row Level Security e Supabase Auth)
-- **Styling**: Tailwind CSS v4 & shadcn/ui (Base UI)
-- **OAuth Integrations**: Google OAuth (Google Calendar API & People API)
-- **Quality Gates**: ESLint, Prettier, Husky, lint-staged, Commitlint
+- **Framework:** Next.js App Router (React 19 & Next.js 16)
+- **Language:** TypeScript
+- **Database & Auth:** Supabase PostgreSQL (Row Level Security enabled)
+- **Styling:** Vanilla CSS
+- **OAuth Integrations:** Google OAuth, Google Calendar API (FreeBusy, event sync), Google Meet Integration
+- **Monorepo Manager:** `pnpm`
 
 ---
 
-## 3. Estrutura do Projeto (Feature-First)
+## 2. Core Flows
 
-O projeto adota uma arquitetura orientada a domínios (Feature-First):
+### Public Booking Flow
+
+1. User accesses `/agendamento`.
+2. Open Time Slots are loaded from Supabase and filtered against Google Calendar's FreeBusy API.
+3. Candidate fills out booking details.
+4. Transaction creates record atomically via Postgres stored procedures (counter checks prevent overbooking).
+5. Event is synchronized with Google Calendar and a Google Meet URL is attached.
+
+### Admin Dashboard Flow
+
+1. Log in with admin credentials via Google OAuth.
+2. **Fechar Slot:** Deactivates time slots, removing them from the public booking page. Preserves all Google Calendar events and meeting history.
+3. **Excluir Slot:** Offers two options:
+   - _Apenas do Dashboard (default):_ Removes slot/session records from Supabase DB, preserving historical events in Google Calendar.
+   - _Plataforma + Google Calendar:_ Deletes events from Google Calendar and rolls back the DB deletion if the API call fails.
+
+---
+
+## 3. Directory Structure
 
 ```text
 pm-sessions/
 ├── apps/
-│   └── web/                   # Aplicação web principal em Next.js 16
-│       ├── src/
-│       │   ├── app/           # App Router (Route Groups, Layouts e Páginas)
-│       │   ├── features/      # Lógica e componentes isolados de domínio (ex: auth)
-│       │   └── shared/        # Componentes UI, configurações e libs reutilizáveis
-├── docs/                      # Documentação técnica e especificações
-├── supabase/                  # Estrutura do banco de dados (migrations, seeds e CLI config)
-└── LICENSE                    # Licença MIT
+│   └── web/                   # Main Next.js 16 App
+│       ├── e2e/               # Playwright browser spec files
+│       └── src/
+│           ├── app/           # Pages, Layouts and Route handlers
+│           ├── features/      # Domain folders (admin, auth, scheduling)
+│           └── shared/        # Reusable helpers, UI, and feature flags
+├── docs/                      # Technical design, ADRs, and runbooks
+├── scripts/                   # Audits, backups, and release gate pipelines
+└── supabase/                  # Database migrations, seed and configs
 ```
 
 ---
 
-## 4. Pré-requisitos & Instalação
+## 4. Local Database & Development
 
-### Pré-requisitos
+### Pre-requisites
 
-- **Node.js** v20 ou superior
-- **pnpm** v10 ou superior
-- **Supabase CLI** (para gerenciar migrações locais)
+- Node.js v20+
+- pnpm v10+
+- Supabase CLI
 
-### Instalação
+### Setup
 
-1. Clone o repositório.
-2. Instale as dependências executando na raiz do projeto:
+1. Clone the repository and install dependencies:
    ```bash
    pnpm install
+   ```
+2. Start the local database:
+   ```bash
+   supabase start
+   ```
+3. Run migrations and seed:
+   ```bash
+   supabase db reset
+   ```
+4. Run the local development server:
+   ```bash
+   pnpm dev
    ```
 
 ---
 
-## 5. Variáveis de Ambiente Necessárias
+## 5. Verification & Testing
 
-Copie o arquivo `.env.example` na raiz para `.env` (ou `apps/web/.env.example` para `apps/web/.env.local`) e configure os valores:
+### Running Tests
 
-| Nome da Variável                | Obrigatória? | Descrição                                                    | Escopo             |
-| ------------------------------- | :----------: | ------------------------------------------------------------ | ------------------ |
-| `NEXT_PUBLIC_APP_URL`           |     Sim      | URL base do app local/produção (ex: `http://localhost:3000`) | Servidor & Cliente |
-| `NEXT_PUBLIC_SUPABASE_URL`      |     Sim      | URL da API do projeto Supabase                               | Servidor & Cliente |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` |     Sim      | Chave pública anônima do Supabase                            | Servidor & Cliente |
-| `SUPABASE_SERVICE_ROLE_KEY`     |     Sim      | Chave de privilégios admin (bypassa RLS)                     | Apenas Servidor    |
-| `GOOGLE_CLIENT_ID`              |     Sim      | ID do cliente do Google OAuth                                | Servidor & Cliente |
-| `GOOGLE_CLIENT_SECRET`          |     Sim      | Segredo do cliente Google OAuth                              | Apenas Servidor    |
+To run the Vitest unit, integration, concurrency, and contract test suite:
 
----
+```bash
+pnpm --filter web test
+```
 
-## 6. Scripts Disponíveis
+### Running Release Gate Audit
 
-Executados na raiz do monorepo:
+To execute the automated Release Gate validation pipeline:
 
-- `pnpm dev`: Inicia o servidor de desenvolvimento.
-- `pnpm build`: Executa o build de produção da aplicação.
-- `pnpm start`: Inicia o servidor Next.js em modo produção.
-- `pnpm lint`: Executa a análise estática com ESLint.
-- `pnpm format`: Executa o formatador de código Prettier.
+```bash
+pnpm audit:release
+```
 
----
-
-## 7. Status das Foundations (Sprint 1)
-
-O progresso de implementação das fundações pode ser acompanhado através de [docs/specs/foundation/FOUNDATIONS-STATUS.md](file:///c:/Users/edumo/OneDrive/Documentos/Projetos/pm-sessions/docs/specs/foundation/FOUNDATIONS-STATUS.md):
-
-| ID  | Foundation           | Status       |
-| --- | -------------------- | ------------ |
-| 001 | Project Setup        | ✅ Concluído |
-| 002 | Supabase Persistence | ✅ Concluído |
-| 003 | Google Cloud Config  | ✅ Concluído |
-| 004 | Authentication Layer | ✅ Concluído |
-
----
-
-## 8. Roadmap de Desenvolvimento
-
-- **Sprint 1 (Fundações)**: Conclusão do setup, Supabase, Google Cloud Credentials e autenticação SSR com RLS.
-- **Sprint 2 (Funcionalidades Core)**: Implementação de reservas públicas de agendamento, gerenciamento de slots por administradores e sincronização bidirecional do Google Calendar.
-- **Sprint 3 (Painel de Dynamic Assessments)**: Painel interativo de avaliação de candidatos em tempo real.
-
----
-
-## 9. Licença
-
-Distribuído sob a licença **MIT**. Veja o arquivo [LICENSE](file:///c:/Users/edumo/OneDrive/Documentos/Projetos/pm-sessions/LICENSE) para mais detalhes.
+This script computes a maturity score, checks schema parity, runs backup/restore tests, and outputs a scorecard report to `docs/release-history/`.

@@ -50,6 +50,7 @@ export function AvailableSlotsContainer({
         if (!isMounted) return;
 
         if (result.success) {
+          console.log('[PUBLIC] Slots recebidos pela página:', result.data);
           setSlots((prevSlots) => {
             if (areSlotsEqual(prevSlots, result.data)) {
               return prevSlots;

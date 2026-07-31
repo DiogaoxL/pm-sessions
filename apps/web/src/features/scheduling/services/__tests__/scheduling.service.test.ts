@@ -62,6 +62,7 @@ describe('SchedulingService - Camada de Serviços', () => {
       syncAttendees: vi.fn(),
       deleteEvent: vi.fn(),
       updateEventTime: vi.fn(),
+      getPrimaryCalendarEmail: vi.fn().mockResolvedValue('host@test.com'),
     };
     mockHostAllocatorService = {
       getNextHostEmail: vi.fn().mockResolvedValue('host@test.com'),
@@ -98,6 +99,7 @@ describe('SchedulingService - Camada de Serviços', () => {
           capacity: 1,
           current_participants: 0,
           status: 'AVAILABLE' as const,
+          title: 'Entrevista em Grupo',
           created_at: '',
           updated_at: '',
           calendar_event_id: null,
@@ -143,6 +145,7 @@ describe('SchedulingService - Camada de Serviços', () => {
           capacity: 1,
           current_participants: 0,
           status: 'AVAILABLE' as const,
+          title: 'Entrevista em Grupo',
           created_at: '',
           updated_at: '',
           calendar_event_id: null,
@@ -172,6 +175,7 @@ describe('SchedulingService - Camada de Serviços', () => {
           date: '2026-07-20',
           start_time: '09:00:00',
           end_time: '10:00:00',
+          capacity: 1,
           status: 'OPEN',
           created_at: '',
           updated_at: '',
@@ -185,6 +189,7 @@ describe('SchedulingService - Camada de Serviços', () => {
           capacity: 1,
           current_participants: 0,
           status: 'AVAILABLE' as const,
+          title: 'Entrevista em Grupo',
           created_at: '',
           updated_at: '',
           calendar_event_id: null,
@@ -248,15 +253,19 @@ describe('SchedulingService - Camada de Serviços', () => {
         null,
         'host@test.com',
       );
-      expect(mockGoogleCalendarService.createEvent).toHaveBeenCalled();
+      expect(mockGoogleCalendarService.createEvent).toHaveBeenCalledWith(
+        'Entrevista em Grupo',
+        expect.any(Date),
+        expect.any(Date),
+        [email],
+        expect.any(String),
+      );
       expect(mockSessionRepository.updateSessionCalendar).toHaveBeenCalledWith(
         sessionId,
         'google-event-id',
         'https://meet.google.com/test',
       );
-      expect(mockGoogleCalendarService.syncAttendees).toHaveBeenCalledWith('google-event-id', [
-        email,
-      ]);
+      expect(mockGoogleCalendarService.syncAttendees).not.toHaveBeenCalled();
       expect(result.id).toBe('part-1');
     });
 
@@ -284,9 +293,11 @@ describe('SchedulingService - Camada de Serviços', () => {
       await service.scheduleSession(email, name, sessionId, timeSlotId);
 
       expect(mockGoogleCalendarService.createEvent).not.toHaveBeenCalled();
-      expect(mockGoogleCalendarService.syncAttendees).toHaveBeenCalledWith('existing-event-id', [
-        email,
-      ]);
+      expect(mockGoogleCalendarService.syncAttendees).toHaveBeenCalledWith(
+        'existing-event-id',
+        [email],
+        expect.any(String),
+      );
     });
 
     it('deve simular concorrencia com aproximadamente 20-30 chamadas simultaneas e validar integridade', async () => {
@@ -336,6 +347,7 @@ describe('SchedulingService - Camada de Serviços', () => {
         capacity: 1,
         current_participants: 1,
         status: 'AVAILABLE',
+        title: 'Entrevista em Grupo',
         created_at: '',
         updated_at: '',
       });
@@ -344,7 +356,13 @@ describe('SchedulingService - Camada de Serviços', () => {
       await service.cancelSession(participantId);
 
       expect(mockSessionRepository.removeParticipant).toHaveBeenCalledWith(participantId);
-      expect(mockGoogleCalendarService.syncAttendees).toHaveBeenCalledWith('google-event-id', []);
+      expect(mockGoogleCalendarService.deleteEvent).toHaveBeenCalledWith('google-event-id');
+      expect(mockSessionRepository.updateSessionCalendar).toHaveBeenCalledWith(
+        sessionId,
+        null,
+        null,
+      );
+      expect(mockGoogleCalendarService.syncAttendees).not.toHaveBeenCalled();
     });
   });
 });

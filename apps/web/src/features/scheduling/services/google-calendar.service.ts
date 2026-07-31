@@ -11,11 +11,13 @@ export interface IGoogleCalendarService {
     title: string,
     startTime: Date,
     endTime: Date,
-    organizerEmail: string,
+    attendees?: string[],
+    description?: string,
   ): Promise<{ eventId: string; meetUrl: string | null }>;
-  syncAttendees(eventId: string, attendees: string[]): Promise<void>;
+  syncAttendees(eventId: string, attendees: string[], description: string): Promise<void>;
   deleteEvent(eventId: string): Promise<void>;
   updateEventTime(eventId: string, title: string, startTime: Date, endTime: Date): Promise<void>;
+  getPrimaryCalendarEmail(): Promise<string>;
 }
 
 export class GoogleCalendarService implements IGoogleCalendarService {
@@ -39,11 +41,29 @@ export class GoogleCalendarService implements IGoogleCalendarService {
   }
 
   isCalendarConfigured(): boolean {
+    if (process.env.FEATURE_GOOGLE_CALENDAR === 'false') {
+      return false;
+    }
     return !!(
       process.env.GOOGLE_CLIENT_ID &&
       process.env.GOOGLE_CLIENT_SECRET &&
       process.env.GOOGLE_REFRESH_TOKEN
     );
+  }
+
+  async getPrimaryCalendarEmail(): Promise<string> {
+    if (!this.isCalendarConfigured()) {
+      return process.env.DEFAULT_HOST_EMAIL || 'admin@example.com';
+    }
+    try {
+      const response = await this.calendarClient.calendars.get({
+        calendarId: 'primary',
+      });
+      return response.data.id || 'admin@example.com';
+    } catch (error) {
+      console.error('[Google Calendar] Failed to fetch primary calendar email:', error);
+      return 'admin@example.com';
+    }
   }
 
   async checkAvailability(startTime: Date, endTime: Date): Promise<{ start: Date; end: Date }[]> {
@@ -79,8 +99,8 @@ export class GoogleCalendarService implements IGoogleCalendarService {
     // Find the minimum and maximum boundaries of all candidate slots for FreeBusy query
     const sortedTimes = potentialSlots
       .map((s) => ({
-        start: new Date(`${dateStr}T${s.start_time}Z`),
-        end: new Date(`${dateStr}T${s.end_time}Z`),
+        start: new Date(`${dateStr}T${s.start_time}-03:00`),
+        end: new Date(`${dateStr}T${s.end_time}-03:00`),
       }))
       .sort((a, b) => a.start.getTime() - b.start.getTime());
 
@@ -92,8 +112,8 @@ export class GoogleCalendarService implements IGoogleCalendarService {
 
     // Filter candidate slots that do NOT overlap with any busy periods
     return potentialSlots.filter((slot) => {
-      const candidateStart = new Date(`${dateStr}T${slot.start_time}Z`);
-      const candidateEnd = new Date(`${dateStr}T${slot.end_time}Z`);
+      const candidateStart = new Date(`${dateStr}T${slot.start_time}-03:00`);
+      const candidateEnd = new Date(`${dateStr}T${slot.end_time}-03:00`);
 
       const hasOverlap = busyPeriods.some((busy) => {
         return candidateStart < busy.end && candidateEnd > busy.start;
@@ -107,31 +127,30 @@ export class GoogleCalendarService implements IGoogleCalendarService {
     title: string,
     startTime: Date,
     endTime: Date,
-    organizerEmail: string,
+    attendees?: string[],
+    description?: string,
   ): Promise<{ eventId: string; meetUrl: string | null }> {
     try {
+      const updatedAttendees = attendees ? attendees.map((email) => ({ email })) : [];
       const response = await this.calendarClient.events.insert({
         calendarId: 'primary',
         conferenceDataVersion: 1,
+        sendUpdates: 'all',
         requestBody: {
           summary: title,
-          description: 'PM Sessions - Interview Session',
+          description: description || 'PM Sessions - Interview Session',
           start: {
             dateTime: startTime.toISOString(),
-            timeZone: 'America/Sao_Paulo',
           },
           end: {
             dateTime: endTime.toISOString(),
-            timeZone: 'America/Sao_Paulo',
           },
-          organizer: {
-            email: organizerEmail,
-          },
+          attendees: updatedAttendees,
           conferenceData: {
             createRequest: {
               requestId: `meet-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
               conferenceSolutionKey: {
-                type: 'hangoutMeet',
+                type: 'hangoutsMeet',
               },
             },
           },
@@ -142,13 +161,17 @@ export class GoogleCalendarService implements IGoogleCalendarService {
       const meetUrl = response.data.hangoutLink || null;
 
       return { eventId, meetUrl };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error creating calendar event:', error);
+      const errObj = error as { response?: { data?: unknown } };
+      if (errObj.response?.data) {
+        console.error('Google API Error Details:', JSON.stringify(errObj.response.data, null, 2));
+      }
       throw new Error('Failed to create event in Google Calendar');
     }
   }
 
-  async syncAttendees(eventId: string, attendees: string[]): Promise<void> {
+  async syncAttendees(eventId: string, attendees: string[], description: string): Promise<void> {
     try {
       const updatedAttendees = attendees.map((email) => ({ email }));
 
@@ -158,6 +181,7 @@ export class GoogleCalendarService implements IGoogleCalendarService {
         sendUpdates: 'all',
         requestBody: {
           attendees: updatedAttendees,
+          description,
         },
       });
     } catch (error) {

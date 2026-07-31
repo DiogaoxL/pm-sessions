@@ -25,6 +25,12 @@ export async function GET() {
       );
     }
 
+    const googleConfigured = !!(
+      process.env.GOOGLE_CLIENT_ID &&
+      process.env.GOOGLE_CLIENT_SECRET &&
+      process.env.GOOGLE_REFRESH_TOKEN
+    );
+
     return NextResponse.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
@@ -32,7 +38,9 @@ export async function GET() {
         supabase: {
           status: 'healthy',
         },
-        // Google APIs, Storage, and other external integrations can be appended here
+        googleCalendar: {
+          status: googleConfigured ? 'healthy' : 'unconfigured',
+        },
       },
     });
   } catch (err: unknown) {

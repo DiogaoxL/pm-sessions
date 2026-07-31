@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "supabase:generate-types": "supabase gen types typescript --project-id yjyckvesjmqlvxrszown --schema public > src/shared/types/database.ts"

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useTransition } from 'react';
+import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { TimeSlotWithSessions } from '../../admin/repositories/admin-dashboard.repository';
 import { useToast } from './ui/toaster';
@@ -83,6 +83,7 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
   const [editingSlot, setEditingSlot] = useState<TimeSlotWithSessions | null>(null);
   const [closingSlot, setClosingSlot] = useState<TimeSlotWithSessions | null>(null);
   const [deletingSlot, setDeletingSlot] = useState<TimeSlotWithSessions | null>(null);
+  const [deleteCalendarEvents, setDeleteCalendarEvents] = useState(false);
   const [editingSession, setEditingSession] = useState<{
     id: string;
     capacity: number;
@@ -108,6 +109,7 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
   const [creatingSessionForSlot, setCreatingSessionForSlot] = useState<string | null>(null);
   const [newSessionHost, setNewSessionHost] = useState<string>('');
   const [newSessionCapacity, setNewSessionCapacity] = useState<number | ''>(3);
+  const [newSessionTitle, setNewSessionTitle] = useState<string>('Entrevista em Grupo');
 
   // Form states (Creation & Complete Edit Form - BUG 02)
   const [slotFormData, setSlotFormData] = useState<{
@@ -115,11 +117,15 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
     start_time: string;
     end_time: string;
     capacity: number | '';
+    host: string;
+    title: string;
   }>({
     date: new Date().toISOString().split('T')[0],
     start_time: '14:00',
     end_time: '15:00',
     capacity: 3,
+    host: '',
+    title: 'Entrevista em Grupo',
   });
 
   const [sessionEditCapacity, setSessionEditCapacity] = useState<number | ''>(3);
@@ -141,13 +147,17 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
         typeof slotFormData.capacity === 'number' && slotFormData.capacity > 0
           ? slotFormData.capacity
           : 3;
-      const res = await createSlotAction({
-        date: slotFormData.date,
-        start_time: `${slotFormData.start_time}:00`,
-        end_time: `${slotFormData.end_time}:00`,
-        capacity,
-        status: 'OPEN',
-      });
+      const res = await createSlotAction(
+        {
+          date: slotFormData.date,
+          start_time: `${slotFormData.start_time}:00`,
+          end_time: `${slotFormData.end_time}:00`,
+          capacity,
+          status: 'OPEN',
+        },
+        slotFormData.title,
+        slotFormData.host || undefined,
+      );
 
       if (res.success) {
         toast({
@@ -281,15 +291,16 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
     if (!deletingSlot) return;
 
     startTransition(async () => {
-      const res = await deleteSlotAction(deletingSlot.id);
+      const res = await deleteSlotAction(deletingSlot.id, deleteCalendarEvents);
 
       if (res.success) {
         toast({
           type: 'success',
           title: 'Slot Excluído',
-          description: 'O slot foi removido permanentemente do banco de dados.',
+          description: 'O slot foi removido permanentemente.',
         });
         setDeletingSlot(null);
+        setDeleteCalendarEvents(false);
         router.refresh();
       } else {
         toast({
@@ -341,7 +352,12 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
     startTransition(async () => {
       const capacity =
         typeof newSessionCapacity === 'number' && newSessionCapacity > 0 ? newSessionCapacity : 3;
-      const res = await createSessionAction(creatingSessionForSlot, newSessionHost, capacity);
+      const res = await createSessionAction(
+        creatingSessionForSlot,
+        newSessionHost,
+        capacity,
+        newSessionTitle,
+      );
 
       if (res.success) {
         toast({
@@ -350,6 +366,7 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
           description: 'A nova sessão foi adicionada a este horário com sucesso.',
         });
         setCreatingSessionForSlot(null);
+        setNewSessionTitle('Entrevista em Grupo');
         router.refresh();
       } else {
         toast({
@@ -440,6 +457,8 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
                 start_time: '14:00',
                 end_time: '15:00',
                 capacity: 3,
+                host: '',
+                title: 'Entrevista em Grupo',
               });
               setIsCreateOpen(true);
             }}
@@ -637,6 +656,8 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
                                 start_time: slot.start_time.slice(0, 5),
                                 end_time: slot.end_time.slice(0, 5),
                                 capacity: slot.capacity,
+                                host: '',
+                                title: '',
                               });
                             }}
                             className="h-7 text-xs border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-neutral-300"
@@ -704,7 +725,8 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
                                           <div className="flex items-center gap-2">
                                             <span className="size-2 rounded-full bg-sky-400" />
                                             <span className="text-sm font-semibold text-neutral-200">
-                                              Sala {charId} ({sessionOccupied}/{sessionCapacity})
+                                              {session.title || `Sala ${charId}`} ({sessionOccupied}
+                                              /{sessionCapacity})
                                             </span>
                                           </div>
                                           <span className="text-xs text-neutral-500 block">
@@ -1034,6 +1056,37 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
           </div>
           <div>
             <label className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1.5">
+              Host (Organizador)
+            </label>
+            <select
+              required
+              className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-200 focus:outline-none focus:border-neutral-700"
+              value={slotFormData.host}
+              onChange={(e) => setSlotFormData({ ...slotFormData, host: e.target.value })}
+            >
+              <option value="">Selecione um host...</option>
+              {hosts.map((host) => (
+                <option key={host} value={host}>
+                  {host}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1.5">
+              Nome da Sessão
+            </label>
+            <input
+              type="text"
+              required
+              className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-200 focus:outline-none focus:border-neutral-700"
+              value={slotFormData.title}
+              onChange={(e) => setSlotFormData({ ...slotFormData, title: e.target.value })}
+              placeholder="Ex: Entrevista Técnica, Mentoria..."
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1.5">
               Capacidade Padrão
             </label>
             <input
@@ -1161,11 +1214,57 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
       {/* BUG 03: Excluir Slot Real Confirm Dialog */}
       <AdminConfirmDialog
         isOpen={!!deletingSlot}
-        onClose={() => setDeletingSlot(null)}
+        onClose={() => {
+          setDeletingSlot(null);
+          setDeleteCalendarEvents(false);
+        }}
         onConfirm={handleDeleteSlot}
-        title="Excluir Time Slot Permanentemente"
-        description="Tem certeza que deseja remover este time slot permanentemente do banco de dados? Esta ação não pode ser desfeita."
-        confirmLabel="Excluir Definitivamente"
+        title="Excluir Time Slot"
+        description={
+          <div className="space-y-4 text-left">
+            <p className="text-sm text-neutral-300">
+              Escolha a forma como deseja excluir este Time Slot:
+            </p>
+            <div className="space-y-3">
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  type="radio"
+                  name="deleteMode"
+                  checked={!deleteCalendarEvents}
+                  onChange={() => setDeleteCalendarEvents(false)}
+                  className="mt-1 accent-emerald-500"
+                />
+                <div>
+                  <span className="text-sm font-medium text-white group-hover:text-emerald-400 transition-colors">
+                    Apenas do Dashboard
+                  </span>
+                  <p className="text-xs text-neutral-400">
+                    Mantém os eventos e reuniões correspondentes intactos no Google Calendar.
+                  </p>
+                </div>
+              </label>
+
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  type="radio"
+                  name="deleteMode"
+                  checked={deleteCalendarEvents}
+                  onChange={() => setDeleteCalendarEvents(true)}
+                  className="mt-1 accent-rose-500"
+                />
+                <div>
+                  <span className="text-sm font-medium text-white group-hover:text-rose-400 transition-colors">
+                    Dashboard + Google Calendar
+                  </span>
+                  <p className="text-xs text-neutral-400">
+                    Remove definitivamente o evento e todos os convites do Google Calendar.
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+        }
+        confirmLabel="Confirmar Exclusão"
         loading={isPending}
         variant="destructive"
       />
@@ -1283,7 +1382,7 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
                   >
                     <div className="flex flex-col text-xs">
                       <span className="font-semibold text-neutral-200">
-                        {session.organizer_email}
+                        {session.title || 'Entrevista'} ({session.organizer_email})
                       </span>
                       <span className="text-neutral-500 mt-0.5">
                         Vagas: {session.current_participants}/{session.capacity}
@@ -1337,6 +1436,19 @@ export function AdminTimeSlotList({ slots, hosts }: AdminTimeSlotListProps) {
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1.5">
+              Nome da Sessão
+            </label>
+            <input
+              type="text"
+              required
+              className="w-full px-3 py-2 bg-neutral-950 border border-neutral-800 rounded-lg text-sm text-neutral-200 focus:outline-none focus:border-neutral-700"
+              value={newSessionTitle}
+              onChange={(e) => setNewSessionTitle(e.target.value)}
+              placeholder="Ex: Entrevista Técnica, Mentoria..."
+            />
           </div>
           <div>
             <label className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1.5">

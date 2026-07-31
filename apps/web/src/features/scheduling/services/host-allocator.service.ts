@@ -1,37 +1,29 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/shared/types/database';
+import { IGoogleCalendarService } from './google-calendar.service';
 
 export interface IHostAllocatorService {
   getNextHostEmail(): Promise<string>;
 }
 
 export class HostAllocatorService implements IHostAllocatorService {
-  constructor(private supabase: SupabaseClient<Database>) {}
+  constructor(
+    private supabase: SupabaseClient<Database>,
+    private googleCalendarService?: IGoogleCalendarService,
+  ) {}
 
   async getNextHostEmail(): Promise<string> {
-    const { data: admins, error: adminsError } = await this.supabase
-      .from('admins')
-      .select('email')
-      .order('email', { ascending: true });
-
-    if (adminsError) {
-      throw adminsError;
+    if (this.googleCalendarService && this.googleCalendarService.isCalendarConfigured()) {
+      try {
+        const primaryEmail = await this.googleCalendarService.getPrimaryCalendarEmail();
+        if (primaryEmail) {
+          return primaryEmail;
+        }
+      } catch (error) {
+        console.warn('[HostAllocator] Failed to get primary calendar email, falling back:', error);
+      }
     }
 
-    const hostEmails = admins?.map((a) => a.email) || [];
-    if (hostEmails.length === 0) {
-      return process.env.DEFAULT_HOST_EMAIL || 'admin@example.com';
-    }
-
-    const { count, error: countError } = await this.supabase
-      .from('sessions')
-      .select('*', { count: 'exact', head: true });
-
-    if (countError) {
-      throw countError;
-    }
-
-    const nextIndex = (count || 0) % hostEmails.length;
-    return hostEmails[nextIndex];
+    return process.env.DEFAULT_HOST_EMAIL || 'diogo@pulsemais.org.br';
   }
 }

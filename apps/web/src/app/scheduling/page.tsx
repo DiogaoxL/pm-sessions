@@ -13,6 +13,7 @@ export default function PublicSchedulingPage() {
   const [loadingSession, setLoadingSession] = useState<boolean>(false);
   const [sessionError, setSessionError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState<number>(0);
+  const [isScheduled, setIsScheduled] = useState<boolean>(false);
 
   // Block background scroll when bottom sheet is active on mobile
   React.useEffect(() => {
@@ -27,6 +28,7 @@ export default function PublicSchedulingPage() {
   }, [selectedSlot]);
 
   const handleSelectSlot = async (slot: TimeSlot) => {
+    setIsScheduled(false);
     setSelectedSlot(slot);
     setSessionId(null);
     setSessionError(null);
@@ -47,6 +49,7 @@ export default function PublicSchedulingPage() {
   };
 
   const handleCancelSelection = () => {
+    setIsScheduled(false);
     setSelectedSlot(null);
     setSessionId(null);
     setSessionError(null);
@@ -54,7 +57,7 @@ export default function PublicSchedulingPage() {
 
   const handleSlotsLoaded = React.useCallback(
     (newSlots: TimeSlot[]) => {
-      if (selectedSlot) {
+      if (selectedSlot && !isScheduled) {
         const stillAvailable = newSlots.find(
           (s) => s.id === selectedSlot.id && s.status === 'OPEN',
         );
@@ -67,7 +70,7 @@ export default function PublicSchedulingPage() {
         }
       }
     },
-    [selectedSlot],
+    [selectedSlot, isScheduled],
   );
 
   // Helper to format date nicely
@@ -174,6 +177,7 @@ export default function PublicSchedulingPage() {
                     sessionId={sessionId}
                     timeSlotId={selectedSlot.id}
                     onSuccess={() => {
+                      setIsScheduled(true);
                       setRefreshKey((prev) => prev + 1);
                     }}
                     onCancel={handleCancelSelection}
@@ -251,6 +255,7 @@ export default function PublicSchedulingPage() {
                   sessionId={sessionId}
                   timeSlotId={selectedSlot.id}
                   onSuccess={() => {
+                    setIsScheduled(true);
                     setRefreshKey((prev) => prev + 1);
                   }}
                   onCancel={handleCancelSelection}

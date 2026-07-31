@@ -20,10 +20,12 @@ export async function listAllSlotsAction() {
 
 export async function createSlotAction(
   data: Omit<TimeSlotInsert, 'id' | 'created_at' | 'updated_at'>,
+  title?: string,
+  hostEmail?: string,
 ) {
   try {
     const { adminTimeSlotService } = await getAdminServices();
-    const slot = await adminTimeSlotService.createSlot(data);
+    const slot = await adminTimeSlotService.createSlot(data, title, hostEmail);
     revalidatePath('/scheduling');
     revalidatePath('/admin/dashboard');
     return { success: true, data: slot } as const;
@@ -71,14 +73,14 @@ export async function closeSlotAction(id: string) {
   }
 }
 
-export async function deleteSlotAction(id: string) {
+export async function deleteSlotAction(id: string, deleteCalendarEvents: boolean = false) {
   try {
     const { adminTimeSlotService } = await getAdminServices();
-    await adminTimeSlotService.deleteSlot(id);
+    await adminTimeSlotService.deleteSlot(id, deleteCalendarEvents);
     revalidatePath('/scheduling');
     revalidatePath('/admin/dashboard');
     return { success: true } as const;
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof AdminSlotAlreadyHasParticipantsError) {
       return {
         success: false,
@@ -86,7 +88,10 @@ export async function deleteSlotAction(id: string) {
       } as const;
     }
     console.error('[admin] deleteSlotAction error:', error);
-    return { success: false, error: 'Falha ao excluir o time slot.' } as const;
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Falha ao excluir o time slot.',
+    } as const;
   }
 }
 

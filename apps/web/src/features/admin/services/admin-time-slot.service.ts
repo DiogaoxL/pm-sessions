@@ -20,7 +20,7 @@ export interface IAdminTimeSlotService {
   createSlot(data: Omit<TimeSlotInsert, 'id' | 'created_at' | 'updated_at'>): Promise<TimeSlot>;
   updateSlot(id: string, data: TimeSlotUpdate): Promise<TimeSlot>;
   closeSlot(id: string): Promise<TimeSlot>;
-  deleteSlot(id: string): Promise<void>;
+  deleteSlot(id: string, deleteCalendarEvents?: boolean): Promise<void>;
   syncSlotCalendarEvents(
     id: string,
     newDate: string,
@@ -48,15 +48,30 @@ export class AdminTimeSlotService implements IAdminTimeSlotService {
 
   async createSlot(
     data: Omit<TimeSlotInsert, 'id' | 'created_at' | 'updated_at'>,
+    title?: string,
+    hostEmail?: string,
   ): Promise<TimeSlot> {
     const slot = await this.timeSlotRepository.createTimeSlot(data);
+    console.log('[PUBLIC] Novo Slot criado:', slot);
 
     // Auto-criar a primeira sessao com o host padrao e capacidade do slot
     try {
-      const hostEmail = await this.hostAllocator.getNextHostEmail();
-      await this.sessionRepository.createSession(slot.id, hostEmail, slot.capacity);
+      const finalHostEmail = hostEmail || (await this.hostAllocator.getNextHostEmail());
+      const finalTitle = title || 'Entrevista em Grupo';
+      const session = await this.sessionRepository.createSession(
+        slot.id,
+        finalHostEmail,
+        slot.capacity,
+        finalTitle,
+      );
+
+      console.log(`[PUBLIC] Primeira sessão criada automaticamente
+ID da sessão: ${session.id}
+Título: ${session.title}
+Host: ${session.organizer_email}
+Status AVAILABLE: ${session.status}`);
     } catch (error) {
-      console.error('Failed to auto-create first session for slot:', error);
+      console.error('[PUBLIC] Failed to auto-create first session for slot:', error);
     }
 
     return slot;
@@ -75,39 +90,88 @@ export class AdminTimeSlotService implements IAdminTimeSlotService {
    * e atualiza atomicamente os participantes do slot para CANCELLED.
    */
   async closeSlot(id: string): Promise<TimeSlot> {
-    // 1. Obter sessoes deste slot
-    const sessions = await this.sessionRepository.findSessionsByTimeSlot(id);
+    const startTime = performance.now();
+    let previousStatus = 'UNKNOWN';
+    let success = true;
+    let failureReason: string | undefined = undefined;
 
-    // 2. Excluir eventos no Google Calendar para disparar notificacoes
-    for (const session of sessions) {
-      if (session.calendar_event_id) {
-        await this.googleCalendarService.deleteEvent(session.calendar_event_id);
+    try {
+      const slot = await this.timeSlotRepository.findTimeSlotById(id);
+      if (!slot) {
+        throw new Error(`Time slot ${id} not found`);
       }
+      previousStatus = slot.status;
+
+      const updated = await this.timeSlotRepository.closeTimeSlot(id);
+      return updated;
+    } catch (error) {
+      success = false;
+      failureReason = error instanceof Error ? error.message : String(error);
+      throw error;
+    } finally {
+      const executionTime = performance.now() - startTime;
+      console.log(`[CLOSE_SLOT]`, {
+        slotId: id,
+        previousStatus,
+        newStatus: 'CLOSED',
+        execution_time: `${executionTime.toFixed(2)}ms`,
+        success,
+        failure_reason: failureReason || null,
+      });
     }
-
-    // 3. Executar mudancas de banco atomicamente
-    await this.timeSlotRepository.closeTimeSlotAtomic(id);
-
-    // 4. Retornar slot atualizado
-    const updated = await this.timeSlotRepository.findTimeSlotById(id);
-    if (!updated) {
-      throw new Error(`Time slot ${id} not found after closing`);
-    }
-
-    return updated;
   }
 
   /**
    * Exclui permanentemente o time slot.
    * Apenas permitido se o status do slot for CLOSED.
    */
-  async deleteSlot(id: string): Promise<void> {
+  async deleteSlot(id: string, deleteCalendarEvents: boolean = false): Promise<void> {
     const slot = await this.timeSlotRepository.findTimeSlotById(id);
     if (!slot || slot.status !== 'CLOSED') {
       throw new Error('Only closed time slots can be deleted.');
     }
 
-    await this.timeSlotRepository.deleteTimeSlot(id);
+    const sessions = await this.sessionRepository.findSessionsByTimeSlot(id);
+    const calendarEventIds: string[] = [];
+
+    const startTime = performance.now();
+    let success = true;
+    let failureReason: string | undefined = undefined;
+
+    try {
+      if (deleteCalendarEvents) {
+        for (const session of sessions) {
+          if (session.calendar_event_id) {
+            calendarEventIds.push(session.calendar_event_id);
+            try {
+              await this.googleCalendarService.deleteEvent(session.calendar_event_id);
+            } catch (err: unknown) {
+              success = false;
+              failureReason = err instanceof Error ? err.message : String(err);
+              throw new Error(
+                `Não foi possível excluir o evento do Google Calendar. Nenhuma alteração foi realizada.`,
+              );
+            }
+          }
+        }
+      }
+
+      await this.timeSlotRepository.deleteTimeSlot(id);
+    } catch (error) {
+      success = false;
+      failureReason = failureReason || (error instanceof Error ? error.message : String(error));
+      throw error;
+    } finally {
+      const executionTime = performance.now() - startTime;
+      console.log(`[DELETE_SLOT]`, {
+        slotId: id,
+        mode: deleteCalendarEvents ? 'dashboard_and_calendar' : 'dashboard_only',
+        calendar_event_ids: calendarEventIds,
+        execution_time: `${executionTime.toFixed(2)}ms`,
+        success,
+        failure_reason: failureReason || null,
+      });
+    }
   }
 
   /**

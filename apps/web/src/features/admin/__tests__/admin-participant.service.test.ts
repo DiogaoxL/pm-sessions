@@ -36,6 +36,7 @@ const mockSession: Session = {
   capacity: 3,
   current_participants: 1,
   status: 'AVAILABLE',
+  title: 'Entrevista em Grupo',
   created_at: '',
   updated_at: '',
 };
@@ -49,6 +50,7 @@ const mockTargetSession: Session = {
   capacity: 3,
   current_participants: 1,
   status: 'AVAILABLE',
+  title: 'Entrevista em Grupo',
   created_at: '',
   updated_at: '',
 };

@@ -12,6 +12,7 @@ export async function getAvailableSlotsAction(): Promise<
   try {
     const schedulingService = await getSchedulingService();
     const slots = await schedulingService.getAvailableSlots();
+    console.log('[PUBLIC] Slots retornados pela service:', slots);
 
     return {
       success: true,

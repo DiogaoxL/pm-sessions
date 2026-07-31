@@ -76,6 +76,7 @@ export interface Database {
           capacity: number;
           current_participants: number;
           status: 'AVAILABLE' | 'FULL' | 'FINISHED';
+          title: string;
           created_at: string;
           updated_at: string;
         };
@@ -88,6 +89,7 @@ export interface Database {
           capacity?: number;
           current_participants?: number;
           status?: 'AVAILABLE' | 'FULL' | 'FINISHED';
+          title?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -100,6 +102,7 @@ export interface Database {
           capacity?: number;
           current_participants?: number;
           status?: 'AVAILABLE' | 'FULL' | 'FINISHED';
+          title?: string;
           created_at?: string;
           updated_at?: string;
         };
