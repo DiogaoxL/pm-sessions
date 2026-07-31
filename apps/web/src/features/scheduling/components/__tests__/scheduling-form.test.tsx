@@ -177,6 +177,11 @@ describe('SchedulingForm', () => {
         },
       });
     });
+
+    // Wait for the success state to be rendered, ensuring no pending state updates leak
+    await waitFor(() => {
+      expect(screen.getByText('Agendamento Confirmado!')).toBeInTheDocument();
+    });
   });
 
   test('deve exibir erro generico e chamar onError quando a action lanca uma excecao inesperada', async () => {

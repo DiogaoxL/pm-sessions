@@ -1,56 +1,9 @@
-import { describe, it, expect } from 'vitest';
-
-// Sourced directly from scripts/audit-release.mjs for unit testing
-function parseMigrations(output: string): boolean {
-  const trimmed = output.trim();
-  if (!trimmed) return false;
-
-  // 1. Attempt JSON parsing
-  try {
-    const parsed = JSON.parse(trimmed);
-    const list = Array.isArray(parsed) ? parsed : parsed.migrations || [];
-    if (list.length === 0) return false;
-    for (const item of list) {
-      if (!item.local || !item.remote || item.local !== item.remote) {
-        return false;
-      }
-    }
-    return true;
-  } catch {
-    // 2. Fallback to plaintext table parsing
-    const lines = trimmed
-      .split('\n')
-      .map((l) => l.trim())
-      .filter(Boolean);
-    if (lines.length < 2) return false;
-
-    // Verify headers
-    const headerLine = lines[0];
-    if (
-      !headerLine.toLowerCase().includes('local') ||
-      !headerLine.toLowerCase().includes('remote')
-    ) {
-      return false;
-    }
-
-    let migrationCount = 0;
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
-      if (line.startsWith('-') || line.includes('---')) continue;
-
-      const parts = line.split('|').map((p) => p.trim().replace(/`/g, ''));
-      if (parts.length >= 2) {
-        const localVal = parts[0];
-        const remoteVal = parts[1];
-        if (!localVal || !remoteVal || localVal !== remoteVal) {
-          return false;
-        }
-        migrationCount++;
-      }
-    }
-    return migrationCount > 0;
-  }
-}
+import { describe, it, expect, vi } from 'vitest';
+import {
+  parseMigrations,
+  runMigrationCheck,
+  isTransientError,
+} from '../../../../../../scripts/audit-release.mjs';
 
 describe('Release Gate Migrations Parser Suite', () => {
   it('Caso 1: Tabela sincronizada (tudo pareado)', () => {
@@ -102,5 +55,70 @@ Local            | Remote           | Time (UTC)
   it('Caso 4: Tabela vazia', () => {
     expect(parseMigrations('')).toBe(false);
     expect(parseMigrations('   \n  ')).toBe(false);
+  });
+});
+
+describe('Release Gate Retry & Transient Error Suite', () => {
+  it('Caso 1: migration list -> PASS', async () => {
+    const mockExec = vi.fn().mockImplementation(() => 'Local | Remote\n20260718 | 20260718');
+    const result = await runMigrationCheck(mockExec, [0, 0]);
+    expect(result.status).toBe('RESOLVED');
+    expect(result.output).toContain('20260718');
+    expect(mockExec).toHaveBeenCalledTimes(1);
+  });
+
+  it('Caso 2: migration list -> Local != Remote -> FAIL', () => {
+    const tableOutput = 'Local | Remote\n20260718 | ';
+    expect(parseMigrations(tableOutput)).toBe(false);
+  });
+
+  it('Caso 3: 502 -> retry -> PASS', async () => {
+    let calls = 0;
+    const mockExec = vi.fn().mockImplementation(() => {
+      calls++;
+      if (calls === 1) {
+        throw new Error('HTTP 502: Bad Gateway');
+      }
+      return 'Local | Remote\n20260718 | 20260718';
+    });
+
+    const result = await runMigrationCheck(mockExec, [0, 0]);
+    expect(result.status).toBe('RESOLVED');
+    expect(mockExec).toHaveBeenCalledTimes(2);
+  });
+
+  it('Caso 4: 502 -> 502 -> 502 -> UNKNOWN', async () => {
+    const mockExec = vi.fn().mockImplementation(() => {
+      throw new Error('HTTP 502: Bad Gateway');
+    });
+
+    const result = await runMigrationCheck(mockExec, [0, 0]);
+    expect(result.status).toBe('UNKNOWN');
+    expect(mockExec).toHaveBeenCalledTimes(3);
+  });
+
+  it('Caso 5: timeout -> retry -> PASS', async () => {
+    let calls = 0;
+    const mockExec = vi.fn().mockImplementation(() => {
+      calls++;
+      if (calls === 1) {
+        throw new Error('ETIMEDOUT: Connection timed out');
+      }
+      return 'Local | Remote\n20260718 | 20260718';
+    });
+
+    const result = await runMigrationCheck(mockExec, [0, 0]);
+    expect(result.status).toBe('RESOLVED');
+    expect(mockExec).toHaveBeenCalledTimes(2);
+  });
+
+  it('Caso 6: Cloudflare origin_bad_gateway -> UNKNOWN', async () => {
+    const mockExec = vi.fn().mockImplementation(() => {
+      throw new Error('origin_bad_gateway');
+    });
+
+    const result = await runMigrationCheck(mockExec, [0, 0]);
+    expect(result.status).toBe('UNKNOWN');
+    expect(mockExec).toHaveBeenCalledTimes(3);
   });
 });
