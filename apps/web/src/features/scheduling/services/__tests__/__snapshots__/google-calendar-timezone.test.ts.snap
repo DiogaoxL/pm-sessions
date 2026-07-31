@@ -1,0 +1,113 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`GoogleCalendarService Timezone Anti-Regression Suite > Cenário com process.env.TZ = "America/Sao_Paulo" > deve gerar payload com dateTime local e timeZone America/Sao_Paulo (sem sufixo Z ou UTC) 1`] = `
+{
+  "attendees": [
+    {
+      "email": "test@example.com",
+    },
+  ],
+  "conferenceData": {
+    "createRequest": {
+      "conferenceSolutionKey": {
+        "type": "hangoutsMeet",
+      },
+      "requestId": "meet-1785513067866-sbw7rjuou",
+    },
+  },
+  "description": "Descrição da Sessão",
+  "end": {
+    "dateTime": "2026-07-31T09:00:00",
+    "timeZone": "America/Sao_Paulo",
+  },
+  "start": {
+    "dateTime": "2026-07-31T08:00:00",
+    "timeZone": "America/Sao_Paulo",
+  },
+  "summary": "Entrevista de Teste",
+}
+`;
+
+exports[`GoogleCalendarService Timezone Anti-Regression Suite > Cenário com process.env.TZ = "Asia/Tokyo" > deve gerar payload com dateTime local e timeZone America/Sao_Paulo (sem sufixo Z ou UTC) 1`] = `
+{
+  "attendees": [
+    {
+      "email": "test@example.com",
+    },
+  ],
+  "conferenceData": {
+    "createRequest": {
+      "conferenceSolutionKey": {
+        "type": "hangoutsMeet",
+      },
+      "requestId": "meet-1785513067872-qkxwc0rhg",
+    },
+  },
+  "description": "Descrição da Sessão",
+  "end": {
+    "dateTime": "2026-07-31T09:00:00",
+    "timeZone": "America/Sao_Paulo",
+  },
+  "start": {
+    "dateTime": "2026-07-31T08:00:00",
+    "timeZone": "America/Sao_Paulo",
+  },
+  "summary": "Entrevista de Teste",
+}
+`;
+
+exports[`GoogleCalendarService Timezone Anti-Regression Suite > Cenário com process.env.TZ = "Europe/London" > deve gerar payload com dateTime local e timeZone America/Sao_Paulo (sem sufixo Z ou UTC) 1`] = `
+{
+  "attendees": [
+    {
+      "email": "test@example.com",
+    },
+  ],
+  "conferenceData": {
+    "createRequest": {
+      "conferenceSolutionKey": {
+        "type": "hangoutsMeet",
+      },
+      "requestId": "meet-1785513067868-sx2eh3pqp",
+    },
+  },
+  "description": "Descrição da Sessão",
+  "end": {
+    "dateTime": "2026-07-31T09:00:00",
+    "timeZone": "America/Sao_Paulo",
+  },
+  "start": {
+    "dateTime": "2026-07-31T08:00:00",
+    "timeZone": "America/Sao_Paulo",
+  },
+  "summary": "Entrevista de Teste",
+}
+`;
+
+exports[`GoogleCalendarService Timezone Anti-Regression Suite > Cenário com process.env.TZ = "UTC" > deve gerar payload com dateTime local e timeZone America/Sao_Paulo (sem sufixo Z ou UTC) 1`] = `
+{
+  "attendees": [
+    {
+      "email": "test@example.com",
+    },
+  ],
+  "conferenceData": {
+    "createRequest": {
+      "conferenceSolutionKey": {
+        "type": "hangoutsMeet",
+      },
+      "requestId": "meet-1785513067858-wy8fondza",
+    },
+  },
+  "description": "Descrição da Sessão",
+  "end": {
+    "dateTime": "2026-07-31T09:00:00",
+    "timeZone": "America/Sao_Paulo",
+  },
+  "start": {
+    "dateTime": "2026-07-31T08:00:00",
+    "timeZone": "America/Sao_Paulo",
+  },
+  "summary": "Entrevista de Teste",
+}
+`;

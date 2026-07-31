@@ -59,7 +59,7 @@ export function parseMigrations(output) {
 
 // Check if error is transient
 export function isTransientError(errorText) {
-  return /502|503|504|timeout|ECONNRESET|ETIMEDOUT|cloudflare|retryable=true|bad gateway|origin_bad_gateway/i.test(errorText);
+  return /502|503|504|timeout|timed out|timed_out|ECONNRESET|ETIMEDOUT|cloudflare|retryable=true|bad gateway|origin_bad_gateway/i.test(errorText);
 }
 
 // Run Supabase migration check with retries

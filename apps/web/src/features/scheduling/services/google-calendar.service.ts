@@ -1,4 +1,23 @@
 import { google } from 'googleapis';
+import { APP_TIMEZONE } from '../../../shared/constants';
+
+export function formatLocalDate(date: Date, timeZone: string = APP_TIMEZONE): string {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  });
+
+  const parts = formatter.formatToParts(date);
+  const getPart = (type: string) => parts.find((p) => p.type === type)?.value || '';
+
+  return `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}:${getPart('second')}`;
+}
 
 export interface IGoogleCalendarService {
   isCalendarConfigured(): boolean;
@@ -140,10 +159,12 @@ export class GoogleCalendarService implements IGoogleCalendarService {
           summary: title,
           description: description || 'PM Sessions - Interview Session',
           start: {
-            dateTime: startTime.toISOString(),
+            dateTime: formatLocalDate(startTime),
+            timeZone: APP_TIMEZONE,
           },
           end: {
-            dateTime: endTime.toISOString(),
+            dateTime: formatLocalDate(endTime),
+            timeZone: APP_TIMEZONE,
           },
           attendees: updatedAttendees,
           conferenceData: {
@@ -231,12 +252,12 @@ export class GoogleCalendarService implements IGoogleCalendarService {
         requestBody: {
           summary: title,
           start: {
-            dateTime: startTime.toISOString(),
-            timeZone: 'America/Sao_Paulo',
+            dateTime: formatLocalDate(startTime),
+            timeZone: APP_TIMEZONE,
           },
           end: {
-            dateTime: endTime.toISOString(),
-            timeZone: 'America/Sao_Paulo',
+            dateTime: formatLocalDate(endTime),
+            timeZone: APP_TIMEZONE,
           },
         },
       });

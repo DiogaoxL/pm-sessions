@@ -112,6 +112,21 @@ describe('Release Gate Retry & Transient Error Suite', () => {
     expect(mockExec).toHaveBeenCalledTimes(2);
   });
 
+  it('Caso 5.1: connection timed out -> retry -> PASS', async () => {
+    let calls = 0;
+    const mockExec = vi.fn().mockImplementation(() => {
+      calls++;
+      if (calls === 1) {
+        throw new Error('PgClient: Connection timed out');
+      }
+      return 'Local | Remote\n20260718 | 20260718';
+    });
+
+    const result = await runMigrationCheck(mockExec, [0, 0]);
+    expect(result.status).toBe('RESOLVED');
+    expect(mockExec).toHaveBeenCalledTimes(2);
+  });
+
   it('Caso 6: Cloudflare origin_bad_gateway -> UNKNOWN', async () => {
     const mockExec = vi.fn().mockImplementation(() => {
       throw new Error('origin_bad_gateway');
