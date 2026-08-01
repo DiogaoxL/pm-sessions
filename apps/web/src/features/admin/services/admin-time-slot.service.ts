@@ -184,8 +184,6 @@ Status AVAILABLE: ${session.status}`);
     newEndTime: string,
   ): Promise<void> {
     const sessions = await this.sessionRepository.findSessionsByTimeSlot(id);
-    const parsedStart = new Date(`${newDate}T${newStartTime}`);
-    const parsedEnd = new Date(`${newDate}T${newEndTime}`);
 
     for (const session of sessions) {
       if (session.calendar_event_id) {
@@ -193,8 +191,9 @@ Status AVAILABLE: ${session.status}`);
         await this.googleCalendarService.updateEventTime(
           session.calendar_event_id,
           title,
-          parsedStart,
-          parsedEnd,
+          newDate,
+          newStartTime,
+          newEndTime,
         );
       }
     }

@@ -272,11 +272,9 @@ availableSeats: ${availableSeats}`);
       );
       if (!calendarEventId) {
         isNewEvent = true;
-        const startDateTime = new Date(`${slot.date}T${slot.start_time}`);
-        const endDateTime = new Date(`${slot.date}T${slot.end_time}`);
 
         console.log(
-          `[Correlation-ID: ${cid}] [TRACE 6.1] createEvent — ENTROU. start: ${startDateTime} end: ${endDateTime}`,
+          `[Correlation-ID: ${cid}] [TRACE 6.1] createEvent — ENTROU. date: ${slot.date} start: ${slot.start_time} end: ${slot.end_time}`,
         );
         const sessionDetails = await this.sessionRepository.findSessionById(allocation.session_id);
         const capacity = sessionDetails?.capacity ?? slot.capacity ?? 1;
@@ -291,8 +289,9 @@ availableSeats: ${availableSeats}`);
 
         const eventResult = await this.googleCalendarService.createEvent(
           sessionDetails?.title || 'Entrevista em Grupo',
-          startDateTime,
-          endDateTime,
+          slot.date,
+          slot.start_time,
+          slot.end_time,
           [email],
           eventDescription,
         );

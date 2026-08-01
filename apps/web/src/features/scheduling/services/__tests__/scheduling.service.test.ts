@@ -255,8 +255,9 @@ describe('SchedulingService - Camada de Serviços', () => {
       );
       expect(mockGoogleCalendarService.createEvent).toHaveBeenCalledWith(
         'Entrevista em Grupo',
-        expect.any(Date),
-        expect.any(Date),
+        '2026-07-20',
+        '09:00:00',
+        '10:00:00',
         [email],
         expect.any(String),
       );

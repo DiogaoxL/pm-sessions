@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { GoogleCalendarService } from '../google-calendar.service';
+import { GoogleCalendarService, parseBusinessDate } from '../google-calendar.service';
 
 const { mockInsert, MockOAuth2 } = vi.hoisted(() => {
   return {
@@ -149,5 +149,49 @@ describe('Google Calendar Timezone Anti-Regression Suite', () => {
       }
     `,
     );
+  });
+
+  describe('String Parameters - Timezone Correction Regression Suite', () => {
+    const timezones = ['UTC', 'America/Sao_Paulo', 'Europe/London', 'Asia/Tokyo'];
+
+    timezones.forEach((tz) => {
+      describe(`Simulated Server Timezone: ${tz}`, () => {
+        beforeEach(() => {
+          process.env.TZ = tz;
+        });
+
+        it('should correctly parse the business date to the exact UTC instant', () => {
+          const date = '2026-07-31';
+          const startTime = '20:00:00';
+          const parsed = parseBusinessDate(date, startTime, 'America/Sao_Paulo');
+          expect(parsed.toISOString()).toBe('2026-07-31T23:00:00.000Z');
+        });
+
+        it('should produce the exact payload for Google Calendar without timezone shift', async () => {
+          mockInsert.mockResolvedValue({
+            data: {
+              id: 'event-abc',
+              hangoutLink: 'https://meet.google.com/abc',
+            },
+          });
+
+          await service.createEvent('Test Meeting', '2026-07-31', '20:00:00', '21:00:00');
+
+          expect(mockInsert).toHaveBeenCalledTimes(1);
+          const payload = mockInsert.mock.calls[0][0].requestBody;
+
+          expect(payload.start.dateTime).toBe('2026-07-31T20:00:00');
+          expect(payload.start.timeZone).toBe('America/Sao_Paulo');
+          expect(payload.end.dateTime).toBe('2026-07-31T21:00:00');
+          expect(payload.end.timeZone).toBe('America/Sao_Paulo');
+
+          // Verify no Z or UTC is present in the dateTime string
+          expect(payload.start.dateTime).not.toContain('Z');
+          expect(payload.start.dateTime).not.toContain('UTC');
+          expect(payload.end.dateTime).not.toContain('Z');
+          expect(payload.end.dateTime).not.toContain('UTC');
+        });
+      });
+    });
   });
 });

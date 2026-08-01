@@ -19,6 +19,38 @@ export function formatLocalDate(date: Date, timeZone: string = APP_TIMEZONE): st
   return `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}:${getPart('second')}`;
 }
 
+export function parseBusinessDate(
+  dateStr: string,
+  timeStr: string,
+  timeZone: string = APP_TIMEZONE,
+): Date {
+  const baseUtcDate = new Date(`${dateStr}T${timeStr}Z`);
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(baseUtcDate);
+  const getPart = (type: string) => parts.find((p) => p.type === type)?.value || '0';
+
+  const year = parseInt(getPart('year'), 10);
+  const month = parseInt(getPart('month'), 10);
+  const day = parseInt(getPart('day'), 10);
+  const hour = parseInt(getPart('hour'), 10);
+  const minute = parseInt(getPart('minute'), 10);
+  const second = parseInt(getPart('second'), 10);
+
+  const baseTzDateAsUtc = Date.UTC(year, month - 1, day, hour, minute, second);
+  const diff = baseUtcDate.getTime() - baseTzDateAsUtc;
+
+  return new Date(baseUtcDate.getTime() + diff);
+}
+
 export interface IGoogleCalendarService {
   isCalendarConfigured(): boolean;
   checkAvailability(startTime: Date, endTime: Date): Promise<{ start: Date; end: Date }[]>;
@@ -33,9 +65,24 @@ export interface IGoogleCalendarService {
     attendees?: string[],
     description?: string,
   ): Promise<{ eventId: string; meetUrl: string | null }>;
+  createEvent(
+    title: string,
+    date: string,
+    startTime: string,
+    endTime: string,
+    attendees?: string[],
+    description?: string,
+  ): Promise<{ eventId: string; meetUrl: string | null }>;
   syncAttendees(eventId: string, attendees: string[], description: string): Promise<void>;
   deleteEvent(eventId: string): Promise<void>;
   updateEventTime(eventId: string, title: string, startTime: Date, endTime: Date): Promise<void>;
+  updateEventTime(
+    eventId: string,
+    title: string,
+    date: string,
+    startTime: string,
+    endTime: string,
+  ): Promise<void>;
   getPrimaryCalendarEmail(): Promise<string>;
 }
 
@@ -144,26 +191,83 @@ export class GoogleCalendarService implements IGoogleCalendarService {
 
   async createEvent(
     title: string,
-    startTime: Date,
-    endTime: Date,
-    attendees?: string[],
+    startTimeOrDate: Date | string,
+    endTimeOrStartTime: Date | string,
+    attendeesOrEndTime?: string[] | string,
+    descriptionOrAttendees?: string | string[],
     description?: string,
   ): Promise<{ eventId: string; meetUrl: string | null }> {
+    let startLocal: Date;
+    let endLocal: Date;
+    let finalAttendees: string[] | undefined;
+    let finalDescription: string | undefined;
+
+    if (
+      typeof startTimeOrDate === 'string' &&
+      typeof endTimeOrStartTime === 'string' &&
+      typeof attendeesOrEndTime === 'string'
+    ) {
+      const dateStr = startTimeOrDate;
+      const startTimeStr = endTimeOrStartTime;
+      const endTimeStr = attendeesOrEndTime;
+
+      console.log(`[STEP A]
+Input:
+date=${dateStr}
+start=${startTimeStr}
+
+↓`);
+
+      startLocal = parseBusinessDate(dateStr, startTimeStr);
+      endLocal = parseBusinessDate(dateStr, endTimeStr);
+
+      console.log(`[STEP B]
+Parsed Date:
+${startLocal.toString()}
+
+↓
+
+ISO:
+${startLocal.toISOString()}
+
+↓`);
+
+      finalAttendees = Array.isArray(descriptionOrAttendees) ? descriptionOrAttendees : undefined;
+      finalDescription = description;
+    } else if (startTimeOrDate instanceof Date && endTimeOrStartTime instanceof Date) {
+      startLocal = startTimeOrDate;
+      endLocal = endTimeOrStartTime;
+      finalAttendees = Array.isArray(attendeesOrEndTime) ? attendeesOrEndTime : undefined;
+      finalDescription =
+        typeof descriptionOrAttendees === 'string' ? descriptionOrAttendees : undefined;
+    } else {
+      throw new Error('Invalid arguments passed to createEvent');
+    }
+
+    const formattedStart = formatLocalDate(startLocal);
+    const formattedEnd = formatLocalDate(endLocal);
+
+    if (typeof startTimeOrDate === 'string') {
+      console.log(`Google Payload:
+start.dateTime = ${formattedStart}
+start.timeZone = America/Sao_Paulo`);
+    }
+
     try {
-      const updatedAttendees = attendees ? attendees.map((email) => ({ email })) : [];
+      const updatedAttendees = finalAttendees ? finalAttendees.map((email) => ({ email })) : [];
       const response = await this.calendarClient.events.insert({
         calendarId: 'primary',
         conferenceDataVersion: 1,
         sendUpdates: 'all',
         requestBody: {
           summary: title,
-          description: description || 'PM Sessions - Interview Session',
+          description: finalDescription || 'PM Sessions - Interview Session',
           start: {
-            dateTime: formatLocalDate(startTime),
+            dateTime: formattedStart,
             timeZone: APP_TIMEZONE,
           },
           end: {
-            dateTime: formatLocalDate(endTime),
+            dateTime: formattedEnd,
             timeZone: APP_TIMEZONE,
           },
           attendees: updatedAttendees,
@@ -219,7 +323,6 @@ export class GoogleCalendarService implements IGoogleCalendarService {
         sendUpdates: 'all',
       });
     } catch (error: unknown) {
-      // Se o evento ja foi deletado ou nao existe mais, prossegue silenciosamente
       if (error && typeof error === 'object') {
         const errObj = error as Record<string, unknown>;
         if (
@@ -241,9 +344,57 @@ export class GoogleCalendarService implements IGoogleCalendarService {
   async updateEventTime(
     eventId: string,
     title: string,
-    startTime: Date,
-    endTime: Date,
+    startTimeOrDate: Date | string,
+    endTimeOrStartTime: Date | string,
+    endTimeStr?: string,
   ): Promise<void> {
+    let startLocal: Date;
+    let endLocal: Date;
+
+    if (
+      typeof startTimeOrDate === 'string' &&
+      typeof endTimeOrStartTime === 'string' &&
+      typeof endTimeStr === 'string'
+    ) {
+      const dateStr = startTimeOrDate;
+      const startTimeStr = endTimeOrStartTime;
+
+      console.log(`[STEP A]
+Input:
+date=${dateStr}
+start=${startTimeStr}
+
+↓`);
+
+      startLocal = parseBusinessDate(dateStr, startTimeStr);
+      endLocal = parseBusinessDate(dateStr, endTimeStr);
+
+      console.log(`[STEP B]
+Parsed Date:
+${startLocal.toString()}
+
+↓
+
+ISO:
+${startLocal.toISOString()}
+
+↓`);
+    } else if (startTimeOrDate instanceof Date && endTimeOrStartTime instanceof Date) {
+      startLocal = startTimeOrDate;
+      endLocal = endTimeOrStartTime;
+    } else {
+      throw new Error('Invalid arguments passed to updateEventTime');
+    }
+
+    const formattedStart = formatLocalDate(startLocal);
+    const formattedEnd = formatLocalDate(endLocal);
+
+    if (typeof startTimeOrDate === 'string') {
+      console.log(`Google Payload:
+start.dateTime = ${formattedStart}
+start.timeZone = America/Sao_Paulo`);
+    }
+
     try {
       await this.calendarClient.events.patch({
         calendarId: 'primary',
@@ -252,11 +403,11 @@ export class GoogleCalendarService implements IGoogleCalendarService {
         requestBody: {
           summary: title,
           start: {
-            dateTime: formatLocalDate(startTime),
+            dateTime: formattedStart,
             timeZone: APP_TIMEZONE,
           },
           end: {
-            dateTime: formatLocalDate(endTime),
+            dateTime: formattedEnd,
             timeZone: APP_TIMEZONE,
           },
         },
